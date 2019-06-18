@@ -1,0 +1,39 @@
+
+.pagination {
+    > ul {
+        display: inline;
+    }
+    ul {
+        text-align: left;
+    }
+    li {
+        display: inline-block;
+        width: 1.5em; // might break for items with 3 digits
+        text-align: center;
+        height: 1.5em;
+        line-height: 1.5em;
+        span { // behave like nav li a (_nav.scss)
+            display: block;
+            padding: 0 .2em;
+        }
+    }
+    &.dropdown {
+        .pagination_dropdown_headline {
+            &:hover, &:focus, &:focus-within {
+                ul {
+                    display: block;
+                    width: 10em;
+                    height: 5em;
+                    padding-left: .25em;
+                    overflow-y: auto;
+                    white-space: normal !important; // revert from _nav.scss
+                    z-index: 10;
+                }
+            }
+        }
+    }
+}
+
+article + .pagination {
+    margin-top: 1em;
+}

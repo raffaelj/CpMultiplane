@@ -1,0 +1,54 @@
+
+$color-bg: #fcfcfc !default;
+$color-shadow: #ccc !default;
+
+nav {
+    li a {
+        display: block;
+        padding: 0 .2em;
+        &:hover, &:focus {
+            border: none;
+        }
+    }
+    > ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        > li {
+            display: inline-block;
+            vertical-align: top;
+        }
+    }
+    li {
+        position: relative;
+        &:hover, &:focus, &:focus-within {
+            background-color: rgba(0,0,0,.03);
+        }
+        > ul {
+            display: none;
+        }
+        &:hover > ul,
+        &:focus > ul,
+        &:focus-within > ul,
+        > a:hover + ul,
+        > a:focus + ul
+        {
+            display: block;
+            position: absolute;
+            padding: .25em .25em .25em .75em;
+            list-style: none;
+            background-color: $color-bg;
+            white-space: nowrap;
+            @include box-shadow(1px 1px 2px $color-shadow);
+        }
+        li {
+            &:hover > ul,
+            &:focus > ul,
+            &:focus-within > ul
+            {
+                top: 0;
+                left: 100%;
+            }
+        }
+    }
+}

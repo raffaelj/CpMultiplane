@@ -1,0 +1,182 @@
+
+
+$color-bg: #fcfcfc !default;
+$color-grey: #ccc !default;
+$color-link: #a771c5 !default;
+$color-link-hover: #ac833c !default;
+
+$font: system, Helvetica, sans-serif !default;
+
+html {
+    font-family: $font;
+    font-size: 16px;
+    background-color: $color-bg;
+}
+
+body {
+    line-height: 1.5em; // meyer-reset has "line-height: 1"
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-family: $font;
+    font-weight: bold;
+    line-height: 1em;
+    &:first-child {
+        margin-top: .2em;
+    }
+}
+
+h1 {
+    margin: .5em 0;
+    font-size: 2em;
+    line-height: 1.5em;
+}
+h2 {
+    margin: .5em 0;
+    font-size: 1.5em;
+    line-height: 1.25em;
+}
+h3 {
+    margin: .25em 0;
+    font-size: 1.25em;
+}
+h4 {
+    margin: .25em 0;
+    font-size: 1.125em;
+}
+h5 {
+    margin: .25em 0;
+    font-size: 1em;
+}
+h6 {
+    margin: .25em 0;
+    font-size: 1em;
+    font-weight: normal;
+    font-style: italic;
+}
+
+p {
+    margin: 0;
+    padding: 0 0 .5em;
+    @include hyphens();
+}
+
+a {
+    text-decoration: none;
+    color: $color-link;
+    &:hover, &:focus {
+        color: $color-link-hover;
+        border-bottom: 1px dotted;
+    }
+}
+
+strong, b {
+    font-weight: bold;
+}
+
+em, i {
+    font-style: italic;
+}
+
+sub {
+    vertical-align: sub;
+    font-size: .75em;
+}
+
+sup {
+    vertical-align: super;
+    font-size: .75em;
+}
+
+blockquote, q {
+    border-left: 4px solid #ddd;
+    margin-left: .5em;
+    padding: .25em 0 .25em .25em;
+}
+
+cite, dfn {
+    font-style: italic;
+}
+
+small {
+    font-size: .75em;
+}
+
+mark {
+    background-color: #fafad2;
+    padding-left: .125em;
+    padding-right: .125em;
+    @include box-shadow(0px 0px 1px 2px #fafad2);
+}
+
+time {
+    
+}
+
+// to do: responsiveness, contents
+figure {
+    display: table;
+    // display: inline-block;
+    // text-align: center;
+    // img {
+        // + figcaption {
+            
+        // }
+    // }
+}
+figcaption {
+    display: table-caption;
+    caption-side: bottom;
+}
+
+iframe {
+    display: block;
+    width: 90%;
+    height: 500px;
+    margin: 1em 4%;
+    border: 1px solid $color-grey;
+    border-radius: $border-radius;
+}
+
+// lists
+ul, ol {
+    padding-left: 1.5em;
+}
+
+ul {
+    list-style: disclosure-closed;
+    ul {
+        list-style: disc;
+        ul {
+            list-style: circle;
+        }
+    }
+}
+
+ol {
+    list-style: decimal;
+}
+
+li {
+    
+}
+
+dl {
+    
+}
+
+dt {
+    display: list-item;
+    list-style-position: inside;
+    list-style-type: disclosure-open;
+}
+
+dd {
+    margin-left: 1em;
+}
+
+img {
+    // width: auto;
+    height: auto;
+    max-width: 100%;
+}

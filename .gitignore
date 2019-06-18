@@ -1,0 +1,18 @@
+# common cockpit dir names
+/cockpit
+/admin
+
+# custom files and directories
+/Controller
+/addons
+/config
+defines.php
+
+# common user files and directories
+/assets
+/views
+favicon.ico
+
+# Should I ignore scss files...?
+#*.scss
+#*.map

@@ -1,0 +1,93 @@
+
+// sources/home work:
+// * https://css-tricks.com/browser-compatibility-css-grid-layouts-simple-sass-mixins/
+// * https://css-tricks.com/css-grid-in-ie-debunking-common-ie-grid-misconceptions/
+// * https://caniuse.com/#search=grid
+// * https://css-tricks.com/snippets/css/complete-guide-grid/
+
+@mixin display-grid {
+  display: -ms-grid;
+  display: grid;
+}
+
+@mixin grid-template-columns($value) {
+         -ms-grid-columns: $value;
+    grid-template-columns: $value;
+}
+
+
+.grid {
+    @include breakpoint(medium) {
+        margin: 0;
+        padding: 0;
+        @include display-grid;
+        // grid-template-columns: ;
+        @include grid-template-columns(auto 17.75em);
+        // grid-template-rows: auto auto 400px 1fr;
+        // grid-template-rows: auto auto auto 1fr;
+        // grid-template-rows: auto auto 1fr;
+        grid-template-areas:
+            'header header'
+            'nav nav'
+            'main aside'
+            'footer footer';
+        align-content: start;
+        
+        > header, > nav, > aside, > footer, > main {
+            width: auto;
+            margin: .5em;
+        }
+        > header {
+            grid-area: header;
+            margin-top: 1em;
+            margin-left: 1em;
+            margin-right: 1em;
+        }
+        > nav {
+            grid-area: nav;
+            margin-left: 1em;
+            margin-right: 1em;
+        }
+        > aside {
+            grid-area: aside;
+            margin-right: 1em;
+        }
+        > footer {
+            grid-area: footer;
+            margin: .5em 1em 1em;
+        }
+        > main {
+            grid-area: main;
+            // margin-bottom: 1em;
+            margin-left: 1em;
+        }
+    }
+    @include breakpoint(normal) {
+        @include grid-template-columns(auto 25em);
+    }
+    @include breakpoint(large) {
+        @include grid-template-columns(25em auto 20em);
+        grid-template-rows: auto 1fr auto;
+        grid-template-areas:
+            'header main aside'
+            'nav main aside'
+            // 'aside main'
+            'footer footer footer';
+            > nav, > header {
+                margin-left: 1em;
+                // margin-right: .5em;
+            }
+            > aside {
+                // margin-bottom: 1em;
+                margin-left: .5em;
+            }
+            // > footer {
+                // margin-left: 1em;
+                // margin-right: .5em;
+            // }
+            > main {
+                margin-left: .5em;
+            }
+    }
+}
+

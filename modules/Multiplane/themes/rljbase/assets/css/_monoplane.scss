@@ -1,0 +1,154 @@
+
+html {
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
+}
+
+main, header, footer, aside, nav {
+    box-sizing:border-box;
+}
+
+  body > main
+, body > footer
+, body > aside
+{
+    position:relative;
+    margin: 1em auto;
+    width: $width;
+    max-width: 100%;
+    padding: 1em;
+    background-color: $color-white;
+    color:$color-dark;
+    @include box-shadow(0px 2px 2px $color-shadow);
+    border-radius: $border-radius;
+}
+
+body > header {
+    position:relative;
+    margin: 1em auto;
+    width: $width;
+    max-width: 100%;
+    text-align:center;
+    a {
+        display:table;
+        margin:0 auto;
+        img {
+            width: 100px;
+            height: 100px;
+            @include filter(drop-shadow(1px 1px rgba(0,0,0,.2)));
+        }
+        &:hover,&:focus {
+            border:none;
+        }
+    }
+    h1 {
+        margin:0;
+    }
+
+}
+
+// blog posts excerpts
+main > .excerpt {
+    margin-top: 1em;
+    padding: 1em;
+    @include box-shadow(0px 2px 2px $color-shadow);
+    .featured_image {
+        float: left;
+        margin: .5em 1em 1em 0;
+    }
+    .read_more {
+        // text-align: right;
+        clear: both;
+    }
+}
+
+.labels {
+    text-align:center;
+    line-height:1.75em;
+}
+.label {
+    display: inline-block;
+    height: 1.5rem;
+    line-height: 1rem;
+    padding: .25rem .5rem;
+    box-sizing: border-box;
+    vertical-align: middle;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: $border-radius;
+    color: $color-link;
+    background-color:$color-black;
+    @include box-shadow(0 -1px 0 rgba(0, 0, 0, 0.12) inset);
+    .icon {
+        height:1rem;
+        float:left;
+        margin-right:.2rem;
+    }
+}
+a.label {
+    &:hover,&:focus {
+        background-color:$color-black-transp;
+    }
+    &.active {
+        color: $color-link;
+        border-bottom:2px solid $color-link-hover;
+    }
+}
+
+body > footer {
+    nav {
+        margin-bottom: 1em;
+    }
+    text-align: center;
+}
+
+body > nav {
+    position:relative;
+    margin: 1em auto;
+    width: $width;
+    max-width: 100%;
+    padding: 1em;
+    font-family: $font_extra;
+    ul {
+        display:block;
+        margin:0 auto;
+        padding:0;
+        list-style-type:none;
+        text-align:center;
+    }
+    li {
+        display:inline-block;
+        margin:.5em;
+    }
+    a {
+        padding: .2em .4em;
+        font-size: 1.2em;
+        border-radius: $border-radius;
+        background-color: $color-white;
+        color: $color-link;
+        @include box-shadow(0px 2px 2px $color-shadow);
+    }
+}
+
+nav .active {
+    color: $color-dark;
+    background-color: transparent;
+}
+
+.language-switch {
+    @include breakpoint(small) {
+        position: absolute;
+        top: 1em;
+        right: 1em;
+    }
+    ul {
+        list-style-type: none;
+        li {
+            display: inline-block;
+        }
+    }
+    a {
+        display: block;
+    }
+}

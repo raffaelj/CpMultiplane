@@ -1,0 +1,29 @@
+
+$color-table-odd: transparent !default;
+$color-table-even: #eee !default;
+$color-table-border: #444 !default;
+
+table {
+  border-spacing: 0 .5em;
+  // text-align: center;
+  text-align: left;
+  thead {
+    font-weight: bold;
+  }
+  // stripes
+  tbody tr:nth-of-type(odd) { 
+    background-color: $color-table-odd; 
+  }
+  tbody tr:nth-of-type(even) { 
+    background-color: $color-table-even; 
+  }
+  tfood {
+    font-style: italic;
+  }
+  tr {
+    // margin:.5em 0;
+  }
+  td,th {
+    padding: .25rem;
+  }
+}

@@ -1,0 +1,302 @@
+// contact form
+
+$border-radius: 2px !default;
+
+// form colors
+$color-main: #8d9444 !default;
+$color-main-dark: #ae5e69 !default;
+
+$color-text: #000000 !default;
+$color-text-light: #999 !default;
+$color-text-dark: #555 !default;
+$color-text-dark: #222 !default;
+
+$color-alarm: #AD000E !default;
+$color-error: #d50f2c !default;
+
+$color-input: rgba(255,255,255,.9) !default;
+$color-input-hover: $color-white !default;
+$color-info: transparent !default;
+
+$color-dark: #222 !default;
+$color-grey: #ccc !default;
+$color-shadow: #0c0c0c !default;
+$color-black-transp-light: rgba(0,0,0,.2) !default;
+
+form{
+    * {
+        @include box-sizing(border-box);
+    }
+    margin: 1rem 0;
+}
+
+fieldset {
+    border:1px solid $color-text-dark;
+    border-radius: $border-radius;
+    padding: .5rem;
+    text-align: center;
+    * {
+      text-align: left;
+    }
+    > .message.error {
+      margin-bottom: .5rem;
+    }
+    > div{
+      display: inline-block;
+      position: relative;
+      width: 100%;
+      margin: 0 0 .5rem;
+      padding: 0;
+      vertical-align: top;
+      &:last-of-type { // contains submit button
+          text-align: center;
+      }
+      @include breakpoint(medium) {
+          width: 100%;
+          float: left;
+          padding-left: .2rem;
+          padding-right: .2rem;
+          &.width-1-1 {
+              width:100%;
+          }
+          &.width-1-2 {
+              width:50%;
+          }
+          &.width-1-3 {
+              width:33%;
+          }
+          &.width-2-3 {
+              width:66%;
+          }
+          &.width-1-4 {
+              width:25%;
+          }
+          &.width-3-4 {
+              width:75%;
+          }
+      }
+      > label{
+          position:absolute;
+          top: 0rem;
+          font-size:.9rem;
+          transition: 0.2s;
+      }
+      .info {
+          padding: .2rem 0;
+          font-size: .9rem;
+          background-color: $color-info;
+          border-radius: $border-radius;
+      }
+    }
+}
+
+legend {
+    padding: 0 .5rem;
+}
+
+input, textarea {
+    background-color:$color-input;
+    // &[required] {
+        // + label:after {
+            // content: "*";
+        // }
+    // }
+}
+
+// &[type=text], &[type=mail], &[type=date], &[type=url], &[type=password], &[type=email], &[type=tel], &[type=number], &[type=search], &[type=month], &[type=week], &[type=datetime], &[type=datetime-local] {
+
+input {
+    border-radius: $border-radius;
+    border:1px solid $color-grey;
+    margin: inherit 0 0;
+    + label {
+        + .message.error {
+          border-top-left-radius:0;
+          border-top-right-radius:0;
+          border-top-width:0;
+          padding-top:.2rem;
+        }
+    }
+    &:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=reset]):not([type=button]) {
+        display:block;
+        padding:5px;
+        width:100%;
+        line-height: 1rem;
+        height: 2rem;
+        &:hover, &:focus {
+            border:1px solid $color-grey;
+            background-color:$color-input-hover;
+            + label {
+                margin-left:.2rem;
+            }
+        }
+    }
+    &:invalid {
+        // to do...
+    }
+    &:valid {
+        // to do...
+    }
+}
+
+input[type=checkbox], input[type=radio] {
+
+    // works only if label follows input:
+
+    position:absolute;
+    opacity: 0;
+    width: 1em;
+    // margin-top:0;
+    // margin-left:-1em;
+
+    + label {
+        display: block;
+        position: relative;
+        margin-left: 1.2rem;
+        &:before {
+            content:'';
+            position: absolute;
+            top: 50%;
+            left: -1.2rem;
+            width: 1rem;
+            height: 1rem;
+            margin-top: -.5rem;
+            padding: 0;
+            border: 1px solid #ccc;
+            border-radius: 2px;
+            margin-right: .2rem;
+            box-sizing: border-box;
+        }
+    }
+    &:hover,&:focus,&:active {
+        + label:before {
+            border-color: $color-main;
+        }
+    }
+    &:checked {
+        + label:before {
+            
+        }
+        + label:after {
+            content:'';
+            position: absolute;
+            top: 50%;
+            left: -1rem;
+            width: .6rem;
+            height: .6rem;
+            margin-top: -.3rem;
+            background-color: $color-main;
+        }
+    }
+}
+
+
+input, button {
+    &[type=submit], &[type=reset], &[type=button] {
+        padding: .2rem .5rem;
+        background-color: $color-link;
+        margin: 0 auto;
+        color: $color-dark;
+        font-size: 1.1rem;
+        border-radius:2px;
+        cursor:pointer;
+        border:none;
+        @include box-shadow(0px -2px 0px $color-black-transp-light inset);
+        &:hover,&:focus {
+            background-color:$color-link-hover;
+        }
+    }
+    &[type=submit] {
+        background-color: $color-link;
+        color: $color-dark;
+        &:hover,&:focus {
+            background-color:$color-link-hover;
+        }
+        // + p {
+            // margin-top:.5rem;
+        // }
+    }
+    &[type=button] {
+        background-color: $color-main;
+        color: $color-dark;
+    }
+    &[type=reset] {
+        background-color: $color-darker;
+        color: $color-link;
+    }
+    &:disabled {
+        background-color: $color-grey;
+        color: $color-darker;
+        cursor: default;
+        &:hover,&:focus {
+            background-color:$color-grey;
+        }
+    }
+}
+
+textarea{
+    display:block;
+    width:100%;
+    height:10rem;
+    padding:.5rem;
+    border-radius: $border-radius;
+    border:1px solid $color-grey;
+    font-family: $font;
+    &:hover,&:focus{
+        background-color:$color-input-hover;
+        + label{
+            margin-left:.2rem;
+        }
+    }
+}
+
+// button {
+    // border:none;
+// }
+
+
+//// label positioning
+
+input:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=reset]):not([type=button]), textarea {
+    margin-top: 1.5rem;
+}
+label {
+    + input, + textarea {
+        margin-top: inherit;
+    }
+}
+
+// reset margin from absolute positioned labels
+// label {
+    // + input {
+        // margin-top:0;
+    // }
+// }
+
+//// messages
+
+.message{
+    font-size:.9rem;
+    text-align:left;
+    &.error{
+        border: 1px solid $color-error;
+        margin: 0 .2rem;
+        padding: .5rem;
+        border-radius: $border-radius;
+        line-height:1.2rem;
+    }
+    &.success{
+        font-size: 1.1rem;
+        border: .5rem solid $color-link-hover;
+        padding: 1rem .5rem;
+        border-radius: $border-radius;
+        text-align: center;
+        margin: 1rem 0.2rem;
+    }
+    &.alarm{
+        color: $color-alarm;
+        border: 2px solid $color-alarm;
+    }
+}
+
+

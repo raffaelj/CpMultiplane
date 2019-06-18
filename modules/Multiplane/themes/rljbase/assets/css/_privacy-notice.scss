@@ -1,0 +1,32 @@
+#privacy-notice {
+    display: none;
+    position: fixed;
+    top: 0;
+    height: 350px;
+    max-height: calc(100vh - 2em);
+    overflow-y: auto;
+    font-size: .9em;
+    background-color: rgba(255,255,255,.98);
+    z-index: 10000;
+    @include breakpoint(small) {
+        top: auto;
+        left: 50%;
+        bottom: 0;
+        width: 500px;
+        height: auto;
+        margin-left: -250px;
+    }
+    @include breakpoint(medium) {
+        width: 740px;
+        margin-left: -370px;
+    }
+    h1 {
+        font-size: 1.5em;
+    }
+    form {
+        margin: 0;
+    }
+    button {
+        margin-top: .5em;
+    }
+}
