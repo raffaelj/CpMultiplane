@@ -1,25 +1,25 @@
 <?php
 
-// forms helper
-$this->helpers['form'] = 'Multiplane\\Controller\\Forms'; // for widget usage
+// forms helper for widget usage
+$this->helpers['form'] = 'Multiplane\\Controller\\Forms';
 
 $this->module('multiplane')->extend([
 
-    'comments' => 'comments',     // comment form name
-    'contact' => 'contact',       // contact form name
-    'newsletter' => 'newsletter', // newsletter form name
-    'hasCommentSection' => false,
-    'hasContactForm' => false,
+    'comments'              => 'comments',      // comment form name - to do...
+    'contact'               => 'contact',       // contact form name
+    'newsletter'            => 'newsletter',    // newsletter form name - to do...
+    'hasCommentSection'     => false,           // to do...
+    'hasContactForm'        => false,           // to do...
 
-    'currentFormId' => 'contact',
+    'currentFormId'         => 'contact',       // for redirects with anchor
 
-    'formSessionName' => md5(__DIR__),
-    'formSessionExpire' => 30,
+    'formSessionName'       => md5(__DIR__),
+    'formSessionExpire'     => 30,              // time in seconds
 
-    'formIdPrefix' => 'mp_form_',
-    'formSubmitButtonName' => 'submit',
+    'formIdPrefix'          => 'mp_form_',      // for form fields to prevent doubled ids
+    'formSubmitButtonName'  => 'submit',        // prevent form validator from validating the button
 
-    'formSendReferer' => false,
+    'formSendReferer'       => false,           // send current page with contact form
 
     'formMessages' => [
         'success' => 'Thank you for your message. I will answer soon.',
@@ -74,12 +74,14 @@ $this->module('multiplane')->extend([
 
     'resolveFormFieldAttributes' => function($field) {
 
-        $attr['name'] = $attr['id'] = $this->formIdPrefix . $field['name'];
+        $attr['name'] = $field['name'];
+        $attr['id']   = $this->formIdPrefix . $field['name'];
 
         if(isset($field['required']) && $field['required']) {
             $attr['required'] = 'required';
         }
 
+        // may overwrite id and name
         if(isset($field['options']['attr'])) {
             foreach($field['options']['attr'] as $key => $val) {
                 $attr[$key] = $val;
@@ -92,6 +94,9 @@ $this->module('multiplane')->extend([
 
     // helper function to convert array to html attribute string
     'arrayToAttributeString' => function($array) {
+
+        // to do: boolean values like required and checked don't need
+        // to be `required="required"` anymore.
 
         $attributes = '';
 

@@ -32,48 +32,50 @@ $this->module('multiplane')->extend([
 
     // base config
     'isMultilingual'        => false,
-    'useDefaultRoutes'      => true,
-    'outputMethod'          => 'dynamic',                   // to do: static
-    'pageTypeDetection'     => 'collections',
+    'disableDefaultRoutes'  => false,             // don't use any default routes
+    'outputMethod'          => 'dynamic',         // to do: static
+    'pageTypeDetection'     => 'collections',     // 'collections' or 'type'
     'slugName'              => '_id',
 
-    'isInMaintenanceMode'   => false,
-    'allowedIpsInMaintenanceMode' => null,
-    'clientIpIsAllowed'   => false,
+    // maintenance mode
+    'isInMaintenanceMode'   => false,             // display under construction page with 503 status
+    'allowedIpsInMaintenanceMode' => null,        // separate multiple ip addresses with whitespaces
+
+    'styles'                => [],                // access via cockpit('multiplane')->userStyles();
+    'scripts'               => [],                // access via cockpit('multiplane')->userScripts();
 
     // use Fields render helper and optional field templates
     'preRenderFields'       => [],
+
+    'site'                  => [],                // default site config
+    'siteSingleton'         => 'site',            // singleton name for default config
+
+    'pages'                 => 'pages',           // collection name for pages
+    'pagesPattern'          => '{title}',         // to do...
+
+    'posts'                 => 'posts',           // collection name for posts
+    'postsPattern'          => '{collection}/{title}',        // to do...
+    // 'postsPattern'         => '{YYYY}/{MM}/{DD}/{title}',  // to do...
+
+    // content preview
+    'isPreviewEnabled'      => false,
+    'previewMethod'         => 'html',            // the inbuilt live preview renders the main part as html
+    'livePreviewToken'      => 'a5aaa86fb37592f02fb14229b706de',
+    'previewDelay'          => 0,
+
+    // pagination
+    'displayPostsLimit'     => 5,               // number of posts to display in subpagemodule
+    'paginationDropdownLimit' => 5,             // number of pages, when the pagination turns to dropdown menu
 
     // changes dynamically
     'defaultLang'           => $this->retrieve('i18n', 'en'),
     'breadcrumbs'           => ['/'],
     'isStartpage'           => false,
-
-    'site'                  => [],
-
-    'pages'                 => 'pages',
-    'pagesPattern'          => '{title}',   // to do...
-
-    'collection'            => 'pages',
-
-    'posts'                 => 'posts',
-    'postsPattern'          => '{collection}/{title}', // to do...
-    // 'postsPattern'         => '{YYYY}/{MM}/{DD}/{title}', // to do...
-
-    // content preview
-    'isPreviewEnabled'      => true,
-    'previewMethod'         => 'html',
-    'livePreviewToken'      => 'a5aaa86fb37592f02fb14229b706de',
-    'previewDelay'          => 0,
-
-    'hasParentPage'         => false,
-    'displayPostsLimit'     => 5,       // number of posts to display in subpagemodule
-    'paginationDropdownLimit' => 5,     // number of pages, when the pagination turns to dropdown menu
-
-    'styles'                => [],      // access via cockpit('multiplane')->userStyles();
-    'scripts'               => [],
-
+    'collection'            => null,            // current collection
     'hasBackgroundImage'    => false,
+    'clientIpIsAllowed'     => false,           // if maintenance and ip is allowed
+    'hasParentPage'         => false,           // for sub pages and pagination
+
 
     'set' => function($key, $value) {
 
@@ -99,9 +101,9 @@ $this->module('multiplane')->extend([
 
     'getSite' => function() {
 
-        $site = $this->app->module('singletons')->getData('site');
+        $site = $this->app->module('singletons')->getData($this->siteSingleton);
 
-        if ($site) $this->site = $site;
+        if ($site && is_array($site)) $this->site = $site;
 
         return $site;
 
@@ -127,7 +129,7 @@ $this->module('multiplane')->extend([
             $filter = [
                 'published' => true,
             ];
-        
+
             if (!$this->isMultilingual) {
                 $filter[$this->slugName] = $slug;
             }
@@ -395,8 +397,6 @@ $this->module('multiplane')->extend([
         $page = $this->app->param('page', 1);
         $limit = (isset($opts['limit']) && (int)$opts['limit'] ? $opts['limit'] : null) ?? $this->displayPostsLimit ?? 5;
         $skip = ($page - 1) * $limit;
-        
-        $hidePagination = 
 
         $filter = [
             'published' => true,
@@ -414,9 +414,11 @@ $this->module('multiplane')->extend([
 
         $posts = $this->app->module('collections')->find($collection, $options);
 
-        if (!$posts) {
-            // send 404 if no posts found (page too high), may braek the page sometimes
-            // $this->app->response->status = 404;
+        $count = $this->app->module('collections')->count($collection, $filter);
+
+        if (!$posts && $count) {
+            // send 404 if no posts found (pagination too high)
+            $this->app->response->status = 404;
             return;
         }
 
@@ -437,8 +439,6 @@ $this->module('multiplane')->extend([
 
         }
 
-        $count = $this->app->module('collections')->count($collection, $filter);
-
         $pagination =  [
             'count' => $count,
             'page'  => $page,
@@ -446,7 +446,7 @@ $this->module('multiplane')->extend([
             'pages' => ceil($count / $limit),
             'slug'  => $slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
-            'hide' => (!isset($opts['pagination']) || $opts['pagination'] !== true),
+            'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
 
         return compact('posts', 'pagination');
@@ -457,10 +457,11 @@ $this->module('multiplane')->extend([
         
         if (!$type) $type = 'post';
 
-        $lang = $this('i18n')->locale;
-        $page = $this->app->param('page', 1);
-        $limit = (isset($opts['limit']) && (int)$opts['limit'] ? $opts['limit'] : null) ?? $this->displayPostsLimit ?? 5;
-        $skip = ($page - 1) * $limit;
+        $lang  = $this('i18n')->locale;
+        $page  = $this->app->param('page', 1);
+        $limit = (isset($opts['limit']) && (int)$opts['limit'] ? $opts['limit'] : null)
+                  ?? $this->displayPostsLimit ?? 5;
+        $skip  = ($page - 1) * $limit;
 
         $filter = [
             'published' => true,
@@ -476,9 +477,11 @@ $this->module('multiplane')->extend([
 
         $posts = $this->app->module('collections')->find($this->pages, $options);
 
-        if (!$posts) {
-            // send 404 if no posts found (paginagion too high), may break the page sometimes
-            // $this->app->response->status = 404;
+        $count = $this->app->module('collections')->count($this->pages, $filter);
+
+        if (!$posts && $count) {
+            // send 404 if no posts found (paginagion too high)
+            $this->app->response->status = 404;
             return;
         }
 
@@ -487,8 +490,6 @@ $this->module('multiplane')->extend([
                 $post = $this->renderFields($post);
             }
         }
-
-        $count = $this->app->module('collections')->count($this->pages, $filter);
 
         $pagination =  [
             'count' => $count,
@@ -541,8 +542,8 @@ $this->module('multiplane')->extend([
                     }
                     $this->breadcrumbs = $breadcrumbs;
 
+                    // pagination for blog module
                     if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
-                        // pagination for blog module
                         $slug = $parts[0];
                         $_REQUEST['page'] = $parts[2];
                     }
@@ -707,6 +708,28 @@ $this->module('multiplane')->extend([
 
     },
 
+    'setConfig' => function() {
+
+        // overwrite default config
+
+        $config = array_replace_recursive(
+            $this->app->storage->getKey('cockpit/options', 'multiplane', []), // ui
+            $this->app->retrieve('multiplane', [])                            // config file
+        );
+
+        foreach($config as $key => $val) {
+
+            // prevent overwriting defaults with empty strings
+            if (($key == 'pages' || $key == 'posts' ) && empty($val)) continue;
+
+            $this->set($key, $val);
+        }
+
+        // set current collection to pages
+        $this->set('collection', $this->pages);
+
+    },
+
 ]);
 
 
@@ -717,11 +740,7 @@ include_once(__DIR__ . '/module/forms.php');
 $this->on('multiplane.init', function() {
 
     // overwrite default config
-    $config = $this->retrieve('multiplane', []);
-
-    foreach($config as $key => $val) {
-        $this->module('multiplane')->$key = $val;
-    }
+    $this->module('multiplane')->setConfig();
 
     // skip binding routes if in maintenance mode
     if (!$this->module('multiplane')->accessAllowed()) {
@@ -729,7 +748,7 @@ $this->on('multiplane.init', function() {
     }
 
     // dont't bind any routes, if user wants to use only their own routes
-    if (!$this->module('multiplane')->useDefaultRoutes) {
+    if ($this->module('multiplane')->disableDefaultRoutes) {
         return;
     }
 

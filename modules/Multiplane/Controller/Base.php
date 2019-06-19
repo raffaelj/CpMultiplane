@@ -6,6 +6,7 @@ class Base extends \LimeExtra\Controller {
 
     public function before() {
         
+        // load site data from site singleton
         $this->app->module('multiplane')->getSite();
 
     }
@@ -80,6 +81,8 @@ class Base extends \LimeExtra\Controller {
     }
 
     public function getImage($options = []) {
+
+        // to do: ddos protection
 
         $src = $this->param('src', null);
 
