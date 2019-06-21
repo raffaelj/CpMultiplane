@@ -44,7 +44,8 @@ git clone https://github.com/raffaelj/cockpit_BootManager.git cockpit/addons/Boo
 git clone https://github.com/pauloamgomes/CockpitCms-EditorFormats.git cockpit/addons/BootManager/addons/EditorFormats
 
 # check for dependencies
-./mp check
+# to do: implement cli commands from Monoplane
+#./mp check
 
 # Use other cli commands to import collections or singletons
 # All cockpit cli commands should work with `./mp`, but you can call `cockpit/cp` instead, too.
@@ -94,7 +95,8 @@ EOF
 # This is the last step, because it requires a user input. 
 
 # create admin user, type a email, a password and press Enter
-./mp account/create --user raffael --name Raffael
+# to do: implement cli commands from Monoplane
+# ./mp account/create --user raffael --name Raffael
 ```
 
 [1]: https://github.com/agentejo/cockpit/#installation

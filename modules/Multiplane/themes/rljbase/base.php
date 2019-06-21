@@ -1,7 +1,3 @@
-<?php
-// temp variables until rewrite is complete...
-$version = '0.1.0';
-?>
 <!DOCTYPE html>
 <html lang="{{ $app('i18n')->locale }}">
 
@@ -17,13 +13,13 @@ $version = '0.1.0';
 
         @render('views:partials/open-graph.php', compact('page', 'site'))
 
-        <link rel="shortcut icon" href="{{ MP_BASE_URL }}/favicon.png?ver={{ $version }}">
+        <link rel="shortcut icon" href="{{ MP_BASE_URL }}/favicon.png?ver={{ mp()->version }}">
 
         <script>
             var MP_BASE_URL = '{{ MP_BASE_URL }}';
         </script>
-        {{ $app->assets($app['multiplane.assets.top'], $version) }}
-        {{ cockpit('multiplane')->userStyles() }}
+        {{ $app->assets($app['multiplane.assets.top'], mp()->version) }}
+        {{ mp()->userStyles() }}
 
     </head>
 
@@ -39,9 +35,12 @@ $version = '0.1.0';
                 <h1>{{ $site['site_name'] ?? $app['app.name'] }}</h1>
             </a>
 
-            @if(cockpit('multiplane')->isMultilingual)
-
+            @if(mp()->isMultilingual)
             @render('views:partials/language-switch.php', ['page' => $page])
+            @endif
+
+            @if(mp()->displayBreadcrumbs)
+            @render('views:partials/breadcrumbs.php', ['page' => $page])
             @endif
 
         </header>
@@ -62,9 +61,9 @@ $version = '0.1.0';
 
         @render('views:partials/privacy-notice.php')
 
-        {{ $app->assets($app['multiplane.assets.bottom'], $version) }}
+        {{ $app->assets($app['multiplane.assets.bottom'], mp()->version) }}
 
-        {{ cockpit('multiplane')->userScripts() }}
+        {{ mp()->userScripts() }}
 
     </body>
 

@@ -1,6 +1,7 @@
 <?php
-$breadcrumbs = cockpit('multiplane')->breadcrumbs;
+$breadcrumbs = mp()->breadcrumbs;
 $last = count($breadcrumbs) -1;
+if ($last == 0) return;
 ?>
 
 <nav class="breadcrumbs">

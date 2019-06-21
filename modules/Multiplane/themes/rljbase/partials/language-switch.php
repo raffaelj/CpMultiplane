@@ -1,6 +1,6 @@
 <?php
 
-$languages = cockpit('multiplane')->getLanguageSwitch($page['_id'] ?? '');
+$languages = mp()->getLanguageSwitch($page['_id'] ?? '');
 
 ?>
 

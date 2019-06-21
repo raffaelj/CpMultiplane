@@ -1,5 +1,5 @@
 <?php
-$route = cockpit('multiplane')->getRouteToPrivacyPage();
+$route = mp()->getRouteToPrivacyPage();
 
 // to do: do anything, when the form actually fires data
 ?>

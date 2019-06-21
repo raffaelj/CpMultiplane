@@ -1,4 +1,4 @@
-<?php $id = $options['id'] ?? cockpit('multiplane')->currentFormId; ?>
+<?php $id = $options['id'] ?? mp()->currentFormId; ?>
 
 <form id="{{ $id }}" method="post" action="@base('/form/submit/' . $form . '?anchor='.$id)">
 

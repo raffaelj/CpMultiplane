@@ -67,6 +67,12 @@ $this->module('multiplane')->extend([
     'displayPostsLimit'     => 5,               // number of posts to display in subpagemodule
     'paginationDropdownLimit' => 5,             // number of pages, when the pagination turns to dropdown menu
 
+    // lexy
+    'lexy'                  => [],
+
+    //breadcrumbs
+    'displayBreadcrumbs'    => false,
+
     // changes dynamically
     'defaultLang'           => $this->retrieve('i18n', 'en'),
     'breadcrumbs'           => ['/'],
@@ -75,6 +81,7 @@ $this->module('multiplane')->extend([
     'hasBackgroundImage'    => false,
     'clientIpIsAllowed'     => false,           // if maintenance and ip is allowed
     'hasParentPage'         => false,           // for sub pages and pagination
+    'parentPage'            => null,
 
 
     'set' => function($key, $value) {
@@ -97,6 +104,52 @@ $this->module('multiplane')->extend([
             // do nothing
         }
 
+    },
+
+    // modified version of Lime - fetch_from_array
+    'get' => function($index, $default = null) {
+
+        if (is_null($index)) {
+
+            return null;
+
+        } elseif (isset($this->$index)) {
+
+            return $this->$index;
+
+        } elseif (\strpos($index, '/')) {
+
+            $keys = \explode('/', $index);
+
+            switch (\count($keys)){
+
+                case 1:
+                    if (isset($this->{$keys[0]})){
+                        return $this->{$keys[0]};
+                    }
+                    break;
+
+                case 2:
+                    if (isset($this->{$keys[0]}[$keys[1]])){
+                        return $this->{$keys[0]}[$keys[1]];
+                    }
+                    break;
+
+                case 3:
+                    if (isset($this->{$keys[0]}[$keys[1]][$keys[2]])){
+                        return $this->{$keys[0]}[$keys[1]][$keys[2]];
+                    }
+                    break;
+
+                case 4:
+                    if (isset($this->{$keys[0]}[$keys[1]][$keys[2]][$keys[3]])){
+                        return $this->{$keys[0]}[$keys[1]][$keys[2]][$keys[3]];
+                    }
+                    break;
+            }
+        }
+
+        return \is_callable($default) ? \call_user_func($default) : $default;
     },
 
     'getSite' => function() {
@@ -305,7 +358,7 @@ $this->module('multiplane')->extend([
         if (!empty($type)) {
             $options['filter']['nav'] = ['$has' => $type];
         }
-        
+
         if ($this->isMultilingual) {
 
             $lang = $this('i18n')->locale;
@@ -321,7 +374,22 @@ $this->module('multiplane')->extend([
 
         }
 
-        $nav = $this->app->module('collections')->find($collection, $options);
+        $entries = $this->app->module('collections')->find($collection, $options);
+
+        $nav =[];
+
+        foreach($entries as $n) {
+
+            $active = false;
+            if ($this->hasParentPage && $n[$this->slugName] == $this->parentPage[$this->slugName]) {
+                $active = true;
+            } elseif($this->currentSlug == $n[$this->slugName]) {
+                $active = true;
+            }
+
+            $nav[] = array_merge($n, ['active' => $active]);
+
+        }
 
         return $nav;
 
@@ -536,16 +604,11 @@ $this->module('multiplane')->extend([
 
                 if ($collection = $this->resolveCurrentCollection($parts[0])) {
 
-                    $breadcrumbs = $this->breadcrumbs;
-                    foreach($parts as $part) {
-                        $breadcrumbs[] = $part;
-                    }
-                    $this->breadcrumbs = $breadcrumbs;
-
                     // pagination for blog module
                     if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
                         $slug = $parts[0];
                         $_REQUEST['page'] = $parts[2];
+                        unset($parts[1]); // I don't want "page" in breadcrumbs
                     }
 
                     else {
@@ -553,6 +616,12 @@ $this->module('multiplane')->extend([
                         $this->collection = $collection;
                         $slug = $parts[1];
                     }
+
+                    $breadcrumbs = $this->breadcrumbs;
+                    foreach($parts as $part) {
+                        $breadcrumbs[] = $part;
+                    }
+                    $this->breadcrumbs = $breadcrumbs;
 
                 }
 

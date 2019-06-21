@@ -1,8 +1,8 @@
 <?php
 // default view
 
-$width  = $app->retrieve('multiplane/lexy/headerimage/width', 800)  . 'px';
-$height = $app->retrieve('multiplane/lexy/headerimage/height', 200) . 'px';
+$width  = mp()->get('lexy/headerimage/width', 800)  . 'px';
+$height = mp()->get('lexy/headerimage/height', 200) . 'px';
 ?>
 
         <main id="main">

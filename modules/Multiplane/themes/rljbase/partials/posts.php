@@ -1,8 +1,8 @@
 <?php
-$width  = $app->retrieve('monoplane/lexy/thumbnail/width', 100)  . 'px';
-$height = $app->retrieve('monoplane/lexy/thumbnail/height', 100) . 'px';
+$width  = mp()->get('lexy/thumbnail/width', 100)  . 'px';
+$height = mp()->get('lexy/thumbnail/height', 100) . 'px';
 
-$slugName = cockpit('multiplane')->slugName;
+$slugName = mp()->slugName;
 ?>
 
             @render('views:partials/pagination.php', compact('pagination'))

@@ -1,13 +1,13 @@
 <?php
-$nav = cockpit('multiplane')->getNav(null, $type);
+$nav = mp()->getNav(null, $type);
 if (empty($nav)) return;
-$slugName = cockpit('multiplane')->slugName;
+$slugName = mp()->slugName;
 ?>
 
         <nav>
             <ul>
 @foreach($nav as $n)
-                <li><a class="" href="@base($n[$slugName])">{{ $n['title'] }}</a></li>
+                <li><a class="{{ $n['active'] ? 'active' : '' }}" href="@base($n[$slugName])">{{ $n['title'] }}</a></li>
 @endforeach
             </ul>
         </nav>

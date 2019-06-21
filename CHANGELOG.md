@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2
+
+* new shorthand function `mp()` returns `cockpit('multiplane')`
+* improved breadcrumbs (now they are alos disabled by default)
+* improved navigation (active state)
+* new core function `get()` - works like `$app->retrieve()`, but only inside multiplane module
+* changed lexy image shortcuts - `mode` is now `method`
+* some cleanup
+
 ## 0.1.1
 
 * minor fixes and cleanup
