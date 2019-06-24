@@ -15,6 +15,8 @@ $height = mp()->get('lexy/headerimage/height', 200) . 'px';
 
             <h2>{{ $page['title'] }}</h2>
 
+            @render('views:partials/posts-meta.php', ['post' => $page])
+
             {{ $page['content'] }}
 
             @if(!empty($page['gallery']))

@@ -11,8 +11,8 @@ $slugName = mp()->slugName;
                 @if(!empty($post['title']))
                 <h3> <a href="@base($pagination['slug'].'/'. ($post[$slugName] ?? $post['_id']))">{{ $post['title'] }}</a></h3>
                 @endif
-                
-                <p><span class="date">{{ date('Y-m-d H:i', $post['_created']) }}</span></p>
+
+                @render('views:partials/posts-meta.php', compact('post'))
 
                 @if(!empty($post['image']))
                 <img class="featured_image" src="@thumbnail($post['image']['_id'])" alt="{{ $post['image']['title'] ?? 'image' }}" width="{{ $width }}" height="{{ $height }}" />
