@@ -36,6 +36,7 @@ $this->module('multiplane')->extend([
     'outputMethod'          => 'dynamic',         // to do: static
     'pageTypeDetection'     => 'collections',     // 'collections' or 'type'
     'slugName'              => '_id',
+    'nav'                   => null,              // hard coded navigation
 
     // maintenance mode
     'isInMaintenanceMode'   => false,             // display under construction page with 503 status
@@ -341,6 +342,9 @@ $this->module('multiplane')->extend([
     'getNav' => function($collection = null, $type = '') {
 
         // to do: nested sub navigations
+
+        // if hard coded nav is present, return this one
+        if (isset($this->nav[$type])) return $this->nav[$type];
 
         if (!$collection) $collection = $this->pages;
 
