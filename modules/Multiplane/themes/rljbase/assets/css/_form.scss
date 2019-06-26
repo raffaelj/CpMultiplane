@@ -31,7 +31,7 @@ form{
 }
 
 fieldset {
-    border:1px solid $color-text-dark;
+    border: 1px solid $color-text-dark;
     border-radius: $border-radius;
     padding: .5rem;
     text-align: center;
@@ -41,7 +41,7 @@ fieldset {
     > .message.error {
       margin-bottom: .5rem;
     }
-    > div{
+    > div {
       display: inline-block;
       position: relative;
       width: 100%;
@@ -57,22 +57,22 @@ fieldset {
           padding-left: .2rem;
           padding-right: .2rem;
           &.width-1-1 {
-              width:100%;
+              width: 100%;
           }
           &.width-1-2 {
-              width:50%;
+              width: 50%;
           }
           &.width-1-3 {
-              width:33%;
+              width: 33%;
           }
           &.width-2-3 {
-              width:66%;
+              width: 66%;
           }
           &.width-1-4 {
-              width:25%;
+              width: 25%;
           }
           &.width-3-4 {
-              width:75%;
+              width: 75%;
           }
       }
       > label{
@@ -103,32 +103,28 @@ input, textarea {
     // }
 }
 
-// &[type=text], &[type=mail], &[type=date], &[type=url], &[type=password], &[type=email], &[type=tel], &[type=number], &[type=search], &[type=month], &[type=week], &[type=datetime], &[type=datetime-local] {
-
 input {
-    border-radius: $border-radius;
-    border:1px solid $color-grey;
+    display:block;
+    width:100%;
+    height: 2rem;
     margin: inherit 0 0;
+    padding:5px;
+    line-height: 1rem;
+    border:1px solid $color-grey;
+    border-radius: $border-radius;
+    &:hover, &:focus {
+        border:1px solid $color-grey;
+        background-color:$color-input-hover;
+        + label {
+            margin-left:.2rem;
+        }
+    }
     + label {
         + .message.error {
           border-top-left-radius:0;
           border-top-right-radius:0;
           border-top-width:0;
           padding-top:.2rem;
-        }
-    }
-    &:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=reset]):not([type=button]) {
-        display:block;
-        padding:5px;
-        width:100%;
-        line-height: 1rem;
-        height: 2rem;
-        &:hover, &:focus {
-            border:1px solid $color-grey;
-            background-color:$color-input-hover;
-            + label {
-                margin-left:.2rem;
-            }
         }
     }
     &:invalid {
@@ -140,14 +136,13 @@ input {
 }
 
 input[type=checkbox], input[type=radio] {
-
-    // works only if label follows input:
-
     position:absolute;
     opacity: 0;
     width: 1em;
-    // margin-top:0;
-    // margin-left:-1em;
+    height: auto;
+    height: 1em;
+    margin: .5em 0 0;
+    padding: 0;
 
     + label {
         display: block;
@@ -189,35 +184,37 @@ input[type=checkbox], input[type=radio] {
         }
     }
 }
+input[type=radio] + label:before,
+input[type=radio]:checked + label:after {
+    border-radius: 50%;
+}
 
-
-input, button {
-    &[type=submit], &[type=reset], &[type=button] {
-        padding: .2rem .5rem;
-        background-color: $color-link;
-        margin: 0 auto;
-        color: $color-dark;
-        font-size: 1.1rem;
-        border-radius:2px;
-        cursor:pointer;
-        border:none;
-        @include box-shadow(0px -2px 0px $color-black-transp-light inset);
-        &:hover,&:focus {
-            background-color:$color-link-hover;
-        }
+input[type=submit], input[type=reset], input[type=button], button {
+    width: auto;
+    margin: .1rem auto;
+    padding: .2rem .5rem;
+    font-size: 1.1rem;
+    color: $color-dark;
+    background-color: $color-link;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    @include box-shadow(0px -2px 0px $color-black-transp-light inset);
+    &:hover, &:focus {
+        background-color: $color-link-hover;
     }
     &[type=submit] {
         background-color: $color-link;
         color: $color-dark;
-        &:hover,&:focus {
-            background-color:$color-link-hover;
+        &:hover, &:focus {
+            background-color: $color-link-hover;
         }
         // + p {
             // margin-top:.5rem;
         // }
     }
     &[type=button] {
-        background-color: $color-main;
+        background-color: $color-link;
         color: $color-dark;
     }
     &[type=reset] {
@@ -229,23 +226,23 @@ input, button {
         color: $color-darker;
         cursor: default;
         &:hover,&:focus {
-            background-color:$color-grey;
+            background-color: $color-grey;
         }
     }
 }
 
-textarea{
-    display:block;
-    width:100%;
-    height:10rem;
-    padding:.5rem;
+textarea {
+    display: block;
+    width: 100%;
+    height: 10rem;
+    padding: .5rem;
     border-radius: $border-radius;
-    border:1px solid $color-grey;
+    border: 1px solid $color-grey;
     font-family: $font;
-    &:hover,&:focus{
-        background-color:$color-input-hover;
+    &:hover, &:focus{
+        background-color: $color-input-hover;
         + label{
-            margin-left:.2rem;
+            margin-left: .2rem;
         }
     }
 }
@@ -257,12 +254,19 @@ textarea{
 
 //// label positioning
 
-input:not([type=checkbox]):not([type=radio]):not([type=submit]):not([type=reset]):not([type=button]), textarea {
+input, textarea {
     margin-top: 1.5rem;
 }
 label {
     + input, + textarea {
         margin-top: inherit;
+    }
+    // reverse pretty checkboxes if label doesn't follow input
+    input[type=checkbox], input[type=radio]/*, + input[type=checkbox], + input[type=radio]*/ {
+        position: static;
+        display: inline;
+        opacity: 1;
+        margin: 0;
     }
 }
 
@@ -275,9 +279,9 @@ label {
 
 //// messages
 
-.message{
-    font-size:.9rem;
-    text-align:left;
+.message {
+    font-size: .9rem;
+    text-align: left;
     &.error{
         border: 1px solid $color-error;
         margin: 0 .2rem;
