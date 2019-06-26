@@ -135,6 +135,35 @@ class Base extends \LimeExtra\Controller {
 
     }
 
+    public function search($params = null) {
+
+        // to do:
+        // * advanced search
+        // * pagination
+        // * snippet view
+
+        $query = $this->app->param('search', false);
+        $list  = new \ArrayObject([]);
+
+        $searchMinLength = mp()->searchMinLength;
+
+        if ($query && mb_strlen($query) >= $searchMinLength) {
+
+            $this->app->trigger('multiplane.search', [$query, $list]);
+
+            // sort by weight
+            $list->uasort(function($a, $b) {return $a['weight'] < $b['weight'];});
+
+            return $this->render('views:search.php', ['page' => [], 'list' => $list->getArrayCopy()]);
+
+        }
+
+        $error = 'Your search term must be at least '.$searchMinLength.' characters long.';
+
+        return $this->render('views:search.php', ['page' => [], 'list' => [], 'error' => $error]);
+
+    }
+
     public function error($status = '') {
 
         // To do: 401, 500

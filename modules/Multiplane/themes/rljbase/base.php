@@ -43,6 +43,10 @@
             @render('views:partials/breadcrumbs.php', ['page' => $page])
             @endif
 
+            @if(mp()->displaySearch)
+            @render('views:partials/search.php')
+            @endif
+
         </header>
 
         @render('views:partials/nav.php', ['type' => 'main'])

@@ -74,6 +74,10 @@ $this->module('multiplane')->extend([
     //breadcrumbs
     'displayBreadcrumbs'    => false,
 
+    //search
+    'displaySearch'         => false,           // experimental full text search
+    'searchMinLength'       => 3,               // minimum charcter length for search
+
     // changes dynamically
     'defaultLang'           => $this->retrieve('i18n', 'en'),
     'breadcrumbs'           => ['/'],
@@ -465,10 +469,10 @@ $this->module('multiplane')->extend([
 
         if (!$_collection) return false;
 
-        $lang = $this('i18n')->locale;
-        $page = $this->app->param('page', 1);
+        $lang  = $this('i18n')->locale;
+        $page  = $this->app->param('page', 1);
         $limit = (isset($opts['limit']) && (int)$opts['limit'] ? $opts['limit'] : null) ?? $this->displayPostsLimit ?? 5;
-        $skip = ($page - 1) * $limit;
+        $skip  = ($page - 1) * $limit;
 
         $filter = [
             'published' => true,
@@ -809,6 +813,9 @@ $this->module('multiplane')->extend([
 // module parts
 include_once(__DIR__ . '/module/forms.php');
 
+// events
+include_once(__DIR__ . '/events.php');
+
 
 $this->on('multiplane.init', function() {
 
@@ -860,6 +867,12 @@ $this->on('multiplane.init', function() {
         });
 
         $this->bind('/*', function($params) {
+
+            // fulltext search
+            if ($this->module('multiplane')->displaySearch && $this->param('search')) {
+                return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
+            }
+
             return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $params[':splat'][0]]);
         });
     }
@@ -885,6 +898,11 @@ $this->on('multiplane.init', function() {
                 // init + load i18n
                 if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
                     $this('i18n')->load($translationspath, $lang);
+                }
+
+                // fulltext search
+                if ($this->module('multiplane')->displaySearch && $this->param('search')) {
+                    return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
                 }
 
                 return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => ($params[':splat'][0] ?? '')]);
