@@ -25,6 +25,8 @@
 
     <body id="top" class="{{ !empty($page['class']) ? $page['class'] : '' }}">
 
+        @trigger('multiplane.layout.contentbefore')
+
         <header>
 
             <a href="@base('/')">
@@ -62,6 +64,8 @@
             @render('views:partials/copyright.php')
             @render('views:partials/login-link.php')
         </footer>
+
+        @trigger('multiplane.layout.contentafter')
 
         @render('views:partials/privacy-notice.php')
 
