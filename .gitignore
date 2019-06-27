@@ -6,6 +6,7 @@
 /Controller
 /addons
 /config
+/themes
 defines.php
 
 # common user files and directories

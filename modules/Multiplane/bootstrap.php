@@ -13,8 +13,7 @@ $this->on('cockpit.filestorages.init', function(&$storages) {
     $storages['thumbs']['url'] = $this->pathToUrl('#thumbs:', true);
 });
 
-// set paths
-$this->path('views', __DIR__.'/themes/rljbase');
+// set config path
 $this->path('mp_config', MP_DOCS_ROOT . '/config');
 
 // register autoload classes in namespace Multiplane\Controller from
@@ -31,6 +30,7 @@ $this->helpers['fields'] = 'Multiplane\\Helper\\Fields';
 $this->module('multiplane')->extend([
 
     // base config
+    'theme'                 => 'rljbase',
     'isMultilingual'        => false,
     'disableDefaultRoutes'  => false,             // don't use any default routes
     'outputMethod'          => 'dynamic',         // to do: static
@@ -822,6 +822,22 @@ $this->on('multiplane.init', function() {
     // overwrite default config
     $this->module('multiplane')->setConfig();
 
+    // load theme and set views path
+    $theme = $this->module('multiplane')->theme;
+    if (  ($themePath = $this->path(MP_DOCS_ROOT."/themes/$theme"))
+       || ($themePath = $this->path(__DIR__."/themes/$theme")) ) {
+
+        $this->path('views', $themePath);
+    } else {
+        echo 'Can\'t find theme folder';
+        $this->stop();
+    }
+
+    // load theme bootstrap file
+    if ($themeBootstrapPath = $this->path('views:bootstrap.php')) {
+        include_once($themeBootstrapPath);
+    }
+
     // skip binding routes if in maintenance mode
     if (!$this->module('multiplane')->accessAllowed()) {
         return;
@@ -959,11 +975,6 @@ $this->on('after', function() {
 // CLI
 if (COCKPIT_CLI) {
     $this->path('#cli', __DIR__.'/cli');
-}
-
-// load theme bootstrap file
-if ($themeBootstrapPath = $this->path('views:bootstrap.php')) {
-    include_once($themeBootstrapPath);
 }
 
 // load custom bootstrap file
