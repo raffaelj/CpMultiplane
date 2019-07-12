@@ -2,7 +2,7 @@
 
     // for relative paths - MP_BASE_URL should be declared in the head of your
     // template file: <script>var MP_BASE_URL = '{{ MP_BASE_URL }}';</script>
-    if (!MP_BASE_URL) MP_BASE_URL = '';
+    if (!MP_BASE_URL) var MP_BASE_URL = '';
 
     var MP = {
 
