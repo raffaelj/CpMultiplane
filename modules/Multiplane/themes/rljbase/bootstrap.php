@@ -12,12 +12,11 @@ $this->layout = 'views:base.php';
 // add assets
 $this->set('multiplane.assets.top', [
     MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/css/style.min.css', // main style file
-    MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/lib/wa-mediabox/wa-mediabox.min.css' // gallery lightbox
 ]);
 $this->set('multiplane.assets.bottom', [
-    MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/lib/wa-mediabox/wa-mediabox.min.js', // gallery lightbox
     MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/js/mp.js',          // Multiplane js
 ]);
+$this->module('multiplane')->add('scripts', ['MP.Lightbox.init({group:".gallery",selector:"a"})']);
 
 // $this->module('multiplane')->hasBackgroundImage = true;
 

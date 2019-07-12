@@ -122,9 +122,6 @@ See [LICENSE][12] for more information.
 
 Without Cockpit, CpMultiplane couldn't exist. Thanks to [Artur Heinze][16] and to all [contributors][17].
 
-I used [wa-mediabox][13] from [Jiří Hýbek][14] for gallery lightboxes, which is released under the [MIT License][15]. It is a lightweight lightbox without jQuery.
-
-
 [1]: https://github.com/agentejo/cockpit/
 [2]: https://github.com/raffaelj/cockpit_CpMultiplaneGUI
 [3]: https://github.com/raffaelj/cockpit_UniqueSlugs
@@ -137,8 +134,5 @@ I used [wa-mediabox][13] from [Jiří Hýbek][14] for gallery lightboxes, which 
 [10]: https://github.com/pauloamgomes/CockpitCms-EditorFormats
 [11]: https://github.com/raffaelj/cockpit_Bootmanager
 [12]: https://github.com/raffaelj/CpMultiplane/blob/master/LICENSE
-[13]: https://github.com/jirihybek/wa-mediabox
-[14]: https://github.com/jirihybek
-[15]: https://github.com/jirihybek/wa-mediabox/blob/master/LICENSE
 [16]: https://github.com/aheinze
 [17]: https://github.com/agentejo/cockpit/graphs/contributors

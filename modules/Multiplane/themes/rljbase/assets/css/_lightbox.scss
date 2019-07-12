@@ -1,0 +1,116 @@
+
+.lightbox {
+    position: fixed;
+    display: none;
+    top:0;
+    left:0;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    background-color: rgba(0,0,0,.9);
+    z-index: 10;
+    &.active {
+        display: table;
+    }
+    > div {
+        position: relative;
+        display: table-cell;
+        vertical-align: middle;
+    }
+    img {
+        display: inline-block;
+        width: auto;
+        max-height: 80vh;
+        + div { // caption
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background-color: rgba(0,0,0,.8);
+            padding: .2em 1em 1em;
+            box-sizing: border-box;
+            color: #fefefe;
+        }
+    }
+    .prev, .next {
+        position: absolute;
+        top: 50%;
+        height: 2em;
+        line-height: 2em;
+        margin-top: -1em;
+        font-size: 2em;
+        width: 2em;
+        &:hover, &:focus {
+            background-color: rgba(255,255,255,.1);
+            border-radius: 50%;
+        }
+        &:before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            margin-top: -1rem;
+            border-style: solid;
+            border-color: transparent;
+            border-width: 1rem;
+            background-color: transparent;
+        }
+    }
+    .prev {
+        left: .5rem;
+        &:before {
+            left: .25rem;
+            border-right-color: rgba(255,255,255,.7);
+        }
+        &:hover:before, &:focus:before {
+            border-right-color: rgba(255,255,255,.9);
+        }
+    }
+    .next {
+        right: .5rem;
+        &:before {
+            right: .25rem;
+            border-left-color: rgba(255,255,255,.7);
+        }
+        &:hover:before, &:focus:before {
+            border-left-color: rgba(255,255,255,.9);
+        }
+    }
+    .close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 2rem;
+        height: 2rem;
+        border: 2px solid rgba(255,255,255,.7);
+        border-radius: 50%;
+        &:hover {
+            border: 2px solid rgba(255,255,255,.9);
+            background-color: rgba(255,255,255,.1);
+        }
+        &:before, &:after {
+            content: "";
+            position: absolute;
+            border-style: solid;
+            border-color: transparent;
+            border-width: .125rem;
+            width: .5rem;
+            height: .5rem;
+            
+            transform: rotate(45deg);
+        }
+        &:before {
+            top: 0.25rem;
+            right: .6rem;
+            border-right-color: rgba(255,255,255,.9);
+            border-bottom-color: rgba(255,255,255,.9);
+        }
+        &:after {
+            top: 1.125rem;
+            right: .6rem;
+            border-left-color: rgba(255,255,255,.9);
+            border-top-color: rgba(255,255,255,.9);
+        }
+    }
+    .hidden {
+        display: none;
+    }
+}
