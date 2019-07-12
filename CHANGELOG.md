@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3
+
+* started to implement posts meta data
+* started to implement fulltext search
+* added option for hardcoded navigation
+* improved form (CSS and a session cleanup)
+* improved custom theming
+* fixed wrong gallery variable in rljbase theme
+* removed wa-mediabox lightbox lib and replaced it with my own simple lightbox
+* some cleanup
+
 ## 0.1.2
 
 * new shorthand function `mp()` returns `cockpit('multiplane')`

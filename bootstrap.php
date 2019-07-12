@@ -5,12 +5,12 @@
  * @see       https://github.com/raffaelj/CpMultiplane
  * @see       https://github.com/agentejo/cockpit/
  * 
- * @version   0.1.2
+ * @version   0.1.3
  * @author    Raffael Jesche
  * @license   MIT
  * @note      work in progress
  */
-$version = '0.1.2';
+$version = '0.1.3';
 
 // check for custom defines
 if (file_exists(__DIR__.'/defines.php')) {
