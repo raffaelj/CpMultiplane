@@ -72,6 +72,9 @@ class Forms extends \LimeExtra\Controller {
             'error'   => $this->app->module('multiplane')->formatErrorMessage(),
         ];
 
+        $this('session')->delete('mp_form_notice');
+        $this('session')->delete('mp_form_success');
+
         return $this->render('views:partials/form.php', compact('page', 'form', 'fields', 'message', 'options'));
 
     }
