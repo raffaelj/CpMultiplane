@@ -18,7 +18,7 @@ $height = mp()->get('lexy/headerimage/height', 200) . 'px';
             {{ $page['content'] }}
 
             @if(!empty($page['gallery']))
-                @render('views:partials/gallery.php', compact('page'))
+                @render('views:partials/gallery.php', ['gallery' => $page['gallery']])
             @endif
 
             @if(!empty($page['video']))
