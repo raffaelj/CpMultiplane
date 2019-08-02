@@ -384,6 +384,8 @@ $this->module('multiplane')->extend([
 
         $entries = $this->app->module('collections')->find($collection, $options);
 
+        if (!$entries) return false;
+
         $nav =[];
 
         foreach($entries as $n) {
