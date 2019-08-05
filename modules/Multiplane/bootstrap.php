@@ -31,6 +31,9 @@ $this->module('multiplane')->extend([
 
     // base config
     'theme'                 => 'rljbase',
+    'parentTheme'           => null,
+    'parentThemeBootstrap'  => true,
+
     'isMultilingual'        => false,
     'disableDefaultRoutes'  => false,             // don't use any default routes
     'outputMethod'          => 'dynamic',         // to do: static
@@ -437,7 +440,6 @@ $this->module('multiplane')->extend([
                 if (isset($entry[$this->slugName])) $slug = $entry[$this->slugName];
 
             }
-            
 
             $subpage = null;
 
@@ -450,7 +452,7 @@ $this->module('multiplane')->extend([
                 'code' => $lang,
                 'name' => $name,
                 'active' => $active,
-                'url' => MP_BASE_URL . '/' . $lang . '/' . ($subpage ? $subpage . '/' : '') . $slug,
+                'url' => MP_BASE_URL . '/' . $lang . '/' . ($subpage ? trim($subpage, '/') . '/' : '') . $slug,
             ];
 
         }
@@ -825,9 +827,19 @@ $this->on('multiplane.init', function() {
     $this->module('multiplane')->setConfig();
 
     // load theme and set views path
-    $theme = $this->module('multiplane')->theme;
+    $theme       = $this->module('multiplane')->theme;
+    $parentTheme = $this->module('multiplane')->parentTheme;
+
     if (  ($themePath = $this->path(MP_DOCS_ROOT."/themes/$theme"))
        || ($themePath = $this->path(__DIR__."/themes/$theme")) ) {
+
+        if ($parentTheme) {
+            if (  ($parentThemePath = $this->path(MP_DOCS_ROOT."/themes/$parentTheme"))
+               || ($parentThemePath = $this->path(__DIR__."/themes/$parentTheme")) ) {
+
+                $this->path('views', $parentThemePath);
+            }
+        }
 
         $this->path('views', $themePath);
     } else {
@@ -836,8 +848,13 @@ $this->on('multiplane.init', function() {
     }
 
     // load theme bootstrap file
-    if ($themeBootstrapPath = $this->path('views:bootstrap.php')) {
-        include_once($themeBootstrapPath);
+    if ($parentTheme && $this->module('multiplane')->parentThemeBootstrap
+        && file_exists($parentThemePath . '/bootstrap.php')) {
+
+        include_once($parentThemePath . '/bootstrap.php');
+    }
+    if (file_exists($themePath . '/bootstrap.php')) {
+        include_once($themePath . '/bootstrap.php');
     }
 
     // skip binding routes if in maintenance mode
