@@ -5,7 +5,7 @@ $color-grey: #ccc !default;
 $color-link: #a771c5 !default;
 $color-link-hover: #ac833c !default;
 
-$font: system, Helvetica, sans-serif !default;
+$font: system-ui, Helvetica, sans-serif !default;
 
 html {
     font-family: $font;
@@ -15,11 +15,12 @@ html {
 
 body {
     line-height: 1.5em; // meyer-reset has "line-height: 1"
+    font-weight: 300; // match Segoe UI Light as default
 }
 
 h1,h2,h3,h4,h5,h6 {
     font-family: $font;
-    font-weight: bold;
+    font-weight: bolder;
     line-height: 1em;
     &:first-child {
         margin-top: .2em;
@@ -71,7 +72,7 @@ a {
 }
 
 strong, b {
-    font-weight: bold;
+    font-weight: bolder;
 }
 
 em, i {

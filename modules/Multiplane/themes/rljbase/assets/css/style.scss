@@ -1,22 +1,26 @@
+
 // colours
 $color-white: #fafafa;
 $color-black: #000;
+
 $color-white-transp: rgba(255,255,255,.9);
 $color-black-transp: rgba(0,0,0,.8);
 $color-black-transp-light: rgba(0,0,0,.2);
+
+$color-main: #470b7e;
 $color-bg: #f4f4f4;
 
 $color-dark: #222;
 $color-darker: #444;
-$color-shadow: #ccc;
-// $color-grey: #ccc;
-$color-main: #470b7e;
+$color-grey: #ccc;
+$color-gray: $color-grey; // avoid typos
+$color-shadow: $color-grey;
 
 $color-link: #a771c5;
 $color-link-hover: #ac833c;
 
 // fonts
-$font: system, Helvetica, sans-serif;
+$font: system-ui, Helvetica, sans-serif;
 $font_extra: $font; // webfont for headlines
 
 // other
