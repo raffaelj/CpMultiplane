@@ -6,8 +6,12 @@
         margin: 0;
     }
     button {
+        margin: 0 0 0 .2em; // reset margin top/bottom
+        // match input height
         padding-top: 5px;
         padding-bottom: 5px;
+        height: 2rem; 
+        vertical-align: bottom;
     }
 }
 
