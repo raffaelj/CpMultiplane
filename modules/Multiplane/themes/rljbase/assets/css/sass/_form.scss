@@ -194,7 +194,8 @@ input[type=submit], input[type=reset], input[type=button], button {
     margin: .1rem auto;
     padding: .2rem .5rem;
     font-size: 1.1rem;
-    color: $color-dark;
+    // color: $color-dark;
+    color: $color-white;
     background-color: $color-link;
     border: none;
     border-radius: 2px;
@@ -205,7 +206,8 @@ input[type=submit], input[type=reset], input[type=button], button {
     }
     &[type=submit] {
         background-color: $color-link;
-        color: $color-dark;
+        // color: $color-dark;
+        color: $color-white;
         &:hover, &:focus {
             background-color: $color-link-hover;
         }
@@ -215,11 +217,19 @@ input[type=submit], input[type=reset], input[type=button], button {
     }
     &[type=button] {
         background-color: $color-link;
-        color: $color-dark;
+        // color: $color-dark;
+        color: $color-white;
+        &:hover, &:focus {
+            background-color: $color-link-hover;
+        }
     }
     &[type=reset] {
         background-color: $color-darker;
-        color: $color-link;
+        // color: $color-link;
+        color: $color-white;
+        &:hover, &:focus {
+            background-color: $color-link-hover;
+        }
     }
     &:disabled {
         background-color: $color-grey;
