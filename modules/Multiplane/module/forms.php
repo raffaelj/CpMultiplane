@@ -170,6 +170,8 @@ $this->module('multiplane')->extend([
             $linkedItem = $this->app->module('collections')->_filterFields($linkedItem, $link['link'], ['lang' => $lang]);
         }
 
+        if (!$linkedItem) return false;
+
         foreach($linkedItem as $k => $v) $link[$k] = $v;
 
         return $link;
