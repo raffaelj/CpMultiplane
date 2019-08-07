@@ -147,6 +147,8 @@ class Base extends \LimeExtra\Controller {
 
         $searchMinLength = mp()->searchMinLength;
 
+        $site = $this->module('multiplane')->site;
+
         if ($query && mb_strlen($query) >= $searchMinLength) {
 
             $this->app->trigger('multiplane.search', [$query, $list]);
@@ -154,27 +156,30 @@ class Base extends \LimeExtra\Controller {
             // sort by weight
             $list->uasort(function($a, $b) {return $a['weight'] < $b['weight'];});
 
-            return $this->render('views:search.php', ['page' => [], 'list' => $list->getArrayCopy()]);
+            return $this->render('views:search.php', ['page' => [], 'site' => $site, 'list' => $list->getArrayCopy()]);
 
         }
 
         $error = 'Your search term must be at least '.$searchMinLength.' characters long.';
 
-        return $this->render('views:search.php', ['page' => [], 'list' => [], 'error' => $error]);
+        return $this->render('views:search.php', ['page' => [], 'site' => $site, 'list' => [], 'error' => $error]);
 
     }
 
     public function error($status = '') {
 
+        $site = $this->module('multiplane')->site;
+        $page = [];
+
         // To do: 401, 500
 
         switch ($status) {
             case '404':
-                return $this->render('views:errors/404.php', ['page' => []]);
+                return $this->render('views:errors/404.php', compact('site', 'page'));
                 break;
             case '503':
                 $this->app->layout = null;
-                return $this->render('views:errors/503-maintenance.php', ['site' => cockpit('multiplane')->site]);
+                return $this->render('views:errors/503-maintenance.php', compact('site'));
                 break;
         }
 
