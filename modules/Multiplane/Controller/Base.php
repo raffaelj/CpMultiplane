@@ -62,12 +62,21 @@ class Base extends \LimeExtra\Controller {
     public function livePreview($params = []) {
 
         $page = [];
-        $site = [];
+        $site = $this->module('multiplane')->site;
         $posts = null;
 
-        // fix language specific paths
+        // fix language specific paths + i18n
         if ($this->app->module('multiplane')->isMultilingual) {
-            $this->app->set('base_url', MP_BASE_URL . '/' . $this('i18n')->locale);
+
+            $lang = $this('i18n')->locale;
+
+            // init + load i18n
+            if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
+                $this('i18n')->load($translationspath, $lang);
+            }
+
+            $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
+
         }
 
         return $this->render('views:live-preview.php', compact('page', 'posts', 'site'));

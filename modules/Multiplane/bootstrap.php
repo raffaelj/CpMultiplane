@@ -285,7 +285,7 @@ $this->module('multiplane')->extend([
         $data = $_REQUEST;
 
         $event      = $data['event'] ?? false;
-        $lang       = $data['lang'] ?? $this->defaultLang;
+        $lang       = isset($data['lang']) && $data['lang'] != 'default' ? $data['lang'] : $this->defaultLang;
         $page       = $data['entry'] ?? false;
         $collection = $data['collection'] ?? false;
 
@@ -295,8 +295,14 @@ $this->module('multiplane')->extend([
         if ($event != 'cockpit:collections.preview') return false;
 
         if ($this->isMultilingual) {
-            $this('i18n')->locale = ($lang == 'default') ? $this->defaultLang : $lang;
-            $this->app->set('base_url', MP_BASE_URL . '/' . $this('i18n')->locale);
+
+            $this('i18n')->locale = $lang;
+            $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
+
+            if ($translationspath = $this->app->path("mp_config:i18n/{$lang}.php")) {
+                $this('i18n')->load($translationspath, $lang);
+            }
+
         }
 
         if ($lang != 'default') {
