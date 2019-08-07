@@ -80,6 +80,7 @@ $this->module('multiplane')->extend([
     //search
     'displaySearch'         => false,           // experimental full text search
     'searchMinLength'       => 3,               // minimum charcter length for search
+    'searchInCollections'   => [],              // full list of collections to search in, overwrites pages and posts
 
     // changes dynamically
     'defaultLang'           => $this->retrieve('i18n', 'en'),

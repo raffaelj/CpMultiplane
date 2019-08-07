@@ -6,6 +6,7 @@
     @foreach($list as $l)
     <div class="search-entries">
         <h3><a href="{{ $l['url'] }}">{{ $l['title'] }}</a></h3>
+        <p><span class="label">{{ $l['collection'] }}</span></p>
         {{ $l['content'] }}
     </div>
     @endforeach
