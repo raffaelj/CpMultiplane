@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.4
+
+* added child theme support
+* fixed error in getNav if no entries exist
+* improved full text search
+* some i18n fixes
+* added cli commands `./mp check` and `./mp account/create`
+* rljbase theme
+  * fixed/improved font stack
+  * restructured scss files into subfolder
+  * some color changes and minor fixes
+
 ## 0.1.3
 
 * started to implement posts meta data
@@ -14,7 +26,7 @@
 ## 0.1.2
 
 * new shorthand function `mp()` returns `cockpit('multiplane')`
-* improved breadcrumbs (now they are alos disabled by default)
+* improved breadcrumbs (now they are also disabled by default)
 * improved navigation (active state)
 * new core function `get()` - works like `$app->retrieve()`, but only inside multiplane module
 * changed lexy image shortcuts - `mode` is now `method`
