@@ -2,6 +2,7 @@
 /**
  * This file is an adapted verison of
  * https://github.com/agentejo/cockpit/blob/next/modules/Cockpit/cli/account/create.php
+ * author of original file: Artur Heinze, http://agentejo.com, MIT License
  * 
  * It allows user input if parameters are missing and it doesn't allow a password parameter
  * to prevent keeping the password in the bash history
@@ -35,8 +36,8 @@ if (!$app->helper('utils')->isEmail($email)) {
 echo "Type a password and press Enter:\n";
 $password = fread(STDIN, 80);
 
+// remove line breaks and white spaces at start and end of password
 $password = $app->hash(trim($password));
-
 
 $created = time();
 
