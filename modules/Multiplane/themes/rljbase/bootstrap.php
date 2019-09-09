@@ -40,3 +40,7 @@ $this->renderer->extend(function($content){ // returns relative url of scaled im
 $this->renderer->extend(function($content){ // returns relative url of scaled image (headerimage)
     return preg_replace('/(\s*)@headerimage\((.+?)\)/', '$1<?php echo MP_BASE_URL."/getImage?src=".urlencode($2)."&w=".mp()->get("lexy/headerimage/width",800)."&h=".mp()->get("lexy/headerimage/height", 200)."&q=".mp()->get("lexy/headerimage/quality", 80)."&m=".mp()->get("lexy/headerimage/method", "thumbnail"); ?>', $content);
 });
+
+$this->renderer->extend(function($content){ // returns relative url of scaled image (headerimage)
+    return preg_replace('/(\s*)@bigthumbnail\((.+?)\)/', '$1<?php echo MP_BASE_URL."/getImage?src=".urlencode($2)."&w=".mp()->get("lexy/bigthumbnail/width",200)."&h=".mp()->get("lexy/bigthumbnail/height", 200)."&q=".mp()->get("lexy/bigthumbnail/quality", 80)."&m=".mp()->get("lexy/bigthumbnail/method", "bestFit"); ?>', $content);
+});
