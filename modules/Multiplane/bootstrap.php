@@ -499,9 +499,11 @@ $this->module('multiplane')->extend([
             ],
         ];
 
+        $this->app->trigger('multiplane.getposts.before', [&$options]);
+
         $posts = $this->app->module('collections')->find($collection, $options);
 
-        $count = $this->app->module('collections')->count($collection, $filter);
+        $count = $this->app->module('collections')->count($collection, $options['filter']);
 
         if (!$posts && $count) {
             // send 404 if no posts found (pagination too high)
