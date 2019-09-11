@@ -371,6 +371,9 @@ $this->module('multiplane')->extend([
                 'title' => true,
                 'nav' => true,
             ],
+            'sort' => [
+                '_o' => 1, // sort by custom sort order
+            ],
         ];
 
         if (!empty($type)) {
