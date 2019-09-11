@@ -4,7 +4,8 @@
 
 // to do:
 // * [ ] special chars in wysiwyg (ä = &auml;...)
-// * [ ] special chars case sensitivity - fixed via PR https://github.com/agentejo/cockpit/pull/1162
+// * [ ] fix interference, if field names are 'url', 'collection' or 'weight'
+// * [ ] search method AND - currently only OR
 
 $this->on('multiplane.search', function($search, $list) {
 
@@ -13,12 +14,34 @@ $this->on('multiplane.search', function($search, $list) {
     $pages = mp()->pages;
     $posts = mp()->posts;
 
+    if (preg_match('/^(["\']).*\1$/m', $search)) {
+        // exact match in quotes, still case insensitive
+        $searches = [trim($search, '"\' \t\n\r\0\x0B')];
+    }
+    else {
+        $searches = array_filter(explode(' ', $search), 'strlen');
+    }
+
+    // to do...
+    // $multipleSearchTerms = count($searches) > 1 ? true : false;
+    // $searchMethod        = $this->param('method', 'and');
+
     if (empty($searchInCollections)) {
 
         $searchInCollections = [
             'pages' => [
                 'name' => mp()->pages,
                 'route' => '',
+                'weight' => 10,
+                'fields' => [
+                    [
+                        'name' => 'title',
+                        'weight' => 10,
+                    ],
+                    [
+                        'name' => 'content',
+                    ],
+                ],
             ],
         ];
 
@@ -26,6 +49,16 @@ $this->on('multiplane.search', function($search, $list) {
             $searchInCollections[$posts] = [
                 'name' => $posts,
                 'route' => '/blog', // to do: dynamic detection
+                'weight' => 5,
+                'fields' => [
+                    [
+                        'name' => 'title',
+                        'weight' => 8,
+                    ],
+                    [
+                        'name' => 'content',
+                    ],
+                ],
             ];
         }
 
@@ -45,18 +78,6 @@ $this->on('multiplane.search', function($search, $list) {
         if (!is_array($c)) $c = [];
 
         $_collection = $this->module('collections')->collection($collection);
-
-        $title   = $c['title']   ?? 'title';
-        $content = $c['content'] ?? 'content';
-
-        // get field type for prerendering
-        $type = '';
-        foreach ($_collection['fields'] as $field) {
-            if ($field['name'] == $content) {
-                $type = $field['type'];
-                break;
-            }
-        }
 
         // find route for sub pages
         if ($collection != $pages) {
@@ -87,58 +108,80 @@ $this->on('multiplane.search', function($search, $list) {
             'lang'   => $lang,
         ];
 
-        if ($lang == mp()->defaultLang) {
-            $options['filter']['$or'] = [
-                [$title   => ['$regex' => $search]],
-                [$content => ['$regex' => $search]],
-            ];
+        $options['fields'] = [
+            $slugName => true,
+        ];
+
+        $options['filter']['$or'] = [];
+
+        foreach ($c['fields'] as $field) {
+
+            $options['fields'][$field['name']] = true;
+
+            foreach ($searches as $search) {
+                $options['filter']['$or'][] = [$field['name'] => ['$regex' => $search]];
+            }
+
+        }
+
+        if ($lang != mp()->defaultLang) {
+
             $options['fields'] = [
-                $title    => true,
-                $slugName => true,
-                $content  => true,
-            ];
-        } else {
-            $options['filter']['$or'] = [
-                [$title.'_'.$lang   => ['$regex' => $search]],
-                [$content.'_'.$lang => ['$regex' => $search]],
-            ];
-            $options['fields'] = [
-                $title              => true,
-                $title.'_'.$lang    => true,
-                $slugName           => true,
                 $slugName.'_'.$lang => true,
-                $content            => true,
-                $content.'_'.$lang  => true,
             ];
+
+            foreach ($c['fields'] as $field) {
+
+                $options['fields'][$field['name'].'_'.$lang] = true;
+
+                foreach ($searches as $search) {
+                    $options['filter']['$or'][] = [$field['name'].'_'.$lang => ['$regex' => $search]];
+                }
+
+            }
+
         }
 
         foreach ($this->module('collections')->find($collection, $options) as $entry) {
 
-            $weight = 0;
+            $weight = !empty($c['weight']) ? $c['weight'] : 0;
 
-            // inspired by: https://stackoverflow.com/a/48406963
-            $highlightedContent = preg_replace_callback(
-                '#((?:(?!<[/a-z]).)*)([^>]*>|$)#si',
-                function($match) use ($search, &$weight) {
-                    return preg_replace('~('.$search.')~i', '<mark>$1</mark>', $match[1], -1, $count) . $match[2] . ($count && $weight++ ? '' : '');
-                },
-                $this('fields')->{$type}($entry[$content])
-            );
-            $highlightedTitle = preg_replace_callback(
-                '#((?:(?!<[/a-z]).)*)([^>]*>|$)#si',
-                function($match) use ($search, &$weight) {
-                    return preg_replace('~('.$search.')~i', '<mark>$1</mark>', $match[1], -1, $count) . $match[2] . ($count && $weight++ ? '' : '');
-                },
-                $this('fields')->{$type}($entry[$title])
-            );
-
-            $list[] = [
-                'title'      => $highlightedTitle,
+            $item = [
                 'url'        => $this->baseUrl(($c['route'] ?? '') . '/' . $entry[$slugName]),
-                'content'    => $highlightedContent,
-                'weight'     => $weight,
-                'collection' => !empty($_collection['label']) ? $_collection['label'] : $collection,
+                'collection' => !empty($c['label']) ? $c['label']
+                                : (!empty($_collection['label'])
+                                    ? $_collection['label']
+                                    : $collection),
             ];
+
+            foreach ($c['fields'] as $field) {
+
+                $name = $field['name'];
+
+                $increase = !empty($field['weight']) ? (int) $field['weight'] : 1;
+
+                $item[$name] = preg_replace_callback(
+                    '#((?:(?!<[/a-z]).)*)([^>]*>|$)#si',
+                    function($match) use ($searches, &$weight, $increase) {
+                        return preg_replace('~('.implode('|', $searches).')~i', '<mark>$1</mark>', $match[1], -1, $count) . $match[2] // highlight
+                        . ($count && ($weight = $weight + $count * $increase) ? '' : ''); // increase weight
+                    },
+                    !empty($c['type'])
+                        ? $this('fields')->{$c['type']}($entry[$name])
+                        : $entry[$name]
+                );
+
+                // optional: rename keys to use the same/default theme template with different field names
+                if (!empty($field['rename'])) {
+                    $item[$field['rename']] = $item[$name];
+                    unset($item[$name]);
+                }
+
+            }
+
+            $item['weight'] = $weight;
+
+            $list[] = $item;
 
         }
 

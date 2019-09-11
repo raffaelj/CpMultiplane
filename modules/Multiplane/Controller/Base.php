@@ -162,10 +162,20 @@ class Base extends \LimeExtra\Controller {
 
             $this->app->trigger('multiplane.search', [$query, $list]);
 
-            // sort by weight
-            $list->uasort(function($a, $b) {return $a['weight'] < $b['weight'];});
+            // custom sorting
+            $sort = null;
+            $this->app->trigger('multiplane.search.sort', [&$sort]);
 
-            return $this->render('views:search.php', ['page' => [], 'site' => $site, 'list' => $list->getArrayCopy()]);
+            if (!$sort || !is_callable($sort)) {
+                // sort by weight
+                $sort = function($a, $b) {return $a['weight'] < $b['weight'];};
+            }
+
+            $list->uasort($sort);
+
+            $count = count($list);
+
+            return $this->render('views:search.php', ['page' => [], 'site' => $site, 'list' => $list->getArrayCopy(), 'count' => $count]);
 
         }
 
