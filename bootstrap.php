@@ -5,12 +5,10 @@
  * @see       https://github.com/raffaelj/CpMultiplane
  * @see       https://github.com/agentejo/cockpit/
  * 
- * @version   0.1.4
  * @author    Raffael Jesche
  * @license   MIT
- * @note      work in progress
+ * @note      work in progress, see package.json for version info
  */
-$version = '0.1.4';
 
 // check for custom defines
 if (file_exists(__DIR__.'/defines.php')) {
@@ -37,9 +35,6 @@ if (!defined('COCKPIT_SITE_DIR'))   define('COCKPIT_SITE_DIR',  MP_DOCS_ROOT);
 if (file_exists(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php')) {
     require_once(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php');
 } else { echo "Cockpit doesn't exist."; die; } // to do: cockpit downloader
-
-//set version
-$cockpit->set('multiplane/version', $version);
 
 // load custom config
 if (file_exists(MP_CONFIG_PATH)) {
