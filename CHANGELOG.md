@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.5 coming soon
+
+* added template and js for simple image carousel
+* improved video field template - more php, less js
+* some accessibility fixes
+* improved search
+* added lexy short renderer `bigthumbnail` to rljbase theme
+* added events `multiplane.getposts.before`, `multiplane.findone.after` and `multiplane.getimage.before`
+* improved pagination
+* added sort order to `getNav` function
+* improved css icons
+* changed assets version to time in debug mode and moved version info to `package.json`
+
+
 ## 0.1.4
 
 * added child theme support
