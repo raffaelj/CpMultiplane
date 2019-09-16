@@ -1,17 +1,10 @@
 <?php
 // default view, if the current collection's name is "posts"
-
-$width  = mp()->get('lexy/headerimage/width', 800)  . 'px';
-$height = mp()->get('lexy/headerimage/height', 200) . 'px';
 ?>
 
         <main id="main">
 
-            @if(!empty($page['image']))
-            <img class="featured_image" src="@headerimage($page['image']['_id'])" alt="{{ $page['image']['title'] ?? 'image' }}" width="{{ $width }}" height="{{ $height }}" />
-            @elseif(!empty($page['featured_image']))
-            <img class="featured_image" src="@headerimage($page['featured_image']['_id'])" alt="{{ $page['featured_image']['title'] ?? 'image' }}" width="{{ $width }}" height="{{ $height }}" />
-            @endif
+            @render('views:partials/featured-media.php', ['page' => $page, 'mode' => 'image', 'format' => 'headerimage'])
 
             <h2>{{ $page['title'] }}</h2>
 

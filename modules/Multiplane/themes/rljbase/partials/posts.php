@@ -1,24 +1,14 @@
-<?php
-$width  = mp()->get('lexy/thumbnail/width', 100)  . 'px';
-$height = mp()->get('lexy/thumbnail/height', 100) . 'px';
-
-$slugName = mp()->slugName;
-?>
 
             @render('views:partials/pagination.php', compact('pagination'))
 @foreach($posts as $post)
             <article class="excerpt">
                 @if(!empty($post['title']))
-                <h3> <a href="@base($pagination['slug'].'/'. ($post[$slugName] ?? $post['_id']))">{{ $post['title'] }}</a></h3>
+                <h3> <a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">{{ $post['title'] }}</a></h3>
                 @endif
 
                 @render('views:partials/posts-meta.php', compact('post'))
 
-                @if(!empty($post['image']))
-                <img class="featured_image" src="@thumbnail($post['image']['_id'])" alt="{{ $post['image']['title'] ?? 'image' }}" width="{{ $width }}" height="{{ $height }}" />
-                @elseif(!empty($post['featured_image']))
-                <img class="featured_image" src="@thumbnail($post['featured_image']['_id'])" alt="{{ $post['featured_image']['title'] ?? 'image' }}" width="{{ $width }}" height="{{ $height }}" />
-                @endif
+                @render('views:partials/featured-media.php', ['page' => $post, 'mode' => 'image', 'format' => 'bigthumbnail'])
 
                 @if(!empty($post['excerpt']))
                 {{ $post['excerpt'] }}
@@ -26,7 +16,7 @@ $slugName = mp()->slugName;
                 {{ $post['content'] }}
                 @endif
 
-                <p class="read_more"><a href="@base($pagination['slug'].'/'. ($post[$slugName] ?? $post['_id']))">@lang('read more...')</a></p>
+                <p class="read_more"><a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">@lang('read more...')</a></p>
 
             </article>
 @endforeach
