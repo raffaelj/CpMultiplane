@@ -63,7 +63,7 @@ Install these addons in `cockpit/addons/`.
     * replaces the SimpleImage library with a modified version to fix black backgrounds of transparent png and gif files on hosts with a non-bundled PHP GD version
 * [EditorFormats][10] - if you want to give your users a Wysiwyg field
 
-If you install the bundle and EditorFormats, you should also use the [BootManager][11], because the VideoLinkField addon must be loaded after EditorFormats if you want to configure it via this addon.
+<del>If you install the bundle and EditorFormats, you should also use the [BootManager][11], because the VideoLinkField addon must be loaded after EditorFormats if you want to configure it via this addon.</del>
 
 ## Intended use
 
