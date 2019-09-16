@@ -1,4 +1,9 @@
 <?php
+//set version
+if (!$this->retrieve('multiplane/version', false)) {
+    $this->set('multiplane/version', $this['debug'] ? time()
+        : json_decode($this('fs')->read(MP_DOCS_ROOT.'/package.json'), true)['version']);
+}
 
 // adjust some auto-detected directory routes to current dir, otherwise inbuilt
 // functions from Lime\App, like pathToUrl() would return wrong paths
@@ -212,7 +217,9 @@ $this->module('multiplane')->extend([
         $page = $this->app->module('collections')->findOne($this->collection, $filter, null, false, ['lang' => $this('i18n')->locale]);
 
         if (!$page) return false;
-        
+
+        $this->app->trigger('multiplane.findone.after', [&$page]);
+
         if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
         }
@@ -743,7 +750,7 @@ $this->module('multiplane')->extend([
 
             if (!in_array($field['name'], $this->preRenderFields)) continue;
 
-            $cmd = $field['type'] ?? 'text';
+            $cmd  = $field['type'] ?? 'text';
             $opts = $field['options'] ?? [];
             $page[$field['name']] = $this('fields')->$cmd($page[$field['name']], $opts);
  

@@ -23,68 +23,54 @@
             }
         },
 
-        convertVideoLinksToIframes: function() {
+        visible: function(fn, fm) {
+
+            // inspired by: https://stackoverflow.com/a/19519701
+            var stateKey, eventKey, keys = {
+                hidden:       'visibilitychange',
+                webkitHidden: 'webkitvisibilitychange',
+                mozHidden:    'mozvisibilitychange',
+                msHidden:     'msvisibilitychange'
+            };
+
+            for (stateKey in keys) {
+                if (stateKey in d) {
+                    eventKey = keys[stateKey];
+                    break;
+                }
+            }
+
+            if (typeof fn == 'function' && typeof fm == 'function') {
+                d.addEventListener(eventKey, function() {
+                    if (!d[stateKey]) fn(); // visible
+                    else              fm(); // invisible
+                });
+            }
+            else if (typeof fn == 'function') {
+                d.addEventListener(eventKey, function() {
+                    fn();
+                });
+            }
+
+            return !d[stateKey];
+
+        },
+
+        replaceVideoLink: function() {
+
+            // to do: fix disabled autoplay on mobile device
 
             var $this = this;
 
-            var video_links = d.querySelectorAll('a[data-video-id]');
+            var video_links = d.querySelectorAll('.video_embed');
 
-            Array.prototype.forEach.call(video_links, function(el, i){
+            Array.prototype.forEach.call(video_links, function(iframe, i) {
 
-                var id       = el.getAttribute('data-video-id');
-                var provider = el.getAttribute('data-video-provider');
-                var asset    = el.getAttribute('data-video-thumb');
-                var width    = 480;
-                var height   = 370;
-
-                if ((data_width = el.getAttribute('data-video-width'))
-                    && (data_height = el.getAttribute('data-video-height'))) {
-
-                    // reassign aspect ratio
-                    height = width * (data_height / data_width);
-
-                }
-
-                var thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
-
-                if (provider == 'youtube') {
-                    var src = 'https://www.youtube-nocookie.com/embed/'
-                        + id + '?rel=0&showinfo=0&autoplay=1';
-                }
-
-                if (provider == 'vimeo') {
-                    var src = 'https://player.vimeo.com/video/'
-                        + id + '?color=ffffff&title=0&byline=0&portrait=0&autoplay=1';
-                }
-
-                var container = d.createElement('div');
-
-                container.setAttribute('class', 'video_embed_container');
-
-                var iframe = d.createElement('iframe');
-
-                iframe.setAttribute('class', 'video_embed');
-                iframe.setAttribute('width', width);
-                iframe.setAttribute('height', height);
-                iframe.setAttribute('src', 'about:blank');
-                iframe.setAttribute('data-src', src);
-                iframe.setAttribute('src', 'about:blank');
-                iframe.setAttribute('allowfullscreen', '');
-                iframe.style.width = width+'px';
-                iframe.style.height = height+'px';
-                iframe.style['background-image'] = 'url(' + thumb + ')';
-
-                container.appendChild(iframe);
-
-                var play_button = d.createElement('span');
-                play_button.setAttribute('class', 'play_button');
-
-                container.appendChild(play_button);
-
-                el.parentNode.insertBefore(container, el);
-                el.parentNode.style['text-align'] = 'center';
+                var play_button = iframe.nextElementSibling;
 
                 play_button.addEventListener('click', function(e) {
+
+                    if (e) e.preventDefault();  
 
                     if (Cookie.get('loadExternalVideos') == '1') {
                         iframe.setAttribute('src', iframe.getAttribute('data-src'));
@@ -104,6 +90,11 @@
 
             var banner = d.getElementById('privacy-notice');
             banner.style.display = 'block';
+
+            var lastFocus = target;
+            banner.tabIndex = -1;
+            banner.setAttribute('role', 'dialog');
+            banner.focus();
 
             var form = d.getElementById('privacy-notice-form');
 
@@ -126,11 +117,15 @@
                 // hide banner
                 banner.style.display = '';
 
+                lastFocus.focus();
+
             });
 
             form.addEventListener('reset', function(e) {
 
                 banner.style.display = '';
+
+                lastFocus.focus();
 
             });
 
@@ -243,7 +238,7 @@
         currentGallery: null,
         galleries:      [],
         captions:       [],
-        body:           d.querySelector('body'),
+        // body:           d.querySelector('body'),
         img:            d.createElement('img'),
         lightbox:       d.createElement('div'),
         wrap:           d.createElement('div'),
@@ -266,14 +261,15 @@
                         $this[k] = options[k];
                     });
                 }
-            }
+            } else { return; }
 
             this.lightbox.setAttribute('class', 'lightbox');
             d.querySelector('body').appendChild(this.lightbox);
 
             this.prevButton.classList.add('prev');
             this.nextButton.classList.add('next');
-            this.closeButton.classList.add('close');
+            // this.closeButton.classList.add('close');
+            this.closeButton.classList.add('icon-close');
 
             this.lightbox.appendChild(this.wrap);
             this.lightbox.appendChild(this.prevButton);
@@ -417,15 +413,139 @@
         },
 
     };
+    
+    var SimpleCarousel = {
 
-    MP.Cookie = Cookie;
+        selector: '',
+        carousels: [],
+        autoplay: true,
+        duration: 10000,
+        // pauseButton: d.createElement('a'),
+
+        init: function(options) {
+
+            var $this = this;
+
+            // overwrite config
+            if (options) {
+                if (typeof options == 'string') {
+                    this.selector = options;
+                } else {
+                    Object.keys(options).forEach(function(k) {
+                        $this[k] = options[k];
+                    });
+                }
+            } else { return; }
+
+            Array.prototype.forEach.call(d.querySelectorAll(this.selector), function (node, k) {
+
+                $this.carousels.push({
+                    paused:   false,
+                    node:     node,
+                    interval: null,
+                });
+
+            });
+
+            // stop, if no carousels found
+            if (!this.carousels.length) return;
+            
+            $this.pause
+
+            Array.prototype.forEach.call(this.carousels, function (carousel, k) {
+
+                var pauseButton = d.createElement('a');
+                pauseButton.setAttribute('href', '#');
+
+                // to do: tabindex...
+
+                carousel.node.addEventListener('click', function(e) {
+
+                    if (e) e.preventDefault();
+
+                    carousel.paused = !carousel.paused;
+
+                    // to do: set cookie to pause sliders on other pages, too
+
+                    if (carousel.paused) {
+                        pauseButton.classList.remove('icon-pause');
+                        pauseButton.classList.add('icon-play');
+                        $this.pause(carousel);
+                    } else {
+                        pauseButton.classList.remove('icon-play');
+                        pauseButton.classList.add('icon-pause');
+                        $this.play(carousel);
+                    }
+
+                });
+                
+                // add carousel navigation
+                pauseButton.classList.add('icon-pause');
+                carousel.node.appendChild(pauseButton);
+
+                MP.visible(
+                    function(){$this.play(carousel);},
+                    function(){$this.pause(carousel);}
+                );
+
+                if ($this.autoplay && !carousel.paused) {
+                    $this.play(carousel);
+                }
+
+            });
+
+        },
+
+        play: function(carousel) {
+
+            // don't replay on visibility change
+            if (carousel.paused) return false;
+            
+            if (!carousel.interval) {
+                carousel.interval = this.animate(carousel);
+            }
+
+            return carousel.interval;
+
+        },
+
+        pause: function(carousel) {
+
+            window.clearInterval(carousel.interval);
+            carousel.interval = false;
+
+        },
+
+        animate: function(carousel) {
+
+            // start animation and return interval id
+            var intervalId = setInterval(function() {
+
+                var current = carousel.node.querySelector('.current');
+                var next    = current.nextElementSibling;
+
+                if (!next || next.nodeName == 'A') next = carousel.node.firstElementChild;
+
+                // set src, if not done already, but don't load all images on startup
+                if (next.getAttribute('src') == 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') {
+                    next.setAttribute('src', next.dataset.src);
+                }
+
+                current.classList.remove('current');
+                next.classList.add('current');
+
+            }, this.duration);
+
+            return intervalId;
+
+        },
+
+    };
+
+    MP.Cookie   = Cookie;
     MP.Lightbox = SimpleLightbox;
+    MP.Carousel = SimpleCarousel;
+
     g.MP = MP;
 
 })(this, document);
-
-MP.ready(function() {
-
-    MP.convertVideoLinksToIframes();
-
-});
