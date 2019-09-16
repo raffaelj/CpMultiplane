@@ -19,12 +19,12 @@ $this->on('cockpit.filestorages.init', function(&$storages) {
 });
 
 // set config path
-$this->path('mp_config', MP_DOCS_ROOT . '/config');
+$this->path('mp_config', MP_ENV_ROOT . '/config');
 
 // register autoload classes in namespace Multiplane\Controller from
 // `MP_DOCS_ROOT/Controller`, e. g.: `/Controller/Products.php`
 spl_autoload_register(function($class){
-    $class_path = MP_DOCS_ROOT.'/Controller'.str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
+    $class_path = MP_ENV_ROOT.'/Controller'.str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
     if(file_exists($class_path)) include_once($class_path);
 });
 
@@ -849,11 +849,11 @@ $this->on('multiplane.init', function() {
     $theme       = $this->module('multiplane')->theme;
     $parentTheme = $this->module('multiplane')->parentTheme;
 
-    if (  ($themePath = $this->path(MP_DOCS_ROOT."/themes/$theme"))
+    if (  ($themePath = $this->path(MP_ENV_ROOT."/themes/$theme"))
        || ($themePath = $this->path(__DIR__."/themes/$theme")) ) {
 
         if ($parentTheme) {
-            if (  ($parentThemePath = $this->path(MP_DOCS_ROOT."/themes/$parentTheme"))
+            if (  ($parentThemePath = $this->path(MP_ENV_ROOT."/themes/$parentTheme"))
                || ($parentThemePath = $this->path(__DIR__."/themes/$parentTheme")) ) {
 
                 $this->path('views', $parentThemePath);
