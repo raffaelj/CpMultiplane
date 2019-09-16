@@ -32,16 +32,27 @@ Now login with admin/admin, change your password and start your work.
 **Don't copy and paste everything!** Read it, understand and modify it to your needs.
 
 ```bash
-cd html
+# cd into docs root
+cd ~/html
+```
 
-# base
+```bash
+# clone CpMultiplane
 git clone https://github.com/raffaelj/CpMultiplane.git .
+
+# clone Cockpit
 git clone https://github.com/agentejo/cockpit.git cockpit
 
 # install addons
-git clone https://github.com/raffaelj/cockpit_CpMultiplaneBundle.git cockpit/addons/CpMultiplaneBundle
-git clone https://github.com/raffaelj/cockpit_BootManager.git cockpit/addons/BootManager
-git clone https://github.com/pauloamgomes/CockpitCms-EditorFormats.git cockpit/addons/BootManager/addons/EditorFormats
+git clone https://github.com/raffaelj/cockpit_CpMultiplaneGUI.git cockpit/addons/CpMultiplaneGUI
+git clone https://github.com/raffaelj/cockpit_FormValidation.git cockpit/addons/FormValidation
+git clone https://github.com/raffaelj/cockpit_rljUtils.git cockpit/addons/rljUtils
+git clone https://github.com/raffaelj/cockpit_SimpleImageFixBlackBackgrounds.git cockpit/addons/SimpleImageFixBlackBackgrounds
+git clone https://github.com/raffaelj/cockpit_UniqueSlugs.git cockpit/addons/UniqueSlugs
+git clone https://github.com/raffaelj/cockpit_VideoLinkField.git cockpit/addons/VideoLinkField
+
+git clone https://github.com/raffaelj/cockpit_ImageResize.git cockpit/addons/ImageResize
+git clone https://github.com/pauloamgomes/CockpitCms-EditorFormats.git cockpit/addons/EditorFormats
 
 # check for dependencies
 # to do: implement cli commands from Monoplane
@@ -98,5 +109,72 @@ EOF
 # to do: implement cli commands from Monoplane
 # ./mp account/create --user raffael --name Raffael
 ```
+
+## Installation with more comfort
+
+It is a bit annoying to update local and production environments if the data lays all over the place. Wouldn't it be nice to have a single folder for all addons, themes, config files, uploads and SQLite databases?
+
+```bash
+# clone CpMultiplane
+git clone https://github.com/raffaelj/CpMultiplane.git .
+
+# clone Cockpit
+git clone https://github.com/agentejo/cockpit.git cockpit
+
+# create data dir
+mkdir data
+mkdir data/cp
+mkdir data/mp
+
+# change environment routes
+cat > cockpit/defines.php <<EOF
+<?php
+define('COCKPIT_ENV_ROOT', str_replace(DIRECTORY_SEPARATOR, '/', realpath(__DIR__.'/../data/cp')));
+EOF
+
+cat > defines.php <<EOF
+<?php
+define('MP_ENV_ROOT', str_replace(DIRECTORY_SEPARATOR, '/', realpath(__DIR__.'/data/mp')));
+EOF
+
+# copy storage folder and remove .gitignore files
+cp -r cockpit/storage data/cp
+find data/cp/storage/ -name .gitignore -exec rm {} +
+
+# install addons
+git clone https://github.com/raffaelj/cockpit_CpMultiplaneGUI.git data/cp/addons/CpMultiplaneGUI
+git clone https://github.com/raffaelj/cockpit_FormValidation.git data/cp/addons/FormValidation
+git clone https://github.com/raffaelj/cockpit_rljUtils.git data/cp/addons/rljUtils
+git clone https://github.com/raffaelj/cockpit_SimpleImageFixBlackBackgrounds.git data/cp/addons/SimpleImageFixBlackBackgrounds
+git clone https://github.com/raffaelj/cockpit_UniqueSlugs.git data/cp/addons/UniqueSlugs
+git clone https://github.com/raffaelj/cockpit_VideoLinkField.git data/cp/addons/VideoLinkField
+
+git clone https://github.com/raffaelj/cockpit_ImageResize.git data/cp/addons/ImageResize
+git clone https://github.com/pauloamgomes/CockpitCms-EditorFormats.git data/cp/addons/EditorFormats
+
+# create admin user, type a email, a password and press Enter
+./mp account/create --user raffael --name Raffael
+```
+
+```bash
+cd data
+
+# local
+# git init
+
+# production
+# update: git pull
+git clone https://github.com/raffaelj/my_private_repository_with_project_files.git .
+```
+
+Now you only have to keep track of
+
+```
+data
+defines.php
+cockpit/defines.php
+```
+
+Now create your config file(s) and/or adjust your settings via UI, create pages and posts collections and start publishing your content :-)
 
 [1]: https://github.com/agentejo/cockpit/#installation
