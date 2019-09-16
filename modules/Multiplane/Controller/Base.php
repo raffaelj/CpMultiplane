@@ -13,9 +13,9 @@ class Base extends \LimeExtra\Controller {
 
     public function index($slug = '') {
 
-        $page = $this->module('multiplane')->findOne($slug);
+        $page  = $this->module('multiplane')->findOne($slug);
         $posts = null;
-        $site = $this->module('multiplane')->site;
+        $site  = $this->module('multiplane')->site;
 
         if (!$page) return false;
 
@@ -91,8 +91,6 @@ class Base extends \LimeExtra\Controller {
 
     public function getImage($options = []) {
 
-        // to do: ddos protection
-
         $src = $this->param('src', null);
 
         if (!$src) return false;
@@ -113,6 +111,9 @@ class Base extends \LimeExtra\Controller {
         if ($this->param('blur')) {
             $options['filters']['blur'] = ['type' => 'gaussian', 'passes' => intval($this->param('blur', 5))];
         }
+
+        // add checks for ddos protection, allow only certain files, or deliver modified media...
+        $this->app->trigger('multiplane.getimage.before', [&$options]);
 
         $thumbpath = $this->module('cockpit')->thumbnail($options);
 
