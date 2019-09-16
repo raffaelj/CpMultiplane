@@ -1,16 +1,13 @@
 
-$iframe-width: 480px;
-$iframe-height: 270px;
+$iframe-width: 480px !default;
+$iframe-height: 270px !default;
 
-$play-button-width: 60px;
-$play-button-height: 60px;
+$color-white-transp-medium: rgba(255,255,255,.5) !default;
 
 .video_embed_container {
     position: relative;
-    // + a[data-video-id] {
-        // display: block;
-        // text-align: center;
-    // }
+    margin-top: 1em;
+    text-align: center;
 }
 
 iframe.video_embed {
@@ -23,45 +20,19 @@ iframe.video_embed {
     background-position: 50%;
     background-repeat: no-repeat;
     background-size: contain;
-    + .play_button {
+    + .icon-play {
         display: none;
-        // + a[data-video-id] {
-            // display: block;
-            // text-align: center;
-        // }
     }
     &[src='about:blank'] {
-        + .play_button {
-            display: block;
+        + .icon-play {
             position: absolute;
+            display: block;
+            font-size: 2em;
             left: 50%;
             top: 50%;
-            margin-left: - $play-button-width / 2;
-            margin-top: - $play-button-height / 2;
-            height: $play-button-height;
-            width: $play-button-width;
-            border-radius: 50%;
-            background-color: rgba(0,0,0,0.5);
-            @include box-shadow(0px 0px ($play-button-width / 7.5) 0px rgba(255,255,255,.8));
-            &:before {
-                content: "";
-                position: absolute;
-                top: 50%;
-                left: $play-button-width / 2.5;
-                margin-top: - $play-button-height / 5;
-                border-style: solid;
-                border-color: transparent;
-                border-width: ($play-button-height / 5) ($play-button-height / 3);
-                border-left-color: rgba(255,255,255,.9);
-                background: transparent;
-            }
-            &:hover {
-                background-color: $color-link-hover;
-                &:before {
-                    border-left-color: #222;
-                }
-            }
+            margin-left: -1em;
+            margin-top: -1em;
+            background-color: $color-white-transp-medium;
         }
-    
     }
 }

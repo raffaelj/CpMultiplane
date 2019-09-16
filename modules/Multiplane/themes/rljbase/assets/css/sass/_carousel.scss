@@ -1,0 +1,34 @@
+
+.carousel {
+    position: relative;
+    margin: 2em auto 1em;
+    overflow: hidden;
+    img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+        padding: 0;
+        opacity: 0;
+        transition: opacity 3s ease-in-out;
+        &.current {
+            opacity: 1;
+            transition: opacity 3s ease-in-out;
+        }
+    }
+    .icon-pause, .icon-play {
+        position: absolute;
+        display: none;
+        // opacity: 0;
+        bottom: 1em;
+        right: 1em;
+    }
+    &:hover, &:focus {
+        .icon-pause, .icon-play {
+            display: block;
+            // opacity: 1;
+        }
+    }
+}

@@ -74,40 +74,16 @@
             border-left-color: rgba(255,255,255,.9);
         }
     }
-    .close {
+    .icon-close {
         position: absolute;
         top: 1rem;
         right: 1rem;
-        width: 2rem;
-        height: 2rem;
-        border: 2px solid rgba(255,255,255,.7);
-        border-radius: 50%;
-        &:hover {
-            border: 2px solid rgba(255,255,255,.9);
-            background-color: rgba(255,255,255,.1);
-        }
-        &:before, &:after {
-            content: "";
-            position: absolute;
-            border-style: solid;
-            border-color: transparent;
-            border-width: .125rem;
-            width: .5rem;
-            height: .5rem;
-            
-            transform: rotate(45deg);
-        }
-        &:before {
-            top: 0.25rem;
-            right: .6rem;
-            border-right-color: rgba(255,255,255,.9);
-            border-bottom-color: rgba(255,255,255,.9);
-        }
-        &:after {
-            top: 1.125rem;
-            right: .6rem;
-            border-left-color: rgba(255,255,255,.9);
-            border-top-color: rgba(255,255,255,.9);
+        border: 2px solid $color-white-transp;
+        background-color: transparent;
+        color: $color-white;
+        &:hover, &:focus {
+            color: $color-link-hover;
+            background-color: $color-white-transp;
         }
     }
     .hidden {

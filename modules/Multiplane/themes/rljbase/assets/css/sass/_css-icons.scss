@@ -1,0 +1,80 @@
+
+// css icons
+
+$icon-width: 2em !default;
+$icon-height: 2em !default;
+
+$color-text: #222 !default;
+$color-white-transp: rgba(255,255,255,.9) !default;
+$color-icon: $color-text !default;
+$color-icon-background: $color-white-transp !default;
+
+[class^=icon-] {
+    position: relative;
+    width: $icon-width;
+    height: $icon-height;
+    background-color: $color-icon-background;
+    color: $color-icon;
+    border-radius: 50%;
+    // @include box-shadow(0px 0px ($icon-width / 7.5) 0px $color-white-transp);
+}
+
+.icon-pause {
+    &:before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        margin-left: - $icon-width / 5;
+        margin-top: - $icon-height / 5;
+        width: $icon-height / 10;
+        height: $icon-height / 2.5;
+        border-style: solid;
+        border-width: 0 $icon-height / (6 + 2 / 3);
+    }
+}
+
+.icon-play {
+    &:before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: $icon-width / 2.5;
+        margin-top: - $icon-height / 5;
+        border-style: solid;
+        border-width: ($icon-height / 5) ($icon-height / 3);
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        background-color: transparent;
+    }
+}
+
+.icon-plus, .icon-close {
+    &:before, &:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+    &:before {
+        margin-top: - $icon-width / 20;
+        margin-left: - $icon-width / 4;
+        width: $icon-width / 2;
+        height: 0;
+        border-bottom-width: $icon-width / 10;
+        border-bottom-style: solid;
+    }
+    &:after {
+        margin-left: - $icon-width / 20;
+        margin-top: - $icon-width / 4;
+        width: 0;
+        height: $icon-width / 2;
+        border-left-width: $icon-width / 10;
+        border-left-style: solid;
+    }
+}
+
+.icon-close {
+    transform: rotate(45deg);
+}

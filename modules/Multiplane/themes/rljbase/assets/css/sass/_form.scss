@@ -166,6 +166,7 @@ input[type=checkbox], input[type=radio] {
     &:hover,&:focus,&:active {
         + label:before {
             border-color: $color-main;
+            @include box-shadow(0 0 1em $color-main); // better accesibility and visibility
         }
     }
     &:checked {

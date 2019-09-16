@@ -1,4 +1,10 @@
 
+// navigate to theme folder
+// sass --watch style.scss:style.min.css --style compressed --scss
+
+// or navigate to CpMultiplane root
+// sass --watch modules/Multiplane/themes/rljbase/assets/css/style.scss:modules/Multiplane/themes/rljbase/assets/css/style.min.css --style compressed --scss
+
 // fonts
 $font: system-ui, Helvetica, sans-serif;
 $font_extra: $font; // webfont for headlines
@@ -23,13 +29,20 @@ $width: 1000px;
 @import 'sass/code';
 @import 'sass/labels';
 @import 'sass/form';
+
+@import 'sass/css-icons';
+
 @import 'sass/gallery';
+@import 'sass/carousel';
 @import 'sass/lightbox';
 @import 'sass/video-embed';
+
 @import 'sass/privacy-notice';
+
 @import 'sass/pagination';
 @import 'sass/breadcrumbs';
 @import 'sass/search';
+
 // @import 'sass/grid';
 
 @import 'multiplane';
