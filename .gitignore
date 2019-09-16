@@ -12,6 +12,7 @@ defines.php
 # common user files and directories
 /assets
 /views
+/data
 favicon.ico
 
 # Should I ignore scss files...?
