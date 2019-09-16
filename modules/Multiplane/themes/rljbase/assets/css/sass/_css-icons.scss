@@ -36,7 +36,7 @@ $color-icon-background: $color-white-transp !default;
 
 .icon-play {
     &:before {
-        content: "";
+        content: '';
         position: absolute;
         top: 50%;
         left: $icon-width / 2.5;
@@ -77,4 +77,31 @@ $color-icon-background: $color-white-transp !default;
 
 .icon-close {
     transform: rotate(45deg);
+}
+
+.icon-search {
+    &:before, &:after {
+        content: '';
+        position: absolute;
+    }
+    &:before {
+        top: $icon-width / 5;
+        left: $icon-width / 5;
+        width: $icon-width / 4;
+        height: $icon-width / 4;
+        border-style: solid;
+        border-width: $icon-width / 10;
+        background-color: transparent;
+        border-radius: 50%;
+    }
+    &:after {
+        top: $icon-width / (1 + 2 / 3);
+        left: $icon-width / 2;
+        width: $icon-width / 8;
+        border-style: solid;
+        border-bottom-width: $icon-width / 20;
+        border-top-width: $icon-width / 20;
+        border-radius: $icon-width / 40;
+        transform: rotate(45deg);
+    }
 }

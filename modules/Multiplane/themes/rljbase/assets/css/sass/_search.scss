@@ -1,21 +1,65 @@
 // search
 
 $color-shadow: #ccc !default;
+$icon-width: 2em !default;
+$icon-height: 2em !default;
 
 // search bar
 .search {
+    form {
+        position: relative;
+        width: 15em;
+        margin: 1em auto;
+        overflow: hidden; // avoid possible flickering when button text appears and mouse hovers over it
+    }
     input {
         display: inline;
-        width: 10em;
+        width: 100%;
         margin: 0;
     }
     button {
+        position: absolute;
+        right: 0;
         margin: 0 0 0 .2em; // reset margin top/bottom
         // match input height
         padding-top: 5px;
         padding-bottom: 5px;
-        height: 2rem; 
-        vertical-align: bottom;
+        // vertical-align: bottom;
+        
+        width: 2rem;
+        max-width: 2rem;
+        height: 2rem;
+        font-size: 0;
+        background-color: transparent;
+
+        @include box-shadow(none);
+        transition: max-width, font-size .2s ease;
+
+        &:hover, &:focus {
+            font-size: inherit;
+            width: auto;
+            max-width: 100%; // transition doesn't work with width: auto
+            padding: 0 .5em 0 0;
+            line-height: 2rem;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+            .icon-search {
+                display: block;
+                float: left;
+                position: relative;
+            }
+        }
+    }
+    .icon-search {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 1rem;
+        border-radius: $border-radius;
+        width: $icon-width;
+        height: $icon-height;
+        color: $color-grey;
+        background-color: transparent;
     }
 }
 
