@@ -8,6 +8,7 @@
 /config
 /themes
 defines.php
+.htaccess
 
 # common user files and directories
 /assets

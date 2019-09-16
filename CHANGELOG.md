@@ -12,6 +12,7 @@
 * added sort order to `getNav` function
 * improved css icons
 * changed assets version to time in debug mode and moved version info to `package.json`
+* replaced `.htaccess` with `.htaccess.dist`
 
 
 ## 0.1.4

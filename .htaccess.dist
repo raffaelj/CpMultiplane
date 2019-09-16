@@ -1,3 +1,8 @@
+### Start CpMultiplane - don't change anything below ###
+
+# This .htaccess content is copied and pasted from Cockpit CMS
+# author: Artur Heinze, agentejo.com, MIT License
+
 # Deny access to database + config files
 <Files ~ "\.(sqlite|sdb|s3db|db|yaml|yml)$">
     <IfVersion >= 2.4>
@@ -149,3 +154,5 @@ AddType application/x-shockwave-flash   swf
 
 # Remove ETags
 FileETag None
+
+### End CpMultiplane - don't change anything above ###

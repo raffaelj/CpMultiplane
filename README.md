@@ -4,6 +4,7 @@ CpMultiplane is a small PHP front end for the fast and headless [Cockpit CMS][1]
 
 CpMultiplane is the refactored version of [Monoplane][8]. The code base was ugly, it was designed for very simple portfolio websites with a few pages and it didn't really support multilingual setups.
 
+[Demo][18]
 
 ## Requirements
 
@@ -16,7 +17,8 @@ make also sure that `$_SERVER['DOCUMENT_ROOT']` exists and is set correctly.
 
 ## Installation
 
-* copy all files of this repository in your web root
+* copy all files of this repository into your web root
+* rename `.htaccess.dist` to `.htaccess`
 * copy Cockpit in a subfolder of your web root and name it `cockpit`
 * copy additional addons, create your collections, adjust some settings
 
@@ -36,34 +38,31 @@ You can find the detailed version and a cli install example in [/docs/installati
 * contact forms - fully functional without javascript
 * pre-rendering of fields, e. g. markdown, wysiwyg
 * multiple ways to change everything
-* GUI is coming soon...
+* GUI via [CpMultiplaneGUI addon][2] - may lack some of the latest features
 * ...
 
 ## Recommended Addons
 
 Install these addons in `cockpit/addons/`.
 
-* [CpMultiplaneBundle][9] - it contains the following addons:
-  * [CpMultiplaneGUI][2]
-    * adds a few fields to the sidebar, so you don't have to define them in your collection definitions
-    * some gui tweaks for easier access
-    * work in progress...
-  * [UniqueSlugs][3]
-    * If links should point to `slug` instead of `_id`
-    * for multilingual slugs in language switch
-  * [rljUtils][4]
-    * fixes security issues in Admin UI for multi user setups
-    * big language buttons for multilingual setups
-  * [FormValidation][5]
-    * The inbuilt Forms Controller requires field definitions from this addon
-    * The inbuilt views and css files are written to match the field definitions
-  * [VideoLinkField][6]
-    * inbuilt `/assets/js/mp.js`, some views and css files are designed to load videos privacy friendly with a privacy notice, that pops up only when a user clicks a play button
-  * [SimpleImageFixBlackBackgrounds][7]
-    * replaces the SimpleImage library with a modified version to fix black backgrounds of transparent png and gif files on hosts with a non-bundled PHP GD version
+* [CpMultiplaneGUI][2]
+  * adds a few fields to the sidebar, so you don't have to define them in your collection definitions
+  * some gui tweaks for easier access
+  * work in progress...
+* [UniqueSlugs][3]
+  * If links should point to `slug` instead of `_id`
+  * for multilingual slugs in language switch
+* [rljUtils][4]
+  * fixes security issues in Admin UI for multi user setups
+  * big language buttons for multilingual setups
+* [FormValidation][5]
+  * The inbuilt Forms Controller requires field definitions from this addon
+  * The inbuilt views and css files are written to match the field definitions
+* [VideoLinkField][6]
+  * inbuilt `/assets/js/mp.js`, some views and css files are designed to load videos privacy friendly with a privacy notice, that pops up only when a user clicks a play button
+* [SimpleImageFixBlackBackgrounds][7]
+  * replaces the SimpleImage library with a modified version to fix black backgrounds of transparent png and gif files on hosts with a non-bundled PHP GD version
 * [EditorFormats][10] - if you want to give your users a Wysiwyg field
-
-<del>If you install the bundle and EditorFormats, you should also use the [BootManager][11], because the VideoLinkField addon must be loaded after EditorFormats if you want to configure it via this addon.</del>
 
 ## Intended use
 
@@ -136,3 +135,4 @@ Without Cockpit, CpMultiplane couldn't exist. Thanks to [Artur Heinze][16] and t
 [12]: https://github.com/raffaelj/CpMultiplane/blob/master/LICENSE
 [16]: https://github.com/aheinze
 [17]: https://github.com/agentejo/cockpit/graphs/contributors
+[18]: https://monoplane.rlj.me

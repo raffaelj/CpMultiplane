@@ -39,6 +39,7 @@ cd ~/html
 ```bash
 # clone CpMultiplane
 git clone https://github.com/raffaelj/CpMultiplane.git .
+cp .htaccess.dist .htaccess
 
 # clone Cockpit
 git clone https://github.com/agentejo/cockpit.git cockpit
@@ -115,8 +116,14 @@ EOF
 It is a bit annoying to update local and production environments if the data lays all over the place. Wouldn't it be nice to have a single folder for all addons, themes, config files, uploads and SQLite databases?
 
 ```bash
+# cd into docs root
+cd ~/html
+```
+
+```bash
 # clone CpMultiplane
 git clone https://github.com/raffaelj/CpMultiplane.git .
+cp .htaccess.dist .htaccess
 
 # clone Cockpit
 git clone https://github.com/agentejo/cockpit.git cockpit
