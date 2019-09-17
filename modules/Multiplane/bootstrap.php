@@ -220,8 +220,6 @@ $this->module('multiplane')->extend([
 
         if (!$page) return false;
 
-        $this->app->trigger('multiplane.findone.after', [&$page]);
-
         if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
         }

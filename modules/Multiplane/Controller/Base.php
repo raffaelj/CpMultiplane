@@ -55,6 +55,8 @@ class Base extends \LimeExtra\Controller {
             }
         }
 
+        $this->app->trigger('multiplane.page', [&$page, &$posts, &$site]);
+
         return $this->render($view, compact('page', 'posts', 'site'));
 
     }
