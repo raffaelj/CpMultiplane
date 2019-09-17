@@ -67,7 +67,7 @@ a {
     color: $color-link;
     &:hover, &:focus {
         color: $color-link-hover;
-        border-bottom: 1px dotted;
+        text-decoration: underline dotted;
     }
 }
 
