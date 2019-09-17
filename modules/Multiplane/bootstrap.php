@@ -956,6 +956,12 @@ $this->on('multiplane.init', function() {
     }
 
     // bind routes
+
+    // clear cache (only in debug mode)
+    $this->bind('/clearcache', function() {
+        return $this->module('cockpit')->clearCache();
+    }, $this['debug']);
+
     $this->bind('/login', function() {
         $this->reroute(MP_ADMINFOLDER);
     });
