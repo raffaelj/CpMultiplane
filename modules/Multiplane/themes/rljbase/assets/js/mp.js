@@ -70,18 +70,25 @@
                 var asset    = el.getAttribute('data-video-thumb');
                 var width    = 480;
                 var height   = 370;
+                var ratio    = '';
 
                 if ((data_width = el.getAttribute('data-video-width'))
                     && (data_height = el.getAttribute('data-video-height'))) {
 
                     // reassign aspect ratio
                     height = width * (data_height / data_width);
+                    ratio  = (data_width / data_height == 16 / 9) ? '16-9' : '4-3';
 
                 }
 
                 var thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
 
                 if (provider == 'youtube') {
+
+                    // downloaded thumbnails are always 4:3 (640px x 480px) with black borders
+                    // lazy fix: overwrite ratio
+                    ratio = '16-9';
+
                     var src = 'https://www.youtube-nocookie.com/embed/'
                         + id + '?rel=0&showinfo=0&autoplay=1';
                 }
@@ -93,19 +100,20 @@
 
                 var container = d.createElement('div');
 
-                container.setAttribute('class', 'video_embed_container');
+                container.classList.add('video_embed_container');
+                container.classList.add('ratio-' + ratio);
 
                 var iframe = d.createElement('iframe');
 
-                iframe.setAttribute('class', 'video_embed');
+                iframe.classList.add('video_embed');
                 iframe.setAttribute('width', width);
                 iframe.setAttribute('height', height);
                 iframe.setAttribute('src', 'about:blank');
                 iframe.setAttribute('data-src', src);
                 iframe.setAttribute('src', 'about:blank');
                 iframe.setAttribute('allowfullscreen', '');
-                iframe.style.width = width+'px';
-                iframe.style.height = height+'px';
+                // iframe.style.width = width+'px';
+                // iframe.style.height = height+'px';
                 iframe.style['background-image'] = 'url(' + thumb + ')';
 
                 container.appendChild(iframe);

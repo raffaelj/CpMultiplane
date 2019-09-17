@@ -2,25 +2,38 @@
 $iframe-width: 480px !default;
 $iframe-height: 270px !default;
 
-$color-white-transp-medium: rgba(255,255,255,.5) !default;
+$color-white-transp: rgba(255,255,255,.8) !default;
 
 .video_embed_container {
     position: relative;
-    margin-top: 1em;
-    text-align: center;
+    margin: 1em auto .5em;
+    // padding-top: 35px;
+    padding-bottom: 75%; // 4:3
+    height: 0;
+    max-width: 100%;
+    &.ratio-16-9 {
+        padding-bottom: 56.25%; // 16:9
+    }
+    iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+    }
     .icon-play {
         &:hover, &:focus {
             @include box-shadow(0px 0px .2em 0px $color-black-transp);
         }
     }
+    + a {
+        display: block;
+        text-align: center;
+    }
 }
 
 iframe.video_embed {
-    display: block;
-    width: $iframe-width;
-    height: $iframe-height;
-    max-width: 100%;
-    margin: 0 auto;
     border: none;
     background-position: 50%;
     background-repeat: no-repeat;
@@ -37,7 +50,7 @@ iframe.video_embed {
             top: 50%;
             margin-left: -1em;
             margin-top: -1em;
-            background-color: $color-white-transp-medium;
+            background-color: $color-white-transp;
         }
     }
 }
