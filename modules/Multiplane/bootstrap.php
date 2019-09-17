@@ -76,8 +76,7 @@ $this->module('multiplane')->extend([
     'displayPostsLimit'     => 5,               // number of posts to display in subpagemodule
     'paginationDropdownLimit' => 5,             // number of pages, when the pagination turns to dropdown menu
 
-    // lexy
-    'lexy'                  => [],
+    'lexy'                  => [],              // extend Lexy parser for image url templates
 
     //breadcrumbs
     'displayBreadcrumbs'    => false,
@@ -96,6 +95,8 @@ $this->module('multiplane')->extend([
     'clientIpIsAllowed'     => false,           // if maintenance and ip is allowed
     'hasParentPage'         => false,           // for sub pages and pagination
     'parentPage'            => null,
+    'themePath'             => null,
+    'parentThemePath'       => null,
 
 
     'set' => function($key, $value) {
@@ -104,10 +105,11 @@ $this->module('multiplane')->extend([
 
     },
 
-    'add' => function($key, $value) {
+    'add' => function($key, $value, $recursive = false) {
 
         if (is_array($this->$key)) {
-            $this->$key = array_merge_recursive($this->$key, $value);
+            if ($recursive) $this->$key = array_merge_recursive($this->$key, $value);
+            else            $this->$key = array_merge($this->$key, $value);
         }
 
         elseif (is_string($this->$key) && is_string($value)) {
@@ -812,9 +814,32 @@ $this->module('multiplane')->extend([
 
         // overwrite default config
 
+        // load config
         $config = array_replace_recursive(
             $this->app->storage->getKey('cockpit/options', 'multiplane', []), // ui
             $this->app->retrieve('multiplane', [])                            // config file
+        );
+
+        // load theme config file(s), if available
+
+        if (!empty($config['parentTheme'])) $this->parentTheme = $config['parentTheme'];
+        if (!empty($config['theme']))       $this->theme       = $config['theme'];
+
+        $this->setTheme();
+
+        $themeConfig = $parentThemeConfig = [];
+        if (file_exists($this->themePath . '/config/config.php')) {
+            $themeConfig = include($this->themePath . '/config/config.php');
+        }
+        if ($this->parentTheme && file_exists($this->themePath . '/config/config.php')) {
+            $parentThemeConfig = include($this->parentThemePath . '/config/config.php');
+        }
+
+        // overwite again
+        $config = array_replace_recursive(
+            $parentThemeConfig,
+            $themeConfig,
+            $config
         );
 
         foreach($config as $key => $val) {
@@ -829,6 +854,68 @@ $this->module('multiplane')->extend([
         $this->set('collection', $this->pages);
 
     },
+
+    'setTheme' => function() {
+
+        $theme       = $this->theme;
+        $parentTheme = $this->parentTheme;
+
+        if (  ($this->themePath = $this->app->path(MP_ENV_ROOT."/themes/$theme"))
+           || ($this->themePath = $this->app->path(__DIR__."/themes/$theme")) ) {
+
+            if ($parentTheme) {
+                if (  ($this->parentThemePath = $this->app->path(MP_ENV_ROOT."/themes/$parentTheme"))
+                   || ($this->parentThemePath = $this->app->path(__DIR__."/themes/$parentTheme")) ) {
+
+                    $this->app->path('views', $this->parentThemePath);
+                }
+            }
+
+            $this->app->path('views', $this->themePath);
+        } else {
+            echo 'Can\'t find theme folder';
+            $this->app->stop();
+        }
+
+    },
+
+    'extendLexy' => function() {
+
+        if (empty($this->lexy) || !is_array($this->lexy)) return;
+
+        foreach ($this->lexy as $k => $v) {
+
+            if (is_string($v)) {
+
+                if ($v == 'raw') {
+                    $this->app->renderer->extend(function($content) use ($k) {
+                        return preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . $2); ?>', $content);
+                    });
+                    continue;
+                }
+
+                else {
+                    continue; // to do: custom callbacks...
+                }
+
+            }
+
+            $pattern = '/(\s*)@'.$k.'\((.+?)\)/';
+
+            $replacement = '$1<?php echo MP_BASE_URL."/getImage?src=".urlencode($2)';
+            if (isset($v['width'])   && $v['width'])    $replacement .= '."&w=".mp()->get("lexy/'.$k.'/width", '   . $v['width'].')';
+            if (isset($v['height'])  && $v['height'])   $replacement .= '."&h=".mp()->get("lexy/'.$k.'/height", '  . $v['height'].')';
+            if (isset($v['quality']) && $v['quality'])  $replacement .= '."&q=".mp()->get("lexy/'.$k.'/quality", ' . $v['quality'].')';
+            if (isset($v['method'])  && $v['method'])   $replacement .= '."&m=".mp()->get("lexy/'.$k.'/method", "' . $v['method'].'")';
+            $replacement .= '; ?>';
+
+            $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
+                return preg_replace($pattern, $replacement, $content);
+            });
+
+        }
+
+    }
 
 ]);
 
@@ -845,36 +932,18 @@ $this->on('multiplane.init', function() {
     // overwrite default config
     $this->module('multiplane')->setConfig();
 
-    // load theme and set views path
-    $theme       = $this->module('multiplane')->theme;
-    $parentTheme = $this->module('multiplane')->parentTheme;
+    // load theme bootstrap file(s)
+    if (mp()->parentTheme && mp()->parentThemeBootstrap
+        && file_exists(mp()->parentThemePath . '/bootstrap.php')) {
 
-    if (  ($themePath = $this->path(MP_ENV_ROOT."/themes/$theme"))
-       || ($themePath = $this->path(__DIR__."/themes/$theme")) ) {
-
-        if ($parentTheme) {
-            if (  ($parentThemePath = $this->path(MP_ENV_ROOT."/themes/$parentTheme"))
-               || ($parentThemePath = $this->path(__DIR__."/themes/$parentTheme")) ) {
-
-                $this->path('views', $parentThemePath);
-            }
-        }
-
-        $this->path('views', $themePath);
-    } else {
-        echo 'Can\'t find theme folder';
-        $this->stop();
+        include_once(mp()->parentTheme . '/bootstrap.php');
+    }
+    if (file_exists(mp()->themePath . '/bootstrap.php')) {
+        include_once(mp()->themePath . '/bootstrap.php');
     }
 
-    // load theme bootstrap file
-    if ($parentTheme && $this->module('multiplane')->parentThemeBootstrap
-        && file_exists($parentThemePath . '/bootstrap.php')) {
-
-        include_once($parentThemePath . '/bootstrap.php');
-    }
-    if (file_exists($themePath . '/bootstrap.php')) {
-        include_once($themePath . '/bootstrap.php');
-    }
+    // extend lexy parser for custom image url templating
+    $this->module('multiplane')->extendLexy();
 
     // skip binding routes if in maintenance mode
     if (!$this->module('multiplane')->accessAllowed()) {
