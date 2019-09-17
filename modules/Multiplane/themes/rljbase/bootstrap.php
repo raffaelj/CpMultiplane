@@ -14,7 +14,7 @@ $this->set('multiplane.assets.top', [
     MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/css/style.min.css', // main style file
 ]);
 
-$this->on('multiplane.findone.after', function(&$page) {
+$this->on('multiplane.page', function(&$page, &$posts, &$site) {
 
     $collection = $this->module('collections')->collection(mp()->collection);
 
@@ -25,8 +25,13 @@ $this->on('multiplane.findone.after', function(&$page) {
 
         foreach($collection['fields'] as $field) {
 
-            if ($field['type'] == 'videolink') {
+            if (isset($this['modules']['videolinkfield']) && $field['type'] == 'videolink') {
                 $mpJsInit[] = 'MP.replaceVideoLink();';
+            }
+
+            if (isset($this['modules']['videolinkfield']) && $field['type'] == 'wysiwyg') {
+                // depricated, fallback for video links in wysiwyg field
+                $mpJsInit[] = 'MP.convertVideoLinksToIframes();';
             }
 
             if ($field['type'] == 'gallery' || $field['type'] == 'simple-gallery') {
@@ -42,6 +47,23 @@ $this->on('multiplane.findone.after', function(&$page) {
 
         }
 
+    }
+    
+    if ($posts && isset($this['modules']['videolinkfield'])) {
+
+        $collection = $this->module('collections')->collection(mp()->posts);
+
+        if (isset($collection['fields']) && is_array($collection['fields'])) {
+            foreach($collection['fields'] as $field) {
+                if ($field['type'] == 'wysiwyg'
+                    && ($field['name'] == 'content' || $field['name'] == 'excerpt')
+                    ) {
+                    // depricated, fallback for video links in wysiwyg field
+                    $mpJsInit[] = 'MP.convertVideoLinksToIframes();';
+                    break;
+                }
+            }
+        }
     }
 
     if (!empty($mpJsInit)) {

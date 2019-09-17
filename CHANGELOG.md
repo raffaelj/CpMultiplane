@@ -2,20 +2,21 @@
 
 ## 0.1.5 coming soon
 
-* added template and js for simple image carousel
-* improved video field template - more php, less js
-* some accessibility fixes
-* improved search
-* added lexy short renderer `bigthumbnail` to rljbase theme
-* added events `multiplane.getposts.before`, `multiplane.findone.after` and `multiplane.getimage.before`
-* improved pagination
-* added sort order to `getNav` function
-* improved css icons
 * changed assets version to time in debug mode and moved version info to `package.json`
-* replaced `.htaccess` with `.htaccess.dist`
+* added template and js for simple image carousel
+* added lexy short renderer `bigthumbnail` to rljbase theme
+* added events `multiplane.getposts.before`, `multiplane.page` and `multiplane.getimage.before`
+* added sort order to `getNav` function
+* added clearcache route (only in debug mode)
 * introduced theme config file
+* improved video field template - more php, less js
+* improved search
+* improved pagination
+* improved css icons
+* replaced `.htaccess` with `.htaccess.dist`
 * improved Lexy settings
-
+* some accessibility fixes
+* deprecated: `convertVideoLinksToIframes()` in `mp.js`
 
 ## 0.1.4
 

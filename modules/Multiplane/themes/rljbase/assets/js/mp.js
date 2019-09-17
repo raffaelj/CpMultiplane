@@ -56,6 +56,88 @@
 
         },
 
+        // deprecated, but still necessary for video links in wysiwyg field
+        convertVideoLinksToIframes: function() {
+
+            var $this = this;
+
+            var video_links = d.querySelectorAll('a[data-video-id]');
+
+            Array.prototype.forEach.call(video_links, function(el, i){
+
+                var id       = el.getAttribute('data-video-id');
+                var provider = el.getAttribute('data-video-provider');
+                var asset    = el.getAttribute('data-video-thumb');
+                var width    = 480;
+                var height   = 370;
+
+                if ((data_width = el.getAttribute('data-video-width'))
+                    && (data_height = el.getAttribute('data-video-height'))) {
+
+                    // reassign aspect ratio
+                    height = width * (data_height / data_width);
+
+                }
+
+                var thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
+
+                if (provider == 'youtube') {
+                    var src = 'https://www.youtube-nocookie.com/embed/'
+                        + id + '?rel=0&showinfo=0&autoplay=1';
+                }
+
+                if (provider == 'vimeo') {
+                    var src = 'https://player.vimeo.com/video/'
+                        + id + '?color=ffffff&title=0&byline=0&portrait=0&autoplay=1';
+                }
+
+                var container = d.createElement('div');
+
+                container.setAttribute('class', 'video_embed_container');
+
+                var iframe = d.createElement('iframe');
+
+                iframe.setAttribute('class', 'video_embed');
+                iframe.setAttribute('width', width);
+                iframe.setAttribute('height', height);
+                iframe.setAttribute('src', 'about:blank');
+                iframe.setAttribute('data-src', src);
+                iframe.setAttribute('src', 'about:blank');
+                iframe.setAttribute('allowfullscreen', '');
+                iframe.style.width = width+'px';
+                iframe.style.height = height+'px';
+                iframe.style['background-image'] = 'url(' + thumb + ')';
+
+                container.appendChild(iframe);
+
+                var play_button = d.createElement('a');
+                play_button.setAttribute('class', 'icon-play');
+                play_button.setAttribute('href', '#');
+                play_button.tabIndex = 0;
+
+                container.appendChild(play_button);
+
+                el.parentNode.insertBefore(container, el);
+                el.parentNode.style['text-align'] = 'center';
+
+                play_button.addEventListener('click', function(e) {
+
+                    if (e) e.preventDefault();  
+
+                    if (Cookie.get('loadExternalVideos') == '1') {
+                        iframe.setAttribute('src', iframe.getAttribute('data-src'));
+                        iframe.style['background-image'] = '';
+                    }
+                    else {
+                        $this.displayPrivacyNotice(iframe);
+                    }
+
+                });
+
+            });
+
+        },
+
         replaceVideoLink: function() {
 
             // to do: fix disabled autoplay on mobile device

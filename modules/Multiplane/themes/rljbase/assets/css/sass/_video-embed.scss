@@ -8,6 +8,11 @@ $color-white-transp-medium: rgba(255,255,255,.5) !default;
     position: relative;
     margin-top: 1em;
     text-align: center;
+    .icon-play {
+        &:hover, &:focus {
+            @include box-shadow(0px 0px .2em 0px $color-black-transp);
+        }
+    }
 }
 
 iframe.video_embed {
