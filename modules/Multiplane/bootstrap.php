@@ -934,7 +934,7 @@ $this->on('multiplane.init', function() {
     if (mp()->parentTheme && mp()->parentThemeBootstrap
         && file_exists(mp()->parentThemePath . '/bootstrap.php')) {
 
-        include_once(mp()->parentTheme . '/bootstrap.php');
+        include_once(mp()->parentThemePath . '/bootstrap.php');
     }
     if (file_exists(mp()->themePath . '/bootstrap.php')) {
         include_once(mp()->themePath . '/bootstrap.php');
