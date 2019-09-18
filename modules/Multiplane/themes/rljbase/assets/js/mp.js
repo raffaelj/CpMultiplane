@@ -112,9 +112,9 @@
                 iframe.setAttribute('data-src', src);
                 iframe.setAttribute('src', 'about:blank');
                 iframe.setAttribute('allowfullscreen', '');
-                // iframe.style.width = width+'px';
-                // iframe.style.height = height+'px';
                 iframe.style['background-image'] = 'url(' + thumb + ')';
+
+                iframe.tabIndex = -1;
 
                 container.appendChild(iframe);
 
@@ -133,6 +133,10 @@
                     if (e) e.preventDefault();  
 
                     if (Cookie.get('loadExternalVideos') == '1') {
+
+                        iframe.focus();
+                        iframe.removeAttribute('tabindex');
+
                         iframe.setAttribute('src', iframe.getAttribute('data-src'));
                         iframe.style['background-image'] = '';
                     }
@@ -149,12 +153,17 @@
         replaceVideoLink: function() {
 
             // to do: fix disabled autoplay on mobile device
+            // seems to not work without youtube iframe player api
+            // https://developers.google.com/youtube/iframe_api_reference
+            // or with a fake click event...
 
             var $this = this;
 
             var video_links = d.querySelectorAll('.video_embed');
 
             Array.prototype.forEach.call(video_links, function(iframe, i) {
+
+                iframe.tabIndex = -1;
 
                 var play_button = iframe.nextElementSibling;
 
@@ -163,6 +172,10 @@
                     if (e) e.preventDefault();  
 
                     if (Cookie.get('loadExternalVideos') == '1') {
+
+                        iframe.focus();
+                        iframe.removeAttribute('tabindex');
+
                         iframe.setAttribute('src', iframe.getAttribute('data-src'));
                         iframe.style['background-image'] = '';
                     }
@@ -328,7 +341,6 @@
         currentGallery: null,
         galleries:      [],
         captions:       [],
-        // body:           d.querySelector('body'),
         img:            d.createElement('img'),
         lightbox:       d.createElement('div'),
         wrap:           d.createElement('div'),
@@ -354,11 +366,22 @@
             } else { return; }
 
             this.lightbox.setAttribute('class', 'lightbox');
+            this.lightbox.setAttribute('role', 'dialog');
+            this.lightbox.setAttribute('aria-hidden', 'true');
+            this.lightbox.tabIndex = -1;
+
             d.querySelector('body').appendChild(this.lightbox);
+
+            this.prevButton.setAttribute('href', '#');
+            this.nextButton.setAttribute('href', '#');
+            this.closeButton.setAttribute('href', '#');
+            
+            this.prevButton.setAttribute('aria-label', 'previous');
+            this.nextButton.setAttribute('aria-label', 'next');
+            this.closeButton.setAttribute('aria-label', 'close');
 
             this.prevButton.classList.add('prev');
             this.nextButton.classList.add('next');
-            // this.closeButton.classList.add('close');
             this.closeButton.classList.add('icon-close');
 
             this.lightbox.appendChild(this.wrap);
@@ -366,12 +389,6 @@
             this.lightbox.appendChild(this.nextButton);
             this.lightbox.appendChild(this.closeButton);
             this.wrap.appendChild(this.img);
-            
-            // accessibility - to do...
-            // this.lightbox.tabIndex = -1;
-            // this.lightbox.setAttribute('role', 'dialog');
-            // this.closeButton.tabIndex = -1;
-            // this.closeButton.focus();
 
             if (this.group) {
                 var groups = d.querySelectorAll(this.group);
@@ -416,19 +433,35 @@
                 });
             });
 
-            this.img.addEventListener('click', function(e) {
-                if (e) e.stopPropagation();
-            });
-
             this.prevButton.addEventListener('click', function(e) {
-                if (e) e.stopPropagation();
+                if (e) {e.preventDefault();e.stopPropagation();};
                 $this.prev(e);
             });
 
             this.nextButton.addEventListener('click', function(e) {
-                if (e) e.stopPropagation();
+                if (e) {e.preventDefault();e.stopPropagation();};
                 $this.next(e);
             });
+
+            this.closeButton.addEventListener('click', function(e) {
+                if (e) e.preventDefault();
+            });
+
+            // close lightbox on click
+            this.lightbox.addEventListener('click', function(e) {
+                if (e && e.target.nodeName == 'IMG') {
+                    return; // don't close when clicking on image
+                }
+                $this.close(e);
+            });
+
+            // force focus to modal
+            d.addEventListener('focus', function(e) {
+                if ($this.active && !$this.lightbox.contains(e.target)) {
+                    e.stopPropagation();
+                    $this.lightbox.focus();
+                }
+            }, true);
 
             d.addEventListener('keydown', function(e) {
                 if ($this.active) {
@@ -436,11 +469,6 @@
                     if (e.keyCode == 39) $this.next(e);
                     if (e.keyCode == 27) $this.close(e);
                 }
-            });
-
-            // close lightbox on click
-            this.lightbox.addEventListener('click', function(e) {
-                $this.close(e);
             });
 
         },
@@ -451,23 +479,25 @@
             if (!this.active) {
                 this.lightbox.classList.remove('active');
 
-                // accessibility - to do...
-                // this.lightbox.setAttribute('aria-hidden', 'true');
-                // this.body.setAttribute('aria-hidden', 'false');
-                // this.lastFocus.focus();
+                // accessibility
+                this.lightbox.setAttribute('aria-hidden', 'true');
+                this.lastFocus.focus();
                 return;
             }
 
             this.lightbox.classList.add('active');
 
-            // accessibility - to do...
-            // this.body.setAttribute('aria-hidden', 'true');
+            // accessibility
+            this.lightbox.focus();
 
             // hide first/last prev/next buttons
-            if (this.currentItem == 0) this.prevButton.classList.add('hidden');
-            else this.prevButton.classList.remove('hidden');
+            if (this.currentItem == 0) {
+                this.prevButton.classList.add('hidden');
+            } else this.prevButton.classList.remove('hidden');
 
-            if (this.currentItem == this.galleries[this.currentGallery].length -1) this.nextButton.classList.add('hidden');
+            if (this.currentItem == this.galleries[this.currentGallery].length -1) {
+                this.nextButton.classList.add('hidden');
+            }
             else this.nextButton.classList.remove('hidden');
 
             // switch image
@@ -503,14 +533,13 @@
         },
 
     };
-    
+
     var SimpleCarousel = {
 
         selector: '',
         carousels: [],
         autoplay: true,
-        duration: 10000,
-        // pauseButton: d.createElement('a'),
+        duration: 15000,
 
         init: function(options) {
 
@@ -539,15 +568,16 @@
 
             // stop, if no carousels found
             if (!this.carousels.length) return;
-            
-            $this.pause
 
             Array.prototype.forEach.call(this.carousels, function (carousel, k) {
 
                 var pauseButton = d.createElement('a');
                 pauseButton.setAttribute('href', '#');
+                pauseButton.classList.add('icon-pause');
+                pauseButton.setAttribute('aria-label', 'start/stop image carousel');
+                pauseButton.tabIndex = 0;
 
-                // to do: tabindex...
+                carousel.node.appendChild(pauseButton);
 
                 carousel.node.addEventListener('click', function(e) {
 
@@ -556,6 +586,7 @@
                     carousel.paused = !carousel.paused;
 
                     // to do: set cookie to pause sliders on other pages, too
+                    // Does this cookie need to be allowed via privacy settings (GDPR)?
 
                     if (carousel.paused) {
                         pauseButton.classList.remove('icon-pause');
@@ -568,10 +599,6 @@
                     }
 
                 });
-                
-                // add carousel navigation
-                pauseButton.classList.add('icon-pause');
-                carousel.node.appendChild(pauseButton);
 
                 MP.visible(
                     function(){$this.play(carousel);},

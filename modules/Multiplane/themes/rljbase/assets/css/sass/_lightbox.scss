@@ -31,6 +31,9 @@
             color: #fefefe;
         }
     }
+    a {
+        outline: 0; // prevent dotted outline on focus
+    }
     .prev, .next {
         position: absolute;
         top: 50%;

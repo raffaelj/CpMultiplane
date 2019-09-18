@@ -26,7 +26,7 @@ $empty = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEA
 // to do: inline css is bad, but I need a dynamic height...
 ?>
 
-<aside class="carousel" style="height:{{ $height }}" tabindex="0">
+<aside class="carousel" style="height:{{ $height }}">
 
   @foreach($carousel as $k => $image)
     <img class="{{ $k == 0 ? 'current' : '' }}" src="@if($k == 0)@headerimage($image['meta']['asset'])@else{{$empty}}@endif" data-src="@headerimage($image['meta']['asset'])" alt="{{ !empty($image['meta']['title']) ? $image['meta']['title'] : 'image' }}" width="{{ $width }}" height="{{ $height }}" />
