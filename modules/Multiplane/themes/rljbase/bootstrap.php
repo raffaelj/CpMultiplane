@@ -70,7 +70,7 @@ $this->on('multiplane.page', function(&$page, &$posts, &$site) {
 
         // Multiplane js
         $this->set('multiplane.assets.bottom', [
-            MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/js/mp.js',
+            MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/js/mp.min.js',
         ]);
 
         mp()->add('scripts', [

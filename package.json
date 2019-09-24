@@ -2,7 +2,14 @@
     "name": "cpmultiplane",
     "version": "0.1.4",
     "license": "MIT",
-    "scripts": {},
-    "devDependencies": {},
+    "scripts": {
+        "build": "npm run build-js",
+        "build-js": "uglifyjs modules/Multiplane/themes/rljbase/assets/js/mp.js -c -o modules/Multiplane/themes/rljbase/assets/js/mp.min.js",
+        "watch": "onchange modules/Multiplane/themes/rljbase/assets/js/mp.js -- npm run build-js"
+    },
+    "devDependencies": {
+        "uglify-js": "^3.6.0",
+        "onchange": "^6.1.0"
+    },
     "dependencies": {}
 }

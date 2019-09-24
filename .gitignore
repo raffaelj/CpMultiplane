@@ -16,9 +16,7 @@ defines.php
 /data
 favicon.ico
 
-# Should I ignore scss files...?
-#*.scss
-#*.map
-
 # dev files and directories
 .sass-cache
+/node_modules
+package-lock.json
