@@ -17,7 +17,7 @@ if ($provider == 'youtube') {
     // lazy fix: overwrite ratio
     $ratio = '16-9';
 
-    $src = 'https://www.youtube-nocookie.com/embed/' . $asset['video_id'] . '?rel=0&showinfo=0&autoplay=1';
+    $src = 'https://www.youtube-nocookie.com/embed/' . $asset['video_id'] . '?enablejsapi=1&rel=0&showinfo=0&autoplay=1';
 }
 if ($provider == 'vimeo') {
     $src = 'https://player.vimeo.com/video/'. $asset['video_id'] . '?color=ffffff&title=0&byline=0&portrait=0&autoplay=1';
@@ -25,7 +25,7 @@ if ($provider == 'vimeo') {
 
 ?>
 <div class="video_embed_container ratio-{{$ratio}}">
-    <iframe class="video_embed" src="about:blank" data-src="{{ $src }}" allowfullscreen="" style="background-image: url('@route('/getImage')?src={{ $asset['_id'] }}&w=480&o=1');" width="{{ $width }}" height="{{ $height }}"></iframe>
+    <iframe class="video_embed" src="about:blank" data-src="{{ $src }}" data-provider="{{ $provider }}" style="background-image: url('@route('/getImage')?src={{ $asset['_id'] }}&w=480&o=1');" width="{{ $width }}" height="{{ $height }}" allow="autoplay; fullscreen"></iframe>
     <a href="#" class="icon-play"></a>
 </div>
 @if($video['provider'] == 'youtube')
