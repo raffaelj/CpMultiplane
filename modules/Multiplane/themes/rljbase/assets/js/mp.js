@@ -9,6 +9,10 @@
         base_route : MP_BASE_URL,
         base_url   : MP_BASE_URL,
 
+        route: function(url) {
+            return this.base_route+url;
+        },
+
         // source: http://youmightnotneedjquery.com/#ready
         ready: function (fn) {
             if (d.readyState != 'loading'){
@@ -56,21 +60,75 @@
 
         },
 
+        // source: https://github.com/agentejo/cockpit/blob/next/assets/app/js/app.js#L25
+        // Cockpit CMS, Artur Heinze, MIT License
+        request: function(url, data, type) {
+
+            url  = this.route(url);
+            type = type || 'json';
+
+            return new Promise(function (fulfill, reject){
+
+                var xhr = new XMLHttpRequest();
+
+                xhr.open('post', url, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                url += (url.indexOf('?') !== -1 ? '&':'?') + 'nc=' + Math.random().toString(36).substr(2);
+
+                if (data) {
+
+                    if (typeof(data) === 'object' && data instanceof HTMLFormElement) {
+                        data = new FormData(data);
+                    } else if (typeof(data) === 'object' && data instanceof FormData) {
+                        // do nothing
+                    } else if (typeof(data) === 'object') {
+
+                        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+                        data = JSON.stringify(data || {});
+                    }
+                }
+
+                xhr.onloadend = function () {
+
+                    var resdata = xhr.responseText;
+
+                    if (type == 'json') {
+                        try {
+                            resdata = JSON.parse(xhr.responseText);
+                        } catch(e) {
+                            resdata = null;
+                        }
+                    }
+
+                    if (this.status == 200) {
+                        fulfill(resdata, xhr);
+                    } else {
+                        reject(resdata, xhr);
+                    }
+                };
+
+                // send the collected data as JSON
+                xhr.send(data);
+            });
+        },
+
         // deprecated, but still necessary for video links in wysiwyg field
         convertVideoLinksToIframes: function() {
 
-            var $this = this;
+            var $this = this,
+                video_links = d.querySelectorAll('a[data-video-id]');
 
-            var video_links = d.querySelectorAll('a[data-video-id]');
+            Array.prototype.forEach.call(video_links, function(el, i) {
 
-            Array.prototype.forEach.call(video_links, function(el, i){
-
-                var id       = el.getAttribute('data-video-id');
-                var provider = el.getAttribute('data-video-provider');
-                var asset    = el.getAttribute('data-video-thumb');
-                var width    = 480;
-                var height   = 370;
-                var ratio    = '';
+                var id       = el.getAttribute('data-video-id'),
+                    provider = el.getAttribute('data-video-provider'),
+                    asset    = el.getAttribute('data-video-thumb'),
+                    width    = 480,
+                    height   = 370,
+                    ratio    = '',
+                    thumb    = '',
+                    src      = '';
 
                 if ((data_width = el.getAttribute('data-video-width'))
                     && (data_height = el.getAttribute('data-video-height'))) {
@@ -81,7 +139,7 @@
 
                 }
 
-                var thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
+                thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
 
                 if (provider == 'youtube') {
 
@@ -89,13 +147,13 @@
                     // lazy fix: overwrite ratio
                     ratio = '16-9';
 
-                    var src = 'https://www.youtube-nocookie.com/embed/'
+                    src = 'https://www.youtube-nocookie.com/embed/'
                         + id + '?enablejsapi=1&rel=0&showinfo=0&autoplay=1';
 
                 }
 
                 if (provider == 'vimeo') {
-                    var src = 'https://player.vimeo.com/video/'
+                    src = 'https://player.vimeo.com/video/'
                         + id + '?color=ffffff&title=0&byline=0&portrait=0&autoplay=1';
                 }
 
@@ -158,9 +216,8 @@
             // https://developers.google.com/youtube/iframe_api_reference
             // or with a fake click event...
 
-            var $this = this;
-
-            var video_links = d.querySelectorAll('.video_embed');
+            var $this = this,
+                video_links = d.querySelectorAll('.video_embed');
 
             Array.prototype.forEach.call(video_links, function(iframe, i) {
 
@@ -235,67 +292,10 @@
 
         },
 
-        route: function(url) {
-            return this.base_route+url;
-        },
-        
-        // source: https://github.com/agentejo/cockpit/blob/next/assets/app/js/app.js#L25
-        // Cockpit CMS, Artur Heinze, MIT License
-        request: function(url, data, type) {
-
-            url  = this.route(url);
-            type = type || 'json';
-
-            return new Promise(function (fulfill, reject){
-
-                var xhr = new XMLHttpRequest();
-
-                xhr.open('post', url, true);
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-                url += (url.indexOf('?') !== -1 ? '&':'?') + 'nc=' + Math.random().toString(36).substr(2);
-
-                if (data) {
-
-                    if (typeof(data) === 'object' && data instanceof HTMLFormElement) {
-                        data = new FormData(data);
-                    } else if (typeof(data) === 'object' && data instanceof FormData) {
-                        // do nothing
-                    } else if (typeof(data) === 'object') {
-
-                        xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-                        data = JSON.stringify(data || {});
-                    }
-                }
-
-                xhr.onloadend = function () {
-
-                    var resdata = xhr.responseText;
-
-                    if (type == 'json') {
-                        try {
-                            resdata = JSON.parse(xhr.responseText);
-                        } catch(e) {
-                            resdata = null;
-                        }
-                    }
-
-                    if (this.status == 200) {
-                        fulfill(resdata, xhr);
-                    } else {
-                        reject(resdata, xhr);
-                    }
-                };
-
-                // send the collected data as JSON
-                xhr.send(data);
-            });
-        },
-
         loadVideo: function(iframe) {
 
-            var $this = this,
-                id = iframe.getAttribute('id')
+            var $this  = this,
+                id     = iframe.getAttribute('id')
                 volume = iframe.dataset.volume || 50;
 
             // accessibility
@@ -659,10 +659,10 @@
 
     var SimpleCarousel = {
 
-        selector: '',
+        selector:  '',
         carousels: [],
-        autoplay: true,
-        duration: 15000,
+        autoplay:  true,
+        duration:  15000,
 
         init: function(options) {
 
