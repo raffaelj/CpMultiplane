@@ -74,6 +74,11 @@ $this->on('multiplane.page', function(&$page, &$posts, &$site) {
         ]);
 
         mp()->add('scripts', [
+
+            // IE polyfills
+            'if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write(\'<script src="'.MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/polyfills/FormData/formdata.min.js'.'"><\/script>\');' . "\r\n",
+
+            // init functions, when document is ready
             "MP.ready(function() {\r\n". implode("\r\n", array_unique($mpJsInit)) ."\r\n});",
         ]);
 
