@@ -139,7 +139,12 @@
 
                 }
 
-                thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
+                // check, if asset starts with "http" or contains "."
+                if (asset.indexOf('http') == 0 || asset.indexOf('.') != -1) {
+                    thumb = asset; // full image url
+                } else {           // asset id
+                    thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
+                }
 
                 if (provider == 'youtube') {
 
@@ -190,7 +195,6 @@
                 container.appendChild(play_button);
 
                 el.parentNode.insertBefore(container, el);
-                el.parentNode.style['text-align'] = 'center';
 
                 play_button.addEventListener('click', function(e) {
 
