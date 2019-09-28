@@ -86,6 +86,8 @@ $this->module('multiplane')->extend([
     'searchMinLength'       => 3,               // minimum charcter length for search
     'searchInCollections'   => [],              // full list of collections to search in, overwrites pages and posts
 
+    'sitemap'               => null,            // array of collections
+
     // changes dynamically
     'defaultLang'           => $this->retrieve('i18n', 'en'),
     'breadcrumbs'           => ['/'],
@@ -913,7 +915,7 @@ $this->module('multiplane')->extend([
 
         }
 
-    }
+    },
 
 ]);
 
@@ -962,6 +964,10 @@ $this->on('multiplane.init', function() {
 
     $this->bind('/login', function() {
         $this->reroute(MP_ADMINFOLDER);
+    });
+
+    $this->bind('/sitemap.xml', function() {
+        return $this->invoke('Multiplane\\Controller\\Base', 'sitemap');
     });
 
     $this->bind('/getImage', function() {

@@ -9,6 +9,8 @@
 /themes
 defines.php
 .htaccess
+robots.txt
+sitemap.xml
 
 # common user files and directories
 /assets

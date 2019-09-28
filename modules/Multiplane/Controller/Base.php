@@ -188,6 +188,34 @@ class Base extends \LimeExtra\Controller {
 
     }
 
+    public function sitemap() {
+
+        $xml = new \XMLWriter();
+        $xml->openMemory();
+
+        $xml->setIndent(true);
+
+        $xml->startDocument('1.0', 'UTF-8');
+
+        $xml->startElement('urlset');
+        $xml->writeAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
+        $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
+        // $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/TR/xhtml11/xhtml11_schema.html');
+        $xml->writeAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+        $xml->writeAttribute('xsi:schemaLocation', 'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd');
+
+        $this->app->trigger('multiplane.sitemap', [&$xml]);
+
+        $xml->endElement(); // end urlset
+
+        $xml->endDocument();
+
+        $this->app->response->mime = 'xml';
+
+        return $xml->outputMemory();
+
+    }
+
     public function error($status = '') {
 
         $site = $this->module('multiplane')->site;

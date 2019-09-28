@@ -188,3 +188,86 @@ $this->on('multiplane.search', function($search, $list) {
     }
 
 });
+
+$this->on('multiplane.sitemap', function(&$xml) {
+
+    $siteUrl        = $this['site_url'];
+    $isMultilingual = mp()->isMultilingual;
+    $defaultLang    = mp()->defaultLang;
+    $slugName       = mp()->slugName;
+    $languages      = [];
+
+    $collections = mp()->sitemap ?? [mp()->pages, mp()->posts];
+
+    $options = [
+        'filter' => [
+            'published' => true,
+        ],
+        'fields' => [
+            $slugName => true,
+        ],
+    ];
+
+    if ($isMultilingual && is_array($this['languages'])) {
+        foreach ($this['languages'] as $lang => $label) {
+            if ($lang == 'default') {
+                $languages[] = $defaultLang;
+            } else {
+                $languages[] = $lang;
+                $options['fields'][$slugName . '_' . $lang] = true;
+            }
+        }
+    }
+
+    foreach ($collections as $collection) {
+
+        if (!$collection) continue;
+
+        foreach($this->module('collections')->find($collection, $options) as $page) {
+
+            if (!$isMultilingual) {
+              $xml->startElement('url');
+                $xml->startElement('loc');
+                $xml->text($siteUrl . '/' .  $page[mp()->slugName]);
+                $xml->endElement();
+
+                $xml->startElement('lastmod');
+                $xml->text(date('c', $page['_modified']));
+                $xml->endElement();
+              $xml->endElement();
+            }
+
+            else {
+                foreach ($languages as $lang) {
+
+                    $suffix = $lang == $defaultLang ? '' : '_' . $lang;
+
+                    $xml->startElement('url');
+
+                      $xml->startElement('loc');
+                      $xml->text($siteUrl . "/$lang/" . $page[$slugName.$suffix]);
+                      $xml->endElement();
+
+                      foreach ($languages as $l) {
+
+                          if ($l == $lang) continue;
+
+                          $suffix = $l == $defaultLang ? '' : '_' . $l;
+
+                          $xml->startElement('xhtml:link');
+                          $xml->writeAttribute('rel', 'alternate');
+                          $xml->writeAttribute('hreflang', $l);
+                          $xml->writeAttribute('href', $siteUrl . "/$l/" . $page[$slugName . $suffix]);
+                          $xml->endElement();
+
+                      }
+
+                    $xml->endElement();
+
+                }
+            }
+
+        }
+    }
+
+});
