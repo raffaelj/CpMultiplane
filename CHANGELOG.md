@@ -1,13 +1,14 @@
 # Changelog
 
-## 0.1.5 coming soon
+## 0.1.5
 
 * changed assets version to time in debug mode and moved version info to `package.json`
+* introduced `MP_ENV_ROOT` and `MP_ENV_URL`
 * added template and js for simple image carousel
 * added lexy short renderer `bigthumbnail` to rljbase theme
 * added events `multiplane.getposts.before`, `multiplane.page`, `multiplane.getimage.before`, `multiplane.sitemap`
 * added sort order to `getNav` function
-* added clearcache route (only in debug mode)
+* added `/clearcache` route (only in debug mode)
 * added sitemap
 * introduced theme config file
 * improved video field template - more php, less js
