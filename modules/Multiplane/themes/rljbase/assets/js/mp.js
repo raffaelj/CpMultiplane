@@ -177,6 +177,7 @@
                 iframe.setAttribute('data-provider', provider);
                 iframe.setAttribute('src', 'about:blank');
                 iframe.setAttribute('allow', 'autoplay; fullscreen');
+                iframe.setAttribute('allowfullscreen', '');
                 iframe.style['background-image'] = 'url(' + thumb + ')';
 
                 if (!iframe.getAttribute('id')) {
