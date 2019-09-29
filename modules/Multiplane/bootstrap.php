@@ -825,22 +825,11 @@ $this->module('multiplane')->extend([
         if (!empty($config['parentTheme'])) $this->parentTheme = $config['parentTheme'];
         if (!empty($config['theme']))       $this->theme       = $config['theme'];
 
-        $this->setTheme();
+        $themeConfig = $this->setTheme();
 
-        $themeConfig = $parentThemeConfig = [];
-        if (file_exists($this->themePath . '/config/config.php')) {
-            $themeConfig = include($this->themePath . '/config/config.php');
+        if (is_array($themeConfig)) {
+            $config = array_replace_recursive($themeConfig, $config);
         }
-        if ($this->parentTheme && file_exists($this->themePath . '/config/config.php')) {
-            $parentThemeConfig = include($this->parentThemePath . '/config/config.php');
-        }
-
-        // overwite again
-        $config = array_replace_recursive(
-            $parentThemeConfig,
-            $themeConfig,
-            $config
-        );
 
         foreach($config as $key => $val) {
 
@@ -857,23 +846,41 @@ $this->module('multiplane')->extend([
 
     'setTheme' => function() {
 
-        $theme       = $this->theme;
-        $parentTheme = $this->parentTheme;
+        $themeConfig = $parentThemeConfig = [];
 
-        if (  ($this->themePath = $this->app->path(MP_ENV_ROOT."/themes/$theme"))
-           || ($this->themePath = $this->app->path(__DIR__."/themes/$theme")) ) {
+        if (  ($this->themePath = $this->app->path(MP_ENV_ROOT.'/themes/'.$this->theme))
+           || ($this->themePath = $this->app->path(__DIR__.'/themes/'.$this->theme)) ) {
 
-            if ($parentTheme) {
-                if (  ($this->parentThemePath = $this->app->path(MP_ENV_ROOT."/themes/$parentTheme"))
-                   || ($this->parentThemePath = $this->app->path(__DIR__."/themes/$parentTheme")) ) {
+            if (file_exists($this->themePath . '/config/config.php')) {
+                $themeConfig = include($this->themePath . '/config/config.php');
 
+                if (!$this->parentTheme && !empty($themeConfig['parentTheme'])) {
+                    $this->parentTheme = $themeConfig['parentTheme'];
+                }
+            }
+
+            if ($this->parentTheme) {
+                if (  ($this->parentThemePath = $this->app->path(MP_ENV_ROOT.'/themes/'.$this->parentTheme))
+                   || ($this->parentThemePath = $this->app->path(__DIR__.'/themes/'.$this->parentTheme)) ) {
+
+                    // parent theme path must be set before theme path
                     $this->app->path('views', $this->parentThemePath);
+
+                    if (file_exists($this->parentThemePath . '/config/config.php')) {
+                        $parentThemeConfig = include($this->parentThemePath . '/config/config.php');
+                    }
                 }
             }
 
             $this->app->path('views', $this->themePath);
-        } else {
-            echo 'Can\'t find theme folder';
+
+            // return theme config
+            return array_replace_recursive($parentThemeConfig, $themeConfig);
+
+        }
+
+        else {
+            echo 'The theme "'.$this->theme.'" doesn\'t exist.';
             $this->app->stop();
         }
 
