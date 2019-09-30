@@ -118,8 +118,17 @@ $this->on('multiplane.search', function($search, $list) {
 
             $options['fields'][$field['name']] = true;
 
-            foreach ($searches as $search) {
-                $options['filter']['$or'][] = [$field['name'] => ['$regex' => $search]];
+            if (isset($field['type']) && $field['type'] == 'repeater') {
+
+                // to do: cleanup/find cleaner solution
+                $options['filter']['$or'][] = [$field['name'] => ['$fn' => 'repeaterSearch']];
+
+            }
+
+            else {
+                foreach ($searches as $search) {
+                    $options['filter']['$or'][] = [$field['name'] => ['$regex' => $search]];
+                }
             }
 
         }
@@ -166,9 +175,9 @@ $this->on('multiplane.search', function($search, $list) {
                         return preg_replace('~('.implode('|', $searches).')~i', '<mark>$1</mark>', $match[1], -1, $count) . $match[2] // highlight
                         . ($count && ($weight = $weight + $count * $increase) ? '' : ''); // increase weight
                     },
-                    !empty($c['type'])
-                        ? $this('fields')->{$c['type']}($entry[$name])
-                        : $entry[$name]
+                    !empty($field['type'])
+                        ? $this('fields')->{$field['type']}($entry[$name])
+                        : (is_string($entry[$name]) ? $entry[$name] : '')
                 );
 
                 // optional: rename keys to use the same/default theme template with different field names
@@ -310,3 +319,43 @@ $this->on('multiplane.sitemap', function(&$xml) {
     }
 
 });
+
+// helper functions - to do: cleanup/find cleaner solution
+if (!function_exists('repeaterSearch')) {
+
+    function repeaterSearch($field) {
+
+        if (!$field || !is_array($field)) return false;
+
+        $search = cockpit()->param('search', false);
+
+        if (preg_match('/^(["\']).*\1$/m', $search)) {
+            // exact match in quotes, still case insensitive
+            $searches = [trim($search, '"\' \t\n\r\0\x0B')];
+        }
+        else {
+            $searches = array_filter(explode(' ', $search), 'strlen');
+        }
+
+        $r = false;
+
+        foreach ($searches as $b) {
+
+            foreach ($field as $block) {
+
+                if (\is_string($block['value'])) {
+                    return (boolean) @\preg_match(isset($b[0]) && $b[0]=='/' ? $b : '/'.$b.'/iu', $block['value'], $match);
+                }
+
+                if ($block['field']['type'] == 'repeater' && \is_array($block['value'])) {
+                    $r = repeaterSearch($block['value']);
+                    if ($r) break;
+                }
+            }
+            return $r;
+        }
+        return $r;
+    }
+
+}
+

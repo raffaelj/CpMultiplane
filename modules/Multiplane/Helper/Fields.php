@@ -96,14 +96,29 @@ class Fields extends \Lime\Helper {
         return $this->index($content);
 
     }
-
+ */
     public function repeater($content = null, $options = []) {
 
-        // to do...
-        return $this->index($content);
+        if (!$content || !is_array($content)) return '';
+
+        $out = '';
+
+        foreach ($content as $i => $block) {
+
+            $cmd = $block['field']['type'];
+
+            if (is_callable([$this, $cmd]) && method_exists($this, $cmd)) {
+
+                $out .= $this->{$cmd}($block['value']);
+
+            }
+
+        }
+
+        return $out;
 
     }
- */
+
     public function replaceRelativeLinksInHTML($html) {
 
         $isMultilingual = $this->app->module('multiplane')->isMultilingual;
