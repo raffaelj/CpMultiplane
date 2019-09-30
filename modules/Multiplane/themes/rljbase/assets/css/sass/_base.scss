@@ -60,6 +60,9 @@ p {
     margin: 0;
     padding: 0 0 .5em;
     @include hyphens();
+    &:last-child {
+        padding-bottom: 0;
+    }
 }
 
 a {
