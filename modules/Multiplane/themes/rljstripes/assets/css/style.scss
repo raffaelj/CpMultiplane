@@ -1,0 +1,79 @@
+
+// navigate to theme folder
+// sass --watch style.scss:style.min.css --style compressed --scss
+
+// or navigate to CpMultiplane root
+// sass --watch modules/Multiplane/themes/rljstripes/assets/css/style.scss:modules/Multiplane/themes/rljstripes/assets/css/style.min.css --style compressed --scss
+
+// fonts
+$font: system-ui, Helvetica, sans-serif;
+$font_extra: $font; // webfont for headlines
+
+// other
+// $border-radius: 2px;
+$border-radius: 0px;
+$width: 1000px;
+
+
+// colours
+$color-white: #fdfdfd;
+$color-black: #000;
+
+$color-white-transp: rgba(255,255,255,.9);
+$color-white-transp-medium: rgba(255,255,255,.5);
+$color-black-transp: rgba(0,0,0,.8);
+$color-black-transp-light: rgba(0,0,0,.2);
+
+// $color-main: #470b7e;
+$color-main: #7fb85e;
+$color-bg: #fdfdfd;
+
+$color-dark: #222;
+$color-darker: #444;
+$color-grey: #ccc;
+$color-light-grey: #eaeaea;
+$color-gray: $color-grey; // avoid typos
+$color-light-gray: $color-light-grey; // avoid typos
+$color-shadow: $color-grey;
+
+// $color-link: #a771c5;
+$color-link: #366a9c;
+$color-link-hover: #ac833c;
+
+$color-link-invert: #bed5eb; // links on dark background
+$color-link-invert-hover: #f6dfb7;
+
+
+// imports
+// @import '../../../rljbase/assets/css/sass/colors';
+@import '../../../rljbase/assets/css/sass/mixins';
+@import '../../../rljbase/assets/css/sass/breakpoints';
+
+@import '../../../rljbase/assets/css/sass/systemfonts';
+// @import 'webfonts'; // Redistribution of webfonts is complicated (copyright)
+
+@import '../../../rljbase/assets/css/sass/meyer-reset';
+@import '../../../rljbase/assets/css/sass/base';
+
+@import '../../../rljbase/assets/css/sass/nav';
+@import '../../../rljbase/assets/css/sass/table';
+@import '../../../rljbase/assets/css/sass/code';
+@import '../../../rljbase/assets/css/sass/labels';
+@import '../../../rljbase/assets/css/sass/form';
+
+@import '../../../rljbase/assets/css/sass/css-icons';
+
+@import '../../../rljbase/assets/css/sass/gallery';
+@import '../../../rljbase/assets/css/sass/carousel';
+@import '../../../rljbase/assets/css/sass/lightbox';
+@import '../../../rljbase/assets/css/sass/video-embed';
+
+@import '../../../rljbase/assets/css/sass/privacy-notice';
+
+@import '../../../rljbase/assets/css/sass/pagination';
+@import '../../../rljbase/assets/css/sass/breadcrumbs';
+@import '../../../rljbase/assets/css/sass/search';
+
+// @import '../../../rljbase/assets/css/multiplane';
+
+@import 'rljstripes';
