@@ -714,7 +714,6 @@ $this->module('multiplane')->extend([
         $projection = [
             $this->slugName => true,
             $this->slugName . '_' . $lang => true,
-            '_id' => false,
             'subpagemodule' => true,
         ];
 
