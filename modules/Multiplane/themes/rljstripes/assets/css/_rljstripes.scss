@@ -18,11 +18,10 @@ body {
     }
 
     > header,
-    // > nav,
     > main > header > h2,
     > main > section,
     > main > article,
-    > main > article > section,
+    > main > article > section, // multiple blog posts (no excerpt)
     > footer
     {
         padding: 1rem 1rem;
@@ -33,9 +32,8 @@ body {
             padding: 3rem 3rem;
         }
     }
-    
+
     > header,
-    // > nav,
     > main > header > h2
     {
         text-align: center;
@@ -49,11 +47,7 @@ body {
             margin: 0;
         }
     }
-    
-    // > nav {
-        // padding-top: 0;
-        // padding-bottom: 0;
-    // }
+
     > main {
         > header {
             position: relative;
@@ -63,16 +57,18 @@ body {
                 margin: 0;
             }
         }
-        > section, article {
-            position: relative;
+        > section,
+        > article,
+        {
             @include box-sizing(border-box);
-            &:nth-of-type(3n-2) {
-            // &:nth-child(3n-2) {
+            &:nth-child(3n+1) {
+                background-color: $color-white;
+            }
+            &:nth-child(3n+2) {
                 color: $color-black;
                 background-color: $color-light-grey;
             }
-            &:nth-of-type(3n-1) {
-            // &:nth-child(3n-1) {
+            &:nth-child(3n) {
                 color: $color-white;
                 background-color: $color-darker;
                 a {
@@ -81,14 +77,33 @@ body {
                         color: $color-link-invert-hover;
                     }
                 }
+                .label {
+                    color: $color-text;
+                }
+            }
+            &.excerpt {
+                &:nth-child(3n+1) > section {
+                    border-color: $color-light-grey;
+                }
+                &:nth-child(3n+2) > section {
+                    border-color: $color-white;
+                }
+                &:nth-child(3n) > section {
+                    border-color: $color-dark;
+                }
             }
         }
-        
+    }
+
+    > footer {
+        text-align: right;
     }
 }
 
 [class^="item-"] {
-    display: inline-block;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
     vertical-align: top;
     padding-bottom: 1rem;
     @include box-sizing(border-box);
@@ -98,6 +113,7 @@ body {
 }
 .item-1-2, .item-2-2 {
     @include breakpoint(medium) {
+        display: inline-block;
         width: 50%;
         padding-bottom: 0;
         &:nth-child(1) {
@@ -110,6 +126,7 @@ body {
 }
 .item-1-4, .item-2-4, .item-3-4, .item-4-4 {
     @include breakpoint(medium) {
+        display: inline-block;
         width: 50%;
         &:nth-child(2n-1) {
             padding-right: $spacer / 2;
@@ -142,6 +159,7 @@ body {
 }
 .item-1-3, .item-2-3, .item-3-3 {
     @include breakpoint(medium) {
+        display: inline-block;
         width: 33%;
         padding-bottom: 0;
         &:nth-child(1) {
@@ -190,11 +208,34 @@ body {
 
 article.excerpt {
     .featured_image {
+        display: block;
         width: 200px;
-        float: left;
-        margin: 0 $spacer / 2 $spacer / 2 0;
+        margin: 0 auto;
+        @include breakpoint(small) {
+            float: left;
+            padding: 0 $spacer / 2 $spacer / 2 0;
+        }
+        + section {
+            &:first-of-type { // clear floating featured_image
+                padding-top: 0;
+                padding-left: 0;
+                &:after {
+                    content: '';
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    clear: both;
+                }
+                // if first element is a repeater with multiple elements, the
+                // layout with the floating featured_image breaks
+                [class^="item-"] {
+                    width: auto;
+                    display: inline;
+                }
+            }
+        }
     }
-    &:after {
+    &:after { // clear floating featured_image
         content: '';
         display: block;
         width: 0;
@@ -202,10 +243,28 @@ article.excerpt {
         clear: both;
     }
     > section {
-        padding-left: 0;
-        padding-right: 0;
-        &:first-of-type {
-            padding-top: 0;
+        border-style: solid;
+        border-bottom-width: 1rem;
+        @include breakpoint(medium) {
+            &:nth-of-type(2n) {
+                border-left-width: 1rem;
+                padding-left: 1rem;
+            }
+            &:nth-of-type(2n+1) {
+                border-right-width: 1rem;
+                padding-right: 1rem
+            }
+        }
+        @include breakpoint(normal) {
+            &:nth-of-type(2n) {
+                padding-left: 2rem;
+            }
+            &:nth-of-type(2n+1) {
+                padding-right: 2rem
+            }
+        }
+        &:last-of-type {
+            border-bottom: none;
         }
     }
 }
@@ -216,27 +275,61 @@ body > header > nav {
         vertical-align: middle;
     }
 }
+
 .search {
+    display: inline-block;
+    button {
+        top: 2px; // fit on input with 2px border
+    }
+}
+header .search {
     width: 12em;
-    // width: 5em;
     max-width: 100%;
-    // margin: 0 auto;
     margin: .5em auto;
-    // transition: width .2s ease-in-out;
-    // &:hover, &:focus, &:focus-within {
-        // width: 12em;
-    // }
     form {
         width: 100%;
         margin: 0;
     }
-    button {
-        top: 2px; // fit on input with 2px border
-    }
     @include breakpoint(small) {
-        display: inline-block;
-        vertical-align: middle;
+        position: absolute;
+        top: 2em;
+        right: 1em;
+        width: auto;
         form {
+            width: 7rem;
+            transition: width .2s ease-in-out;
+            &:hover, &:focus, &:focus-within {
+                width: 12em;
+                @include box-shadow(0px 1px 3px $color-shadow);
+            }
+        }
+        input {
+            border: none
+        }
+        button {
+            top: 1px;
+            right: 1px;
         }
     }
+    @include breakpoint(medium) {
+        form {
+            &:hover, &:focus, &:focus-within {
+                width: 18em;
+            }
+        }
+    }
+}
+// IE11 hack to make form visible by default
+_:-ms-fullscreen, :root header .search form {
+    @include breakpoint(medium) {
+        width: 12em;
+        @include box-shadow(0px 0px 1px $color-shadow);
+    }
+    @include breakpoint(medium) {
+        width: 18em;
+    }
+}
+
+.gallery {
+    margin-top: auto;
 }

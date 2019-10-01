@@ -4,11 +4,14 @@
 
         <main id="main">
 
-            @render('views:partials/featured-media.php', ['page' => $page, 'mode' => 'image', 'format' => 'headerimage'])
+            <header>
+                @render('views:partials/featured-media.php', ['page' => $page, 'mode' => 'image', 'format' => 'headerimage'])
+                <h2>{{ $page['title'] }}</h2>
+            </header>
 
-            <h2>{{ $page['title'] }}</h2>
-
-            @render('views:partials/posts-meta.php', ['post' => $page])
+            <section>
+                @render('views:partials/posts-meta.php', ['post' => $page])
+            </section>
 
             @render('views:partials/content.php', ['content' => $page['content']])
 

@@ -14,38 +14,21 @@ $font_extra: $font; // webfont for headlines
 $border-radius: 0px;
 $width: 1000px;
 
-
 // colours
+// import colours from parent theme
+@import '../../../rljbase/assets/css/sass/colors';
+
 $color-white: #fdfdfd;
-$color-black: #000;
-
-$color-white-transp: rgba(255,255,255,.9);
-$color-white-transp-medium: rgba(255,255,255,.5);
-$color-black-transp: rgba(0,0,0,.8);
-$color-black-transp-light: rgba(0,0,0,.2);
-
-// $color-main: #470b7e;
-$color-main: #7fb85e;
 $color-bg: #fdfdfd;
 
-$color-dark: #222;
-$color-darker: #444;
-$color-grey: #ccc;
 $color-light-grey: #eaeaea;
-$color-gray: $color-grey; // avoid typos
 $color-light-gray: $color-light-grey; // avoid typos
-$color-shadow: $color-grey;
-
-// $color-link: #a771c5;
-$color-link: #366a9c;
-$color-link-hover: #ac833c;
 
 $color-link-invert: #bed5eb; // links on dark background
 $color-link-invert-hover: #f6dfb7;
 
 
 // imports
-// @import '../../../rljbase/assets/css/sass/colors';
 @import '../../../rljbase/assets/css/sass/mixins';
 @import '../../../rljbase/assets/css/sass/breakpoints';
 
@@ -73,7 +56,5 @@ $color-link-invert-hover: #f6dfb7;
 @import '../../../rljbase/assets/css/sass/pagination';
 @import '../../../rljbase/assets/css/sass/breadcrumbs';
 @import '../../../rljbase/assets/css/sass/search';
-
-// @import '../../../rljbase/assets/css/multiplane';
 
 @import 'rljstripes';
