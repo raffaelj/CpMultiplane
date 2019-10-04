@@ -9,7 +9,7 @@
 // pass custom layout file to LimeExtra
 $this->layout = 'views:base.php';
 
-// add assets
+// set assets
 $this->set('multiplane.assets.top', [
     MP_BASE_URL.'/modules/Multiplane/themes/rljbase/assets/css/style.min.css', // main style file
 ]);
