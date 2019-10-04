@@ -20,5 +20,5 @@ favicon.ico
 
 # dev files and directories
 .sass-cache
-/node_modules
+node_modules
 package-lock.json
