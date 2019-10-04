@@ -1,0 +1,18 @@
+{
+  "name": "cpmultiplane-rljbase",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "build": "npm run build-js",
+    "build-js": "uglifyjs assets/js/mp.js -c -o assets/js/mp.min.js",
+    "build-polyfills": "browserify assets/js/src/polyfills.js | uglifyjs > assets/js/polyfills.min.js",
+    "watch": "onchange assets/js/mp.js -- npm run build-js"
+  },
+  "devDependencies": {
+    "browserify": "^16.5.0",
+    "core-js": "^3.2.1",
+    "formdata-polyfill": "^3.0.19",
+    "onchange": "^6.1.0",
+    "uglify-js": "^3.6.0"
+  }
+}
