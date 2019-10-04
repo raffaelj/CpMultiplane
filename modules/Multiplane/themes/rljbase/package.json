@@ -4,9 +4,12 @@
   "license": "MIT",
   "scripts": {
     "build": "npm run build-js",
-    "build-js": "uglifyjs assets/js/mp.js -c -o assets/js/mp.min.js",
+    "build-js": "browserify assets/js/src/mp.js -s MP | uglifyjs > assets/js/mp.min.js",
+    "uglify-js": "uglifyjs assets/js/mp.js -c -o assets/js/mp.min.js",
     "build-polyfills": "browserify assets/js/src/polyfills.js | uglifyjs > assets/js/polyfills.min.js",
-    "watch": "onchange assets/js/mp.js -- npm run build-js"
+    "watch": "onchange \"assets/js/src/mp.js\" \"assets/js/src/mp/*.js\" -- npm run build-js",
+    "build-js-dev": "browserify assets/js/src/mp.js -o assets/js/mp.min.js -s MP --debug",
+    "watch-dev": "onchange \"assets/js/src/mp.js\" \"assets/js/src/mp/*.js\" -- npm run build-js-dev"
   },
   "devDependencies": {
     "browserify": "^16.5.0",
