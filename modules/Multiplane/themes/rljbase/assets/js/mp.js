@@ -2,7 +2,21 @@
 
     // for relative paths - MP_BASE_URL should be declared in the head of your
     // template file: <script>var MP_BASE_URL = '{{ MP_BASE_URL }}';</script>
-    if (!MP_BASE_URL) MP_BASE_URL = '';
+    if (typeof g.MP_BASE_URL === 'undefined') {
+        g.MP_BASE_URL = ''; // to do: try to guess url
+    }
+
+    // polyfills
+    if (!(g.Promise && g.FormData)) {
+
+        if (typeof g.MP_POLYFILLS_URL === 'undefined') {
+            g.MP_POLYFILLS_URL = ''; // to do: try to guess url
+        }
+
+        var js = d.createElement('script');
+        js.src = MP_POLYFILLS_URL;
+        d.head.appendChild(js);
+    }
 
     var MP = {
 

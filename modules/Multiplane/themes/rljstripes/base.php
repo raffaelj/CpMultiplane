@@ -16,7 +16,8 @@
         <link rel="shortcut icon" href="{{ MP_BASE_URL }}/favicon.png?ver={{ mp()->version }}">
 
         <script>
-            var MP_BASE_URL = '{{ MP_BASE_URL }}';
+            var MP_BASE_URL = '{{ MP_BASE_URL }}',
+                MP_POLYFILLS_URL = '{{ MP_BASE_URL }}/modules/Multiplane/themes/rljbase/assets/js/polyfills.min.js';
         </script>
         {{ $app->assets($app['multiplane.assets.top'], mp()->version) }}
         {{ mp()->userStyles() }}
