@@ -364,12 +364,14 @@ $this->module('multiplane')->extend([
 
     'getNav' => function($collection = null, $type = '') {
 
-        // to do: nested sub navigations
-
         // if hard coded nav is present, return this one
         if (isset($this->nav[$type])) return $this->nav[$type];
 
         if (!$collection) $collection = $this->pages;
+
+        $collection = $this->app->module('collections')->collection($collection);
+
+        $isSortable = $collection['sortable'] ?? false;
 
         $options = [
             'filter' => [
@@ -379,9 +381,8 @@ $this->module('multiplane')->extend([
                 $this->slugName => true,
                 'title' => true,
                 'nav' => true,
-            ],
-            'sort' => [
-                '_o' => 1, // sort by custom sort order
+                '_pid' => true,
+                '_o' => true,
             ],
         ];
 
@@ -404,13 +405,11 @@ $this->module('multiplane')->extend([
 
         }
 
-        $entries = $this->app->module('collections')->find($collection, $options);
+        $entries = $this->app->module('collections')->find($collection['name'], $options);
 
         if (!$entries) return false;
 
-        $nav =[];
-
-        foreach($entries as $n) {
+        foreach($entries as &$n) {
 
             $active = false;
             if ($this->hasParentPage && $n[$this->slugName] == $this->parentPage[$this->slugName]) {
@@ -419,11 +418,22 @@ $this->module('multiplane')->extend([
                 $active = true;
             }
 
-            $nav[] = array_merge($n, ['active' => $active]);
+            $n['active'] = $active;
 
         }
 
-        return $nav;
+        if ($isSortable) {
+
+            $entries = $this->app->helper('utils')->buildTree($entries, [
+                'parent_id_column_name' => '_pid',
+                'children_key_name'     => 'children',
+                'id_column_name'        => '_id',
+                'sort_column_name'      => '_o'
+            ]);
+
+        }
+
+        return $entries;
 
     },
 

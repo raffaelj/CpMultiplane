@@ -9,6 +9,7 @@ $icon-height: 2em !default;
     form {
         position: relative;
         width: 15em;
+        max-width: 100%;
         margin: 1em auto;
         overflow: hidden; // avoid possible flickering when button text appears and mouse hovers over it
     }

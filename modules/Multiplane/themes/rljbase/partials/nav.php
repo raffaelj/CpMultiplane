@@ -1,13 +1,10 @@
 <?php
 $nav = mp()->getNav(null, $type);
 if (empty($nav)) return;
-$slugName = mp()->slugName;
+$id = $type == 'main' ? ' id="nav"' : '';
 ?>
 
-        <nav>
-            <ul>
-@foreach($nav as $n)
-                <li><a class="{{ $n['active'] ? 'active' : '' }}" href="@base($n[$slugName])">{{ $n['title'] }}</a></li>
-@endforeach
-            </ul>
+        <nav{{ $id }} class="horizontal">
+            @if($type == 'main')<a href="#nav" class="icon-menu"></a><a class="icon-close" href="#"></a>@endif
+            @render('views:partials/subnav.php', ['nav' => $nav])
         </nav>

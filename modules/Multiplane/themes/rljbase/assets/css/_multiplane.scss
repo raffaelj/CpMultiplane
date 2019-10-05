@@ -30,6 +30,7 @@ body > header {
     width: $width;
     max-width: 100%;
     text-align:center;
+    padding: 0 1em;
     a {
         display:table;
         margin:0 auto;
@@ -71,30 +72,19 @@ body > footer {
 }
 
 body > nav {
-    position:relative;
-    margin: 1em auto;
+    display: block;
+    margin: 0 auto;
     width: $width;
     max-width: 100%;
     padding: 1em;
-    font-family: $font_extra;
-    ul {
-        display:block;
-        margin:0 auto;
-        padding:0;
-        list-style-type:none;
-        text-align:center;
-    }
-    li {
-        display:inline-block;
-        margin:.5em;
-    }
-    a {
-        padding: .2em .4em;
-        font-size: 1.2em;
-        border-radius: $border-radius;
-        background-color: $color-white;
-        color: $color-link;
-        @include box-shadow(0px 2px 2px $color-shadow);
+    @include breakpoint(small) {
+        > ul {
+            display: block;
+            text-align: center;
+            > li {
+                text-align: left;
+            }
+        }
     }
 }
 
@@ -104,8 +94,10 @@ nav .active {
 }
 
 .language-switch {
+    position: absolute;
+    top: 0;
+    right: .5em;
     @include breakpoint(small) {
-        position: absolute;
         top: 1em;
         right: 1em;
     }

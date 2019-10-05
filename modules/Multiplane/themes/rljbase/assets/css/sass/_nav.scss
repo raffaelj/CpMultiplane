@@ -1,28 +1,31 @@
 
 $color-bg: #fcfcfc !default;
 $color-shadow: #ccc !default;
+$color-black-transp-dark: rgba(0,0,0,.95) !default;
 
 nav {
-    li a {
-        display: block;
-        padding: 0 .2em;
-        &:hover, &:focus {
-            text-decoration: none;
-        }
-    }
-    > ul {
-        margin: 0;
+    position: relative;
+    display: inline-block;
+    z-index: 10;
+    margin: 0;
+    padding: 0;
+    font-size: 1.2em;
+    @include box-sizing(border-box);
+
+    ul {
         padding: 0;
-        list-style: none;
-        > li {
-            display: inline-block;
-            vertical-align: top;
-        }
+        display: block;
     }
+
     li {
         position: relative;
-        &:hover, &:focus, &:focus-within {
-            background-color: rgba(0,0,0,.03);
+        display: block;
+        a {
+            display: block;
+            padding: .2em;
+            &.dropdown {
+                padding-right: 1.5em;
+            }
         }
         > ul {
             display: none;
@@ -35,19 +38,195 @@ nav {
         {
             display: block;
             position: absolute;
-            padding: .25em .25em .25em .75em;
+            top: 0;
+            left: 100%;
+            z-index: 12;
             list-style: none;
             background-color: $color-bg;
             white-space: nowrap;
-            @include box-shadow(1px 1px 2px $color-shadow);
+            @include box-sizing(border-box);
         }
         li {
             &:hover > ul,
             &:focus > ul,
             &:focus-within > ul
             {
-                top: 0;
-                left: 100%;
+                @include breakpoint(small) {
+                    right: 0;
+                }
+                @include breakpoint(medium) {
+                    top: 0;
+                    left: 100%;
+                    right: auto;
+                    padding-left: 0;
+                }
+            }
+        }
+    }
+
+    &.horizontal {
+        li {
+            &:hover > ul,
+            &:focus > ul,
+            &:focus-within > ul,
+            > a:hover + ul,
+            > a:focus + ul
+            {
+                top: auto;
+                left: 0;
+            }
+            li {
+                &:hover > ul,
+                &:focus > ul,
+                &:focus-within > ul
+                {
+                    @include breakpoint(small) {
+                        right: 0;
+                        padding-left: .5em;
+                    }
+                    @include breakpoint(medium) {
+                        top: 0;
+                        left: 100%;
+                        right: auto;
+                        padding-left: 0;
+                    }
+                }
+            }
+        }
+        > ul {
+            > li {
+                display:inline-block;
+                margin:.5em;
+            }
+        }
+        @include breakpoint(small) {
+            input[type=checkbox] + label {
+                top: .25em;
+            }
+            @media (pointer: coarse) {
+                input[type=checkbox] + label {
+                    top: auto;
+                    bottom: .25em;
+                }
+            }
+        }
+    }
+
+    a[href="#nav"], .icon-close {
+        display: none;
+    }
+
+    input[type=checkbox] {
+        display: none;
+        + label {
+            position: absolute;
+            top: .5em;
+            right: .5em;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+            &:before {
+                content: '';
+                position: static;
+                display: inline-block;
+                width: 0;
+                height: 0;
+                margin: 0;
+                padding: 0;
+                border-color: $color-shadow transparent transparent transparent;
+                border-width: .25em;
+            }
+        }
+        &:hover, &:focus {
+            + label:before {
+                border-color: $color-link transparent transparent transparent;
+                @include box-shadow(none);
+            }
+        }
+        &:checked {
+            + label:after {
+                content: none;
+            }
+        }
+    }
+
+    @media (pointer: coarse) {
+        li a.dropdown {
+            padding-right: 2em;
+        }
+        input[type=checkbox] + label {
+            &:before {
+                border-width: .5em .5em 0 .5em;
+            }
+        }
+    }
+}
+
+nav#nav {
+
+    @include breakpoint(mini) {
+        margin: 0;
+        padding: 0;
+        > ul {
+            display: none;
+        }
+        a[href="#nav"], .icon-close {
+            position: fixed;
+            top: .5em;
+            left: .5em;
+            display: block;
+            width: 2em;
+            height: 2em;
+            margin: 0;
+            padding: 0;
+            z-index: 11;
+        }
+        .icon-close {
+            display: none;
+        }
+        &:target {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 3em; // for close button
+            width: 100%;
+            height: 100%;
+            overflow-y: scroll;
+            background-color: $color-black-transp-dark;
+            a[href="#nav"] {
+                display: none;
+            }
+            .icon-close {
+                display: block;
+                right: .5em;
+                left: auto;
+            }
+            > ul {
+                display: block;
+            }
+    
+            li {
+                display: block;
+                a {
+                    display: block;
+                    padding: .5em;
+                    color: $color-white;
+                    border-bottom: 1px solid $color-white;
+                }
+                &:hover > ul,
+                &:focus > ul,
+                &:focus-within > ul,
+                > a:hover + ul,
+                > a:focus + ul
+                {
+                    position: static;
+                    background-color: transparent;
+                        padding-left: 1em;
+                    a {
+                        border-left: 1px solid $color-white;
+                    }
+                }
             }
         }
     }

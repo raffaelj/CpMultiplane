@@ -146,11 +146,12 @@ ul, ol {
 }
 
 ul {
-    list-style: disclosure-closed;
+    list-style-type: circle;
+    list-style-type: disclosure-closed; // only supported in FF (experimental)
     ul {
-        list-style: disc;
+        list-style-type: disc;
         ul {
-            list-style: circle;
+            list-style-type: circle;
         }
     }
 }
@@ -170,7 +171,8 @@ dl {
 dt {
     display: list-item;
     list-style-position: inside;
-    list-style-type: disclosure-open;
+    list-style-type: square;
+    list-style-type: disclosure-open; // only supported in FF (experimental)
 }
 
 dd {

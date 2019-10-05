@@ -1,5 +1,8 @@
 // breakpoints
 @mixin breakpoint($point) {
+    @if $point == mini {
+        @media (max-width: 499px) {@content;}
+    }
     @if $point == small {
         @media (min-width: 500px) {@content;}
     }
