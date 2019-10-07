@@ -1,5 +1,7 @@
 
-var g = window, d = document;
+var g  = window,
+    d  = document
+    MP = require('./MP.js');
 
 module.exports = {
 
@@ -45,6 +47,24 @@ module.exports = {
             pauseButton.tabIndex = 0;
 
             carousel.node.appendChild(pauseButton);
+
+            // resize with browser window - to do: find pure css solution
+            g.addEventListener('resize', function() {
+                carousel.node.style.height = carousel.node.children[0].offsetHeight + 'px';
+            });
+
+            // fire resize event, when page is loaded to get the right height,
+            // otherwise there is a random chance for "0px" (image not loaded...)
+            g.addEventListener('load', function() {
+                var event;
+                if (typeof Event === 'function') {
+                    event = new Event('resize');
+                } else {
+                    event = d.createEvent('Event');
+                    event.initEvent('resize', true, true);
+                }
+                g.dispatchEvent(event);
+            });
 
             carousel.node.addEventListener('click', function(e) {
 
