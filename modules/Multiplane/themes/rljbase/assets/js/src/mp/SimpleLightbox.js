@@ -1,5 +1,5 @@
 
-var g = window, d = document;
+var d = document;
 
 module.exports = {
 

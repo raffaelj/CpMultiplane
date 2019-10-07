@@ -1,5 +1,6 @@
 
-var g = window, d = document;
+var d  = document,
+    MP = require('./MP.js');
 
 module.exports = {
 
@@ -33,7 +34,7 @@ module.exports = {
             if (asset.indexOf('http') == 0 || asset.indexOf('.') != -1) {
                 thumb = asset; // full image url
             } else {           // asset id
-                thumb = MP_BASE_URL + '/getImage?src=' + asset + '&w=480&o=1';
+                thumb = MP.base_url + '/getImage?src=' + asset + '&w=480&o=1';
             }
 
             if (provider == 'youtube') {
@@ -89,14 +90,12 @@ module.exports = {
 
             play_button.addEventListener('click', function(e) {
 
-                if (e) e.preventDefault();  
+                if (e) e.preventDefault();
 
-                if (MP.Cookie.get('loadExternalVideos') == '1') {
-                    $this.loadVideo(iframe);
-                }
-                else {
-                    $this.displayPrivacyNotice(iframe);
-                }
+                MP.trigger('privacy', {
+                    type:   'external_video',
+                    target: iframe
+                });
 
             });
 
@@ -126,62 +125,14 @@ module.exports = {
 
             play_button.addEventListener('click', function(e) {
 
-                if (e) e.preventDefault();  
+                if (e) e.preventDefault();
 
-                if (MP.Cookie.get('loadExternalVideos') == '1') {
-                    $this.loadVideo(iframe);
-                }
-                else {
-                    $this.displayPrivacyNotice(iframe);
-                }
+                MP.trigger('privacy', {
+                    type:   'external_video',
+                    target: iframe
+                });
 
             });
-
-        });
-
-    },
-
-    displayPrivacyNotice: function (target) {
-
-        var $this = this;
-
-        var banner = d.getElementById('privacy-notice');
-        banner.style.display = 'block';
-
-        var lastFocus = target;
-        banner.tabIndex = -1;
-        banner.setAttribute('role', 'dialog');
-        banner.focus();
-
-        var form = d.getElementById('privacy-notice-form');
-
-        form.addEventListener('submit', function(e) {
-
-            if (e) e.preventDefault();
-
-            var data = new FormData(form);
-
-            var loadExternalVideos = data.get('loadExternalVideos');
-
-            // Cookie won't be set, if loadExternalVideos == null
-            MP.Cookie.set('loadExternalVideos', loadExternalVideos);
-
-            if (loadExternalVideos && target && target.nodeName == 'IFRAME') {
-                $this.loadVideo(target);
-            }
-
-            // hide banner
-            banner.style.display = '';
-
-            lastFocus.focus();
-
-        });
-
-        form.addEventListener('reset', function(e) {
-
-            banner.style.display = '';
-
-            lastFocus.focus();
 
         });
 
