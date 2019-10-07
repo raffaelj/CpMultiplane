@@ -32,7 +32,6 @@ nav {
         }
         &:hover > ul,
         &:focus > ul,
-        &:focus-within > ul,
         > a:hover + ul,
         > a:focus + ul
         {
@@ -46,9 +45,32 @@ nav {
             white-space: nowrap;
             @include box-sizing(border-box);
         }
+        &:focus-within > ul
+        {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            z-index: 12;
+            list-style: none;
+            background-color: $color-bg;
+            white-space: nowrap;
+            @include box-sizing(border-box);
+        }
         li {
             &:hover > ul,
-            &:focus > ul,
+            &:focus > ul
+            {
+                @include breakpoint(small) {
+                    right: 0;
+                }
+                @include breakpoint(medium) {
+                    top: 0;
+                    left: 100%;
+                    right: auto;
+                    padding-left: 0;
+                }
+            }
             &:focus-within > ul
             {
                 @include breakpoint(small) {
@@ -68,16 +90,32 @@ nav {
         li {
             &:hover > ul,
             &:focus > ul,
-            &:focus-within > ul,
             > a:hover + ul,
             > a:focus + ul
             {
                 top: auto;
                 left: 0;
             }
+            &:focus-within > ul
+            {
+                top: auto;
+                left: 0;
+            }
             li {
                 &:hover > ul,
-                &:focus > ul,
+                &:focus > ul
+                {
+                    @include breakpoint(small) {
+                        right: 0;
+                        padding-left: .5em;
+                    }
+                    @include breakpoint(medium) {
+                        top: 0;
+                        left: 100%;
+                        right: auto;
+                        padding-left: 0;
+                    }
+                }
                 &:focus-within > ul
                 {
                     @include breakpoint(small) {
@@ -216,9 +254,17 @@ nav#nav {
                 }
                 &:hover > ul,
                 &:focus > ul,
-                &:focus-within > ul,
                 > a:hover + ul,
                 > a:focus + ul
+                {
+                    position: static;
+                    background-color: transparent;
+                        padding-left: 1em;
+                    a {
+                        border-left: 1px solid $color-white;
+                    }
+                }
+                &:focus-within > ul
                 {
                     position: static;
                     background-color: transparent;

@@ -19,7 +19,18 @@
     }
     &.dropdown {
         .pagination_dropdown_headline {
-            &:hover, &:focus, &:focus-within {
+            &:hover, &:focus {
+                ul {
+                    display: block;
+                    width: 10em;
+                    height: 5em;
+                    padding-left: .25em;
+                    overflow-y: auto;
+                    white-space: normal !important; // revert from _nav.scss
+                    z-index: 10;
+                }
+            }
+            &:focus-within {
                 ul {
                     display: block;
                     width: 10em;
