@@ -23,7 +23,7 @@ class Base extends \LimeExtra\Controller {
                             && $page['subpagemodule']['active'] === true;
 
         if ($hasSubpageModule) {
-            
+
             $options = $page['subpagemodule'];
 
             if ($this->module('multiplane')->pageTypeDetection == 'collections') {
@@ -98,7 +98,7 @@ class Base extends \LimeExtra\Controller {
         if (!$src) return false;
 
         // lazy uploads prefix if src is an assets id (has no dot in filename) or is mp asset
-        if (strpos($src, '/modules/Monoplane') !== 0 && strpos($src, '.') !== false) {
+        if (strpos($src, '/modules/Multiplane') !== 0 && strpos($src, '.') !== false) {
             $src = '#uploads:'.$src;
         }
 
@@ -116,6 +116,11 @@ class Base extends \LimeExtra\Controller {
 
         // add checks for ddos protection, allow only certain files, or deliver modified media...
         $this->app->trigger('multiplane.getimage.before', [&$options]);
+
+        // optional: redirect to original file
+        if (isset($options['output']) && $options['output'] === true) {
+            return $this->module('cockpit')->thumbnail($options);
+        }
 
         $thumbpath = $this->module('cockpit')->thumbnail($options);
 
@@ -160,6 +165,10 @@ class Base extends \LimeExtra\Controller {
         $searchMinLength = mp()->searchMinLength;
 
         $site = $this->module('multiplane')->site;
+
+        if (mp()->hasBackgroundImage) {
+            mp()->addBackgroundImage();
+        }
 
         if ($query && mb_strlen($query) >= $searchMinLength) {
 
