@@ -76,7 +76,9 @@ $color-icon-background: $color-white-transp !default;
 }
 
 .icon-close {
-    transform: rotate(45deg);
+    &:before, &:after {
+        transform: rotate(45deg);
+    }
 }
 
 .icon-search {

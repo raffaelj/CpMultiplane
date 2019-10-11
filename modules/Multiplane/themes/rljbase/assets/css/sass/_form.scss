@@ -2,14 +2,22 @@
 
 $border-radius: 2px !default;
 
+// colours
+$color-white: #fafafa !default;
+$color-black: #000 !default;
+$color-dark: #222 !default;
+$color-grey: #ccc !default;
+$color-shadow: #0c0c0c !default;
+$color-black-transp-light: rgba(0,0,0,.2) !default;
+
 // form colors
 $color-main: #8d9444 !default;
 $color-main-dark: #ae5e69 !default;
 
 $color-text: #000000 !default;
 $color-text-light: #999 !default;
-$color-text-dark: #555 !default;
 $color-text-dark: #222 !default;
+$color-button-text: $color-white !default;
 
 $color-alarm: #AD000E !default;
 $color-error: #d50f2c !default;
@@ -18,10 +26,7 @@ $color-input: rgba(255,255,255,.9) !default;
 $color-input-hover: $color-white !default;
 $color-info: transparent !default;
 
-$color-dark: #222 !default;
-$color-grey: #ccc !default;
-$color-shadow: #0c0c0c !default;
-$color-black-transp-light: rgba(0,0,0,.2) !default;
+$color-fieldset-border: $color-text-dark !default;
 
 form{
     * {
@@ -31,7 +36,7 @@ form{
 }
 
 fieldset {
-    border: 1px solid $color-text-dark;
+    border: 1px solid $color-fieldset-border;
     border-radius: $border-radius;
     padding: .5rem;
     text-align: center;
@@ -195,8 +200,7 @@ input[type=submit], input[type=reset], input[type=button], button {
     margin: .1rem auto;
     padding: .2rem .5rem;
     font-size: 1rem;
-    // color: $color-dark;
-    color: $color-white;
+    color: $color-button-text;
     background-color: $color-link;
     border: none;
     border-radius: 2px;
@@ -207,8 +211,6 @@ input[type=submit], input[type=reset], input[type=button], button {
     }
     &[type=submit] {
         background-color: $color-link;
-        // color: $color-dark;
-        color: $color-white;
         &:hover, &:focus {
             background-color: $color-link-hover;
         }
@@ -218,16 +220,12 @@ input[type=submit], input[type=reset], input[type=button], button {
     }
     &[type=button] {
         background-color: $color-link;
-        // color: $color-dark;
-        color: $color-white;
         &:hover, &:focus {
             background-color: $color-link-hover;
         }
     }
     &[type=reset] {
         background-color: $color-darker;
-        // color: $color-link;
-        color: $color-white;
         &:hover, &:focus {
             background-color: $color-link-hover;
         }

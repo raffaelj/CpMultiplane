@@ -4,9 +4,9 @@ $color-shadow: #ccc !default;
 $color-black-transp-dark: rgba(0,0,0,.95) !default;
 
 nav {
-    position: relative;
+    // position: relative;
     display: inline-block;
-    z-index: 10;
+    // z-index: 10;
     margin: 0;
     padding: 0;
     font-size: 1.2em;
@@ -203,6 +203,7 @@ nav {
 nav#nav {
 
     @include breakpoint(mini) {
+        z-index: 100;
         margin: 0;
         padding: 0;
         > ul {
@@ -246,6 +247,7 @@ nav#nav {
     
             li {
                 display: block;
+                margin: 0;
                 a {
                     display: block;
                     padding: .5em;

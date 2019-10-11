@@ -62,6 +62,9 @@ main > .excerpt {
         // text-align: right;
         clear: both;
     }
+    > ul, > ol {
+        overflow: hidden; // fix bullets overlapping floating image
+    }
 }
 
 body > footer {
