@@ -116,39 +116,24 @@ $this->on('multiplane.search', function($search, $list) {
 
         $options['filter']['$or'] = [];
 
+        $suffix = $lang == mp()->defaultLang ? '' : '_'.$lang;
+
         foreach ($c['fields'] as $field) {
 
             $options['fields'][$field['name']] = true;
+            if ($lang != mp()->defaultLang) $options['fields'][$field['name'].$suffix] = true;
 
             if (isset($field['type']) && $field['type'] == 'repeater') {
 
                 // to do: cleanup/find cleaner solution
-                $options['filter']['$or'][] = [$field['name'] => ['$fn' => 'repeaterSearch']];
+                $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'repeaterSearch']];
 
             }
 
             else {
                 foreach ($searches as $search) {
-                    $options['filter']['$or'][] = [$field['name'] => ['$regex' => $search]];
+                    $options['filter']['$or'][] = [$field['name'].$suffix => ['$regex' => $search]];
                 }
-            }
-
-        }
-
-        if ($lang != mp()->defaultLang) {
-
-            $options['fields'] = [
-                $slugName.'_'.$lang => true,
-            ];
-
-            foreach ($c['fields'] as $field) {
-
-                $options['fields'][$field['name'].'_'.$lang] = true;
-
-                foreach ($searches as $search) {
-                    $options['filter']['$or'][] = [$field['name'].'_'.$lang => ['$regex' => $search]];
-                }
-
             }
 
         }
