@@ -22,11 +22,13 @@
 
     @foreach($fields as $field)
       @if(!isset($field['lst']) || $field['lst'] == true)
-        @render('views:formfields/'.($field['type'] ?? 'text').'.php with views:formfields/field-wrapper.php', compact('field', 'options'))
+<?php if (isset($options['fields'][$field['name']]) && $options['fields'][$field['name']] === false) continue; ?>
+        @render('views:formfields/'.($field['type'] ?? 'text').'.php with views:formfields/field-wrapper.php', ['field' => $field])
+
       @endif
     @endforeach
 
-        <div><input name="{{ $app->module('multiplane')->formSubmitButtonName }}" type="submit" value="@lang('Send')" /></div>
+        <div><input name="{{ mp()->formSubmitButtonName }}" type="submit" value="@lang('Send')" /></div>
     </fieldset>
 
 </form>
