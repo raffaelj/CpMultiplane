@@ -24,7 +24,7 @@
             @endif
 
             @if (!empty($posts))
-                @render('views:partials/posts.php', ['posts' => $posts['posts'], 'pagination' => $posts['pagination']])
+                @render('views:partials/posts.php', ['posts' => $posts])
             @endif
 
         </main>
