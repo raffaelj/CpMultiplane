@@ -44,14 +44,15 @@ $this->module('multiplane')->extend([
     'outputMethod'          => 'dynamic',         // to do: static
     'pageTypeDetection'     => 'collections',     // 'collections' or 'type'
     'slugName'              => '_id',
+    'navName'               => 'nav',             // field name for navigation
     'nav'                   => null,              // hard coded navigation
 
     // maintenance mode
     'isInMaintenanceMode'   => false,             // display under construction page with 503 status
     'allowedIpsInMaintenanceMode' => null,        // separate multiple ip addresses with whitespaces
 
-    'styles'                => [],                // access via cockpit('multiplane')->userStyles();
-    'scripts'               => [],                // access via cockpit('multiplane')->userScripts();
+    'styles'                => [],                // access via mp()->userStyles();
+    'scripts'               => [],                // access via mp()->userScripts();
 
     // use Fields render helper and optional field templates
     'preRenderFields'       => [],
@@ -87,13 +88,42 @@ $this->module('multiplane')->extend([
     'searchInCollections'   => [],              // full list of collections to search in, overwrites pages and posts
 
     'sitemap'               => null,            // array of collections
+    
+    'hasBackgroundImage'    => false,             // enable background image
+    'backgroundBreakpoints' => [
+        'mini' => [
+            'points' => [
+                'max-width' => 500,
+            ],
+            'size' => 700,
+        ],
+        'small' => [
+            'points' => [
+                'min-width' => 500,
+                'max-width' => 1000,
+            ],
+            'size' => 1200,
+        ],
+        'normal' => [
+            'points' => [
+                'min-width' => 1000,
+                'max-width' => 1200,
+            ],
+            'size' => 1400,
+        ],
+        'large' => [
+            'points' => [
+                'min-width' => 1200,
+            ],
+            'size' => 1920,
+        ],
+    ],
 
     // changes dynamically
     'defaultLang'           => $this->retrieve('i18n', 'en'),
     'breadcrumbs'           => ['/'],
     'isStartpage'           => false,
     'collection'            => null,            // current collection
-    'hasBackgroundImage'    => false,
     'clientIpIsAllowed'     => false,           // if maintenance and ip is allowed
     'hasParentPage'         => false,           // for sub pages and pagination
     'parentPage'            => null,
@@ -181,8 +211,13 @@ $this->module('multiplane')->extend([
     },
 
     'findOne' => function($slug = '') {
+        return $this->getPage($slug);
+    },
+
+    'getPage' => function($slug = '') {
 
         $slug = $this->resolveSlug($slug);
+        $collection = $this->collection;
 
         // startpage
         if (empty($slug)) {
@@ -208,7 +243,7 @@ $this->module('multiplane')->extend([
                 // filter by localized slug
                 $lang = $this('i18n')->locale;
 
-                $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$this->collection, false);
+                $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$collection, false);
 
                 if ($this->slugName != '_id' && $isLocalized && $lang != $this->defaultLang) {
                     $filter[$this->slugName.'_'.$lang] = $slug;
@@ -217,8 +252,14 @@ $this->module('multiplane')->extend([
                 }
             }
         }
+        
+        $projection = null;
+        $populate = false;
+        $fieldsFilter = ['lang' => $this('i18n')->locale];
 
-        $page = $this->app->module('collections')->findOne($this->collection, $filter, null, false, ['lang' => $this('i18n')->locale]);
+        $this->app->trigger('multiplane.getpage.before', [$collection, &$filter, &$projection, &$populate, &$fieldsFilter]);
+
+        $page = $this->app->module('collections')->findOne($collection, $filter, $projection, $populate, $fieldsFilter);
 
         if (!$page) return false;
 
@@ -270,8 +311,6 @@ $this->module('multiplane')->extend([
 
     'addBackgroundImage' => function($page = []) {
 
-        // to do: custom media queries
-
         $background = $page['background_image']['_id']
                    ?? $this->site['background_image']['_id']
                    ?? null;
@@ -279,9 +318,21 @@ $this->module('multiplane')->extend([
         if ($background) {
 
             $css = [];
-            $css[] = '@media (min-width: 400px) and (max-width: 1000px) {html {background-image: url("'.MP_BASE_URL.'/getImage?src='.$background.'&w=1000&m=bestFit&q=70");}}';
-            $css[] = '@media (min-width: 1000px) and (max-width: 1200px) {html {background-image: url("'.MP_BASE_URL.'/getImage?src='.$background.'&w=1200&m=bestFit&q=70");}}';
-            $css[] = '@media (min-width: 1200px) {html {background-image: url("'.MP_BASE_URL.'/getImage?src='.$background.'&w=1920&m=bestFit&q=70");}}';
+            $pattern = '';
+
+            foreach ($this->backgroundBreakpoints as $name => $options) {
+
+                $sizes = [];
+                foreach ($options['points'] as $o => $size) {
+                    $sizes[] = '(' . $o . ':' . $size . 'px)';
+                }
+
+                $backgroundSize = $options['size'] ?? $options['points']['max-width'] ?? $options['points']['min-width'] ?? 1920;
+
+                $pattern = '@media ' . implode(' and ', $sizes);
+
+                $css[] = $pattern . '{' . 'html {background-image: url("'.MP_BASE_URL.'/getImage?src='.$background.'&w='.$backgroundSize.'&m=bestFit&q=70");}' . '}';
+            }
 
             $this->add('styles', $css);
 
@@ -380,14 +431,14 @@ $this->module('multiplane')->extend([
             'fields' => [
                 $this->slugName => true,
                 'title' => true,
-                'nav' => true,
+                $this->navName => true,
                 '_pid' => true,
                 '_o' => true,
             ],
         ];
 
         if (!empty($type)) {
-            $options['filter']['nav'] = ['$has' => $type];
+            $options['filter'][$this->navName] = ['$has' => $type];
         }
 
         if ($this->isMultilingual) {
@@ -498,9 +549,11 @@ $this->module('multiplane')->extend([
 
         if (!$collection) $collection = $this->posts;
 
-        $_collection = $this->app->module('collections')->collection($collection);
+        $collection = $this->app->module('collections')->collection($collection);
 
-        if (!$_collection) return false;
+        if (!$collection) return false;
+
+        $name = $collection['name'];
 
         $lang  = $this('i18n')->locale;
         $page  = $this->app->param('page', 1);
@@ -521,11 +574,11 @@ $this->module('multiplane')->extend([
             ],
         ];
 
-        $this->app->trigger('multiplane.getposts.before', [&$options]);
+        $this->app->trigger('multiplane.getposts.before', [$name, &$options]);
 
-        $posts = $this->app->module('collections')->find($collection, $options);
+        $posts = $this->app->module('collections')->find($name, $options);
 
-        $count = $this->app->module('collections')->count($collection, $options['filter']);
+        $count = $this->app->module('collections')->count($name, $options['filter']);
 
         if (!$posts && $count) {
             // send 404 if no posts found (pagination too high)
@@ -560,7 +613,7 @@ $this->module('multiplane')->extend([
             'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
 
-        return compact('posts', 'pagination');
+        return compact('posts', 'pagination', 'collection');
 
     },
     
@@ -1010,6 +1063,12 @@ $this->on('multiplane.init', function() {
 
     if (!$isMultilingual) {
 
+        // init + load i18n
+        $lang = mp()->defaultLang;
+        if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
+            $this('i18n')->load($translationspath, $lang);
+        }
+
         // routes for forms
         $this->bind('/form/*', function($params) {
             return $this->invoke('Multiplane\\Controller\\Forms', 'index', ['params' => $params]);
@@ -1027,7 +1086,7 @@ $this->on('multiplane.init', function() {
     }
     else {
 
-        $defaultLang = $this->retrieve('monoplane/i18n') ?? $this->retrieve('i18n', 'en');
+        $defaultLang = $this->retrieve('multiplane/i18n') ?? $this->retrieve('i18n', 'en');
 
         foreach($languages as $languageCode => $name) {
 
