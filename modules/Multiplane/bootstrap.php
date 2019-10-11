@@ -398,7 +398,7 @@ $this->module('multiplane')->extend([
             $this->app->layout = false;
 
             $view = 'views:index.php';
-            if ($path = $this->app->path('views:' . $collection . '.php')) {
+            if ($path = $this->app->path('views:page/' . $collection . '.php')) {
                 $view = $path;
             }
 

@@ -45,12 +45,12 @@ class Base extends \LimeExtra\Controller {
         // custom views
         $view = 'views:index.php';
         if ($this->module('multiplane')->pageTypeDetection == 'collections') {
-            if ($path = $this->app->path('views:' . $this->module('multiplane')->collection . '.php')) {
+            if ($path = $this->app->path('views:page/' . $this->module('multiplane')->collection . '.php')) {
                 $view = $path;
             }
         }
         if ($this->module('multiplane')->pageTypeDetection == 'type' && !empty($page['type'])) {
-            if ($path = $this->app->path('views:' . $page['type'] . '.php')) {
+            if ($path = $this->app->path('views:page/' . $page['type'] . '.php')) {
                 $view = $path;
             }
         }
