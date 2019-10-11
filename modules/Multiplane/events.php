@@ -79,6 +79,8 @@ $this->on('multiplane.search', function($search, $list) {
 
         $_collection = $this->module('collections')->collection($collection);
 
+        if (!$_collection) continue;
+
         // find route for sub pages
         if ($collection != $pages) {
 
@@ -242,6 +244,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                 $filter = [
                     'published' => true,
                     'subpagemodule.active' => true,
+                    'subpagemodule.collection' => $collection,
                 ];
                 $projection = [
                     '_id' => false,
