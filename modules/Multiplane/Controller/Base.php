@@ -230,6 +230,10 @@ class Base extends \LimeExtra\Controller {
         $site = $this->module('multiplane')->site;
         $page = [];
 
+        if (mp()->hasBackgroundImage) {
+            mp()->addBackgroundImage();
+        }
+
         // To do: 401, 500
 
         switch ($status) {
