@@ -70,8 +70,9 @@ $this->module('multiplane')->extend([
     // content preview
     'isPreviewEnabled'      => false,
     'previewMethod'         => 'html',            // the inbuilt live preview renders the main part as html
-    'livePreviewToken'      => 'a5aaa86fb37592f02fb14229b706de',
+    'livePreviewToken'      => md5(__DIR__),
     'previewDelay'          => 0,
+    'previewScripts'        => false,           // restart MP init scripts
 
     // pagination
     'displayPostsLimit'     => 5,               // number of posts to display in subpagemodule
@@ -345,14 +346,16 @@ $this->module('multiplane')->extend([
         $data = $_REQUEST;
 
         $event      = $data['event'] ?? false;
+
+        if ($event != 'cockpit:collections.preview') return false;
+
         $lang       = isset($data['lang']) && $data['lang'] != 'default' ? $data['lang'] : $this->defaultLang;
         $page       = $data['entry'] ?? false;
         $collection = $data['collection'] ?? false;
 
         $posts = null;
-        $site = $this->site;
-
-        if ($event != 'cockpit:collections.preview') return false;
+        $site  = $this->site;
+        $slug  = $this->resolveSlug(MP_BASE_URL . '/' . $page[$this->slugName]);
 
         if ($this->isMultilingual) {
 
@@ -375,19 +378,17 @@ $this->module('multiplane')->extend([
             $page = $this->renderFields($page);
         }
 
-        // if ($this->hasBackgroundImage) {
-            // $this->addBackgroundImage($page);
-        // }
-
         $hasSubpageModule = isset($page['subpagemodule']['active']) && $page['subpagemodule']['active'] === true;
 
         if ($hasSubpageModule) {
-            $collection = $page['subpagemodule']['collection'];
-            $route = $page['subpagemodule']['route'];
 
-            $posts = $this->getPosts($collection, $this->currentSlug);
+            $subCollection = $page['subpagemodule']['collection'];
+            $route = $page['subpagemodule']['route'];
+            $posts = $this->getPosts($subCollection, $this->currentSlug);
 
         }
+
+        $this->app->trigger('multiplane.getpreview.before', [$collection, &$page, &$posts, &$site]);
 
         if ($this->previewMethod == 'json') {
             return compact('page', 'posts', 'site');
