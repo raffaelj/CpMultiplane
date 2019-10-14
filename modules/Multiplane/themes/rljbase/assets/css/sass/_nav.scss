@@ -1,7 +1,12 @@
 
 $color-bg: #fcfcfc !default;
 $color-shadow: #ccc !default;
+$color-white: #fefefe !default;
 $color-black-transp-dark: rgba(0,0,0,.95) !default;
+
+$color-nav-mini: $color-white !default;
+$color-nav-mini-hover: $color-black !default;
+$color-nav-mini-bg: $color-black-transp-dark !default;
 
 nav {
     // position: relative;
@@ -231,8 +236,8 @@ nav#nav {
             padding-top: 3em; // for close button
             width: 100%;
             height: 100%;
-            overflow-y: scroll;
-            background-color: $color-black-transp-dark;
+            overflow-y: auto;
+            background-color: $color-nav-mini-bg;
             a[href="#nav"] {
                 display: none;
             }
@@ -251,8 +256,12 @@ nav#nav {
                 a {
                     display: block;
                     padding: .5em;
-                    color: $color-white;
-                    border-bottom: 1px solid $color-white;
+                    color: $color-nav-mini;
+                    border-bottom: 1px solid $color-nav-mini;
+                    &:hover, &:focus {
+                        color: $color-nav-mini-hover;
+                        background-color: $color-nav-mini;
+                    }
                 }
                 &:hover > ul,
                 &:focus > ul,
@@ -263,7 +272,7 @@ nav#nav {
                     background-color: transparent;
                         padding-left: 1em;
                     a {
-                        border-left: 1px solid $color-white;
+                        border-left: 1px solid $color-nav-mini;
                     }
                 }
                 &:focus-within > ul
@@ -272,7 +281,7 @@ nav#nav {
                     background-color: transparent;
                         padding-left: 1em;
                     a {
-                        border-left: 1px solid $color-white;
+                        border-left: 1px solid $color-nav-mini;
                     }
                 }
             }
