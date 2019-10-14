@@ -67,6 +67,10 @@ class Base extends \LimeExtra\Controller {
         $site = $this->module('multiplane')->site;
         $posts = null;
 
+        if (mp()->hasBackgroundImage) {
+            mp()->addBackgroundImage();
+        }
+
         // fix language specific paths + i18n
         if ($this->app->module('multiplane')->isMultilingual) {
 
