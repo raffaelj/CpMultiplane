@@ -1,11 +1,11 @@
 
-<main id="main"></main>
+<span id="live-preview"></span>
 
 <script>
 
-    var isMultilingual = {{ cockpit('multiplane')->isMultilingual }};
-    var previewMethod  = '{{ cockpit("multiplane")->previewMethod }}';
-    var previewDelay   = '{{ cockpit("multiplane")->previewDelay ?? 0 }}';
+    var previewScripts = {{ mp()->previewScripts ? 'true' : 'false' }};
+    var previewMethod  = '{{ mp()->previewMethod }}';
+    var previewDelay   = '{{ mp()->previewDelay ?? 0 }}';
 
     var firstRun = true;
 
@@ -18,7 +18,18 @@
         MP.request('/getPreview', event.data, 'html').then(function(data) {
 
             if (previewMethod == 'html') {
-                document.getElementById('main').innerHTML = data;
+
+                document.getElementById('live-preview').innerHTML = data;
+
+                if(previewScripts) {
+                    MP.ready(function() {
+                        MP.replaceVideoLink();
+                        MP.convertVideoLinksToIframes();
+                        MP.Lightbox.init({group:".gallery",selector:"a"});
+                        MP.Carousel.init({selector:".carousel"});
+                    });
+                }
+
             }
 
             else if (previewMethod == 'json') {
@@ -27,7 +38,7 @@
                 // document.getElementById("title").textContent = entry.title;
                 // document.getElementById("title").textContent = entry['title' + (lang != 'default' ? '_'+lang : '')];
 
-                document.getElementById('main').textContent = JSON.stringify(data);
+                document.getElementById('live-preview').textContent = JSON.stringify(data);
             }
 
         });
