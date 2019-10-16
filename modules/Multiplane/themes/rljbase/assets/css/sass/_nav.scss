@@ -9,9 +9,7 @@ $color-nav-mini-hover: $color-black !default;
 $color-nav-mini-bg: $color-black-transp-dark !default;
 
 nav {
-    // position: relative;
     display: inline-block;
-    // z-index: 10;
     margin: 0;
     padding: 0;
     font-size: 1.2em;
@@ -29,7 +27,7 @@ nav {
             display: block;
             padding: .2em;
             &.dropdown {
-                padding-right: 1.5em;
+                padding-right: 1em;
             }
         }
         > ul {
@@ -142,14 +140,12 @@ nav {
                 margin:.5em;
             }
         }
-        @include breakpoint(small) {
-            input[type=checkbox] + label {
-                top: .25em;
-            }
-            @media (pointer: coarse) {
-                input[type=checkbox] + label {
-                    top: auto;
-                    bottom: .25em;
+
+        @media (hover: none), (any-pointer: coarse) {
+            input[type=checkbox] {
+                width: 1em;
+                + label {
+                    width: 1.5em;
                 }
             }
         }
@@ -160,24 +156,36 @@ nav {
     }
 
     input[type=checkbox] {
-        display: none;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: auto; // revert 1em from _form.scss
+        height: 1em;
+        margin: 0;
+        padding: 0;
+        font-size: 1.6em;
         + label {
             position: absolute;
-            top: .5em;
-            right: .5em;
+            top: 0;
+            right: 0;
+            width: 1em; // revert 1em from _form.scss
+            height: 100%;
             margin: 0;
-            padding: 0;
-            cursor: pointer;
+            padding: 0 0 0 .25em;
+            @include box-sizing(border-box);
+
             &:before {
                 content: '';
-                position: static;
-                display: inline-block;
                 width: 0;
                 height: 0;
                 margin: 0;
                 padding: 0;
                 border-color: $color-shadow transparent transparent transparent;
                 border-width: .25em;
+                top: 50%;
+                left: .25em;
+                margin-top: -.15em;
             }
         }
         &:hover, &:focus {
@@ -188,14 +196,14 @@ nav {
         }
         &:checked {
             + label:after {
-                content: none;
+                content: none; // revert from _form.scss
             }
         }
     }
 
-    @media (pointer: coarse) {
+    @media (hover: none), (any-pointer: coarse) {
         li a.dropdown {
-            padding-right: 2em;
+            padding-right: 1.5em;
         }
         input[type=checkbox] + label {
             &:before {
@@ -205,6 +213,7 @@ nav {
     }
 }
 
+// mobile main nav
 nav#nav {
 
     @include breakpoint(mini) {
@@ -249,7 +258,14 @@ nav#nav {
             > ul {
                 display: block;
             }
-    
+            input[type=checkbox] {
+                + label {
+                    height: 2.2em;
+                    &:before {
+                        
+                    }
+                }
+            }
             li {
                 display: block;
                 margin: 0;
@@ -262,6 +278,9 @@ nav#nav {
                         color: $color-nav-mini-hover;
                         background-color: $color-nav-mini;
                     }
+                    &.dropdown {
+                        padding-right: 2em;
+                    }
                 }
                 &:hover > ul,
                 &:focus > ul,
@@ -270,7 +289,7 @@ nav#nav {
                 {
                     position: static;
                     background-color: transparent;
-                        padding-left: 1em;
+                    padding-left: 1em;
                     a {
                         border-left: 1px solid $color-nav-mini;
                     }
@@ -279,7 +298,7 @@ nav#nav {
                 {
                     position: static;
                     background-color: transparent;
-                        padding-left: 1em;
+                    padding-left: 1em;
                     a {
                         border-left: 1px solid $color-nav-mini;
                     }
