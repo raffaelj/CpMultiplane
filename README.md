@@ -1,10 +1,24 @@
 # CpMultiplane
 
-CpMultiplane is a small PHP front end for the fast and headless [Cockpit CMS][1]. It is no Cockpit addon, so don't copy it in the cockpit addon folder. It is designed to use Cockpit as a library to keep the idea of having a headless CMS. When calling Cockpit directly (UI or API), it has no clue about CpMultiplane in the background.
+a small PHP front end for the fast and headless [Cockpit CMS][1]
 
-CpMultiplane is the refactored version of [Monoplane][8]. The code base was ugly, it was designed for very simple portfolio websites with a few pages and it didn't really support multilingual setups.
+**My main goals:**
 
-[Demo][18]
+1. privacy by design and privacy by default
+2. developer friendliness
+  * no plugins to deactivate half of the core features needed
+  * ability to adjust everything
+3. clean and structured backend for my clients - Cockpit CMS with addons and modifications
+4. structured data - keep the system and the data portable and future proof
+5. modular, small and reusable code
+6. semantic html, responsive css, *usable* without javascript
+6. multilingualism by design
+
+CpMultiplane is no classic Cockpit addon. It uses Cockpit as a library, registers `multiplane` as a new module and than uses cockpit's core features. The backend still works as a standalone tool to manage and structure data.
+
+It is the refactored version of [Monoplane][8], which is not maintained anymore.
+
+[Demo][18] (outdated), [Docs][19] (work in progress)
 
 ## Requirements
 
@@ -22,7 +36,7 @@ make also sure that `$_SERVER['DOCUMENT_ROOT']` exists and is set correctly.
 * copy Cockpit in a subfolder of your web root and name it `cockpit`
 * copy additional addons, create your collections, adjust some settings
 
-You can find the detailed version and a cli install example in [/docs/installation.md](/docs/installation.md).
+You can find the detailed version and a cli install example in [docs - installation.md][20].
 
 ## Features
 
@@ -30,7 +44,7 @@ You can find the detailed version and a cli install example in [/docs/installati
 * multilingual with language prefix, e. g.: `example.com/en/my-page`
 * 2 modes for structured content
   1. one collection per content type, e. g. a collection named `pages` and a collection named `posts`
-  2. a single collection named `pages` - each entry has a type `page` or `post`
+  2. a single collection named `pages` - each entry has a type `page` or `post` (**experimental**)
 * maintenance mode with option for allowed ips
 * simple content preview while editing pages
 * a basic responsive theme with scss files
@@ -39,6 +53,7 @@ You can find the detailed version and a cli install example in [/docs/installati
 * pre-rendering of fields, e. g. markdown, wysiwyg
 * multiple ways to change everything
 * GUI via [CpMultiplaneGUI addon][2] - may lack some of the latest features
+* full-text search (**experimental**)
 * ...
 
 ## Recommended Addons
@@ -66,42 +81,31 @@ Install these addons in `cockpit/addons/`.
 
 ## Intended use
 
+### Backend - Cockpit
+
 1. Create a singleton `site` for your default page definitions.
 2. Create a collection `pages` for all of your pages.
 3. Create a collection `posts` for all of your blog posts.
 4. Use the CpMultiplaneGUI addon.
 
-## Default templates
+### Frontend - CpMultiplane
 
-coming soon...
+1. create a child theme of rljbase or create your own theme
+2. adjust defaults in `/child-theme/config/config.php`
+3. add snippets to `/child-theme/bootstrap.php`, that are explicitly for your theme
+4. add snippets to `/config/bootstrap.php`, that are specifically for your setup
+5. change some partials to fit your needs
 
 ## Settings
 
-The fastest way to change some defaults, is to add some values to `MP_DOCS_ROOT/cockpit/config/config.yaml`:
-
-to do...
+The fastest way to change some defaults, is to add some values to `/cockpit/config/config.yaml`:
 
 ```yaml
 multiplane:
+    siteSingleton: config
     slugName: slug
-    isMultilingual: true
-    # isInMaintenanceMode: true
-    # allowedIpsInMaintenanceMode: 127.0.0.1
-    # isPreviewEnabled: false
-    preRenderFields: ["content", "excerpt"]
-    displayPostsLimit: 6
-    paginationDropdownLimit: 5
-    formSendReferer: true                         # send current page with the contact form
-    lexy:
-        logo:
-            width: 200
-            height: 200
-        headerimage:
-            width: 968
-            height: 200
+    sitemap: ['pages', 'posts', 'products']
 ```
-
-If you change some settings and your page doesn't update, clear your cache in *Settings --> System --> Cache --> click trash icon* or just call `/cockpit/call/cockpit/clearCache?acl=qwe` while you are logged in and have cockpit manage rights.
 
 ## Reserved routes
 
@@ -109,7 +113,7 @@ If you change some settings and your page doesn't update, clear your cache in *S
 * `/getImage` - Calling `/getImage?src=assets_id?w=100&h=100&m=thumbnail` returns images/thumbnails with predefined settings, that can be adjusted with params
 * `/submit` and `/forms` - for contact forms
 * `/getPreview` and `/livePreview` for content preview
-
+* `/clearcache` to clear the cockpit's cache (only in debug mode)
 
 ## Copyright and License
 
@@ -136,3 +140,5 @@ Without Cockpit, CpMultiplane couldn't exist. Thanks to [Artur Heinze][16] and t
 [16]: https://github.com/aheinze
 [17]: https://github.com/agentejo/cockpit/graphs/contributors
 [18]: https://monoplane.rlj.me
+[19]: https://github.com/raffaelj/cockpit_CpMultiplane-docs
+[20]: https://github.com/raffaelj/cockpit_CpMultiplane-docs/blob/master/installation.md
