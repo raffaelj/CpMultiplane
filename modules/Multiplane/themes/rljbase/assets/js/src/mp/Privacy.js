@@ -29,7 +29,7 @@ module.exports = {
             // manipulate data, e. g. to force setting a "zero cookie" when no checkbox was checked
             MP.trigger('privacy.form.submit', data);
 
-            var entries = data.entries(), entry   = entries.next();
+            var entries = data.entries(), entry = entries.next();
 
             // set cookies for all inputs from privacy modal
             // to do: custom lifeTime per cookie
@@ -38,15 +38,20 @@ module.exports = {
                 entry = entries.next();
             }
 
-            $this.hide();
-
             // trigger 'privacy' again to check for set cookies
             // and to pass params to following event
             MP.trigger('privacy', params);
 
+            $this.hide();
+
         });
 
         form.addEventListener('reset', function(e) {
+
+            // set cookies manually to zero, if you don't want to annoy your
+            // visitors with this popup over and over again
+            MP.trigger('privacy.form.reset');
+
             $this.hide();
         });
 
@@ -58,10 +63,12 @@ module.exports = {
 
         this.active = true;
 
-        this.modal.style.display = 'block';
+        this.modal.classList.add('show');
         this.modal.tabIndex = -1;
         this.modal.setAttribute('role', 'dialog');
         this.modal.focus();
+
+        MP.trigger('privacy.show');
 
         // force focus to modal
         d.addEventListener('focus', function(e) {
@@ -84,7 +91,7 @@ module.exports = {
 
         this.active = false;
 
-        this.modal.style.display = '';
+        this.modal.classList.remove('show');
 
         // accessibility
         this.lastFocus.focus();

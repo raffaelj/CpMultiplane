@@ -1,25 +1,38 @@
+
+$color-privacy-notice-bg: rgba(255,255,255,.98) !default;
+
 #privacy-notice {
-    display: none;
     position: fixed;
-    top: 0;
-    height: 350px;
-    max-height: calc(100vh - 2em);
+    visibility: hidden;
+    opacity: 0;
+    z-index: 10000;
+    bottom: 100%;
+
+    width: calc(100vw - 1em);
+    max-height: calc(100vh - 1em);
+    margin: .5em;
+    @include box-sizing(border-box);
+
     overflow-y: auto;
     font-size: .9em;
-    background-color: rgba(255,255,255,.98);
-    z-index: 10000;
+    background-color: $color-privacy-notice-bg;
     outline: 0; // prevent outline on focus
-    @include breakpoint(small) {
-        top: auto;
-        left: 50%;
+    transition: opacity .5s ease-in, bottom .8s ease-in-out;
+
+    &.show {
+        visibility: visible;
+        opacity: 1;
         bottom: 0;
-        width: 500px;
-        height: auto;
-        margin-left: -250px;
-    }
-    @include breakpoint(medium) {
-        width: 740px;
-        margin-left: -370px;
+        @include breakpoint(small) {
+            top: auto;
+            left: 50%;
+            width: 500px;
+            margin-left: -250px;
+        }
+        @include breakpoint(medium) {
+            width: 740px;
+            margin-left: -370px;
+        }
     }
     h1 {
         font-size: 1.5em;

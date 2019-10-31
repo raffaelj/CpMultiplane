@@ -16,10 +16,12 @@ $route = mp()->getRouteToPrivacyPage();
 
         <input id="loadExternalVideos" name="loadExternalVideos" type="checkbox" value="1" checked />
         <label for="loadExternalVideos">
-            @lang('Allow cookie usage and to load external videos from YouTube and Vimeo')
+            @lang('Allow loading external media from YouTube/Vimeo')
         </label>
 
-        <button id="privacy-notice-submit" type="submit">@lang('Yes')</button>
+        @trigger('multiplane.privacy.form')
+
+        <button id="privacy-notice-submit" type="submit">@lang('Accept')</button>
         <button id="privacy-notice-cancel" type="reset">@lang('No')</button>
     </form>
 
