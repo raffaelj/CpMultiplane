@@ -9,6 +9,7 @@
     text-align: center;
     background-color: rgba(0,0,0,.9);
     z-index: 10;
+    outline: 0; // prevent outline on focus (Chrome)
     &.active {
         display: table;
     }
