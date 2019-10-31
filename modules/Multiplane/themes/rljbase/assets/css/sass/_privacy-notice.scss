@@ -8,6 +8,7 @@
     font-size: .9em;
     background-color: rgba(255,255,255,.98);
     z-index: 10000;
+    outline: 0; // prevent outline on focus
     @include breakpoint(small) {
         top: auto;
         left: 50%;
