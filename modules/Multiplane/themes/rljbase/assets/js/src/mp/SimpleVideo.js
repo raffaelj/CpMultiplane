@@ -92,23 +92,29 @@ module.exports = {
 
                 if (e) e.preventDefault();
 
+                // fire event to check for privacy cookie
                 MP.trigger('privacy', {
                     type:   'external_video',
-                    target: iframe
+                    target: iframe,
+                    cookie: 'loadExternalVideos',
+                    event: 'external_video'
                 });
 
             });
 
         });
 
+        MP.on('external_video', function(e) {
+
+            if (e && e.params && e.params.target) {
+                $this.loadVideo(e.params.target);
+            }
+
+        });
+
     },
 
     replaceVideoLink: function() {
-
-        // to do: fix disabled autoplay on mobile device
-        // seems to not work without youtube iframe player api
-        // https://developers.google.com/youtube/iframe_api_reference
-        // or with a fake click event...
 
         var $this = this,
             video_links = d.querySelectorAll('.video_embed');
@@ -127,12 +133,23 @@ module.exports = {
 
                 if (e) e.preventDefault();
 
+                // fire event to check for privacy cookie
                 MP.trigger('privacy', {
                     type:   'external_video',
-                    target: iframe
+                    target: iframe,
+                    cookie: 'loadExternalVideos',
+                    event: 'external_video'
                 });
 
             });
+
+        });
+
+        MP.on('external_video', function(e) {
+
+            if (e && e.params && e.params.target) {
+                $this.loadVideo(e.params.target);
+            }
 
         });
 

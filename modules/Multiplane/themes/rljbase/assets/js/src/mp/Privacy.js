@@ -24,22 +24,25 @@ module.exports = {
 
             if (e) e.preventDefault();
 
-            var data    = new FormData(form),
-                entries = data.entries(),
-                entry   = entries.next()
-                ;
+            var data = new FormData(form);
 
+            // manipulate data, e. g. to force setting a "zero cookie" when no checkbox was checked
+            MP.trigger('privacy.form.submit', data);
+
+            var entries = data.entries(), entry   = entries.next();
+
+            // set cookies for all inputs from privacy modal
+            // to do: custom lifeTime per cookie
             while (!entry.done) {
-                Cookie.set(entry.value[0], entry.value[1])
+                Cookie.set(entry.value[0], entry.value[1]);
                 entry = entries.next();
             }
 
-            MP.trigger('privacy', {
-                type:   params.type,
-                target: target
-            });
-
             $this.hide();
+
+            // trigger 'privacy' again to check for set cookies
+            // and to pass params to following event
+            MP.trigger('privacy', params);
 
         });
 

@@ -1,6 +1,4 @@
 
-var g = window, d = document;
-
 module.exports = {
 
     lifeTime: '30', // cookie life time in days
@@ -13,16 +11,16 @@ module.exports = {
         var expirationDate = new Date();
         expirationDate.setTime(expirationDate.getTime() + lifeTime * 86400000)
 
-        d.cookie = key + '=' + value + ';expires=' + expirationDate.toUTCString() + '; path=/';
+        document.cookie = key + '=' + value + ';expires=' + expirationDate.toUTCString() + '; path=/';
 
     },
 
     get: function(key) {
 
-        if (d.cookie == '') return;
+        if (document.cookie == '') return;
 
         // source: https://stackoverflow.com/a/42578414
-        var cockie = d.cookie.split('; ').reduce(function(result, pairStr) {
+        var cockie = document.cookie.split('; ').reduce(function(result, pairStr) {
             var arr = pairStr.split('=');
             if (arr.length === 2) { result[arr[0]] = arr[1]; }
             return result;
