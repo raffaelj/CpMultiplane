@@ -94,9 +94,9 @@ module.exports = {
                 if (node) {
                     $this.captions[k][i] = node.innerHTML;
                 } else if (el.getAttribute('title')) {
-                    $this.captions[k][i] = el.getAttribute('title');
+                    $this.captions[k][i] = (el.getAttribute('title')).replace(/(\r\n|\n\r|\r|\n)/g, '<br>' + '$1');
                 } else if (el.dataset.title) {
-                    $this.captions[k][i] = el.dataset.title;
+                    $this.captions[k][i] = (el.dataset.title).replace(/(\r\n|\n\r|\r|\n)/g, '<br>' + '$1');
                 }
 
             });
