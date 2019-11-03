@@ -1,5 +1,6 @@
 
-var d = document;
+var d = document,
+    Modal  = require('./SimpleModalManager.js');
 
 module.exports = {
 
@@ -10,13 +11,13 @@ module.exports = {
     currentGallery: null,
     galleries:      [],
     captions:       [],
-    img:            d.createElement('img'),
-    lightbox:       d.createElement('div'),
-    wrap:           d.createElement('div'),
-    caption:        d.createElement('div'),
-    closeButton:    d.createElement('a'),
-    prevButton:     d.createElement('a'),
-    nextButton:     d.createElement('a'),
+    img:            null,
+    lightbox:       null,
+    wrap:           null,
+    caption:        null,
+    closeButton:    null,
+    prevButton:     null,
+    nextButton:     null,
     lastFocus:      null,
 
     init: function(options) {
@@ -34,31 +35,6 @@ module.exports = {
             }
         } else { return; }
 
-        this.lightbox.setAttribute('class', 'lightbox');
-        this.lightbox.setAttribute('role', 'dialog');
-        this.lightbox.setAttribute('aria-hidden', 'true');
-        this.lightbox.tabIndex = -1;
-
-        d.querySelector('body').appendChild(this.lightbox);
-
-        this.prevButton.setAttribute('href', '#');
-        this.nextButton.setAttribute('href', '#');
-        this.closeButton.setAttribute('href', '#');
-        
-        this.prevButton.setAttribute('aria-label', 'previous');
-        this.nextButton.setAttribute('aria-label', 'next');
-        this.closeButton.setAttribute('aria-label', 'close');
-
-        this.prevButton.classList.add('prev');
-        this.nextButton.classList.add('next');
-        this.closeButton.classList.add('icon-close');
-
-        this.lightbox.appendChild(this.wrap);
-        this.lightbox.appendChild(this.prevButton);
-        this.lightbox.appendChild(this.nextButton);
-        this.lightbox.appendChild(this.closeButton);
-        this.wrap.appendChild(this.img);
-
         if (this.group) {
             var groups = d.querySelectorAll(this.group);
             Array.prototype.forEach.call(groups, function(el, i) {
@@ -68,6 +44,9 @@ module.exports = {
         else {
             this.galleries.push(d.querySelectorAll(this.selector));
         }
+
+        if (this.galleries.length < 1) { return; }
+        else { this.addLightboxToDOM(); }
 
         Array.prototype.forEach.call(this.galleries, function(gallery, k) {
 
@@ -125,12 +104,12 @@ module.exports = {
         });
 
         // force focus to modal
-        d.addEventListener('focus', function(e) {
-            if ($this.active && !$this.lightbox.contains(e.target)) {
-                e.stopPropagation();
-                $this.lightbox.focus();
-            }
-        }, true);
+        Modal.keepFocus({
+            modal:     this.lightbox,
+            condition: function(){return $this.active;},
+            priority:  10,
+            elements:  'a.icon-close'
+        });
 
         d.addEventListener('keydown', function(e) {
             if ($this.active) {
@@ -139,6 +118,43 @@ module.exports = {
                 if (e.keyCode == 27) $this.close(e);
             }
         });
+
+    },
+
+    addLightboxToDOM: function() {
+
+        this.img         = d.createElement('img'),
+        this.lightbox    = d.createElement('div'),
+        this.wrap        = d.createElement('div'),
+        this.caption     = d.createElement('div'),
+        this.closeButton = d.createElement('a'),
+        this.prevButton  = d.createElement('a'),
+        this.nextButton  = d.createElement('a'),
+
+        this.lightbox.setAttribute('class', 'lightbox');
+        this.lightbox.setAttribute('role', 'dialog');
+        this.lightbox.setAttribute('aria-hidden', 'true');
+        this.lightbox.tabIndex = -1;
+
+        d.querySelector('body').appendChild(this.lightbox);
+
+        this.prevButton.setAttribute('href', '#');
+        this.nextButton.setAttribute('href', '#');
+        this.closeButton.setAttribute('href', '#');
+        
+        this.prevButton.setAttribute('aria-label', 'previous');
+        this.nextButton.setAttribute('aria-label', 'next');
+        this.closeButton.setAttribute('aria-label', 'close');
+
+        this.prevButton.classList.add('prev');
+        this.nextButton.classList.add('next');
+        this.closeButton.classList.add('icon-close');
+
+        this.lightbox.appendChild(this.wrap);
+        this.lightbox.appendChild(this.prevButton);
+        this.lightbox.appendChild(this.nextButton);
+        this.lightbox.appendChild(this.closeButton);
+        this.wrap.appendChild(this.img);
 
     },
 

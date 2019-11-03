@@ -6,6 +6,7 @@ MP.Carousel = require('./mp/SimpleCarousel.js');
 MP.Lightbox = require('./mp/SimpleLightbox.js');
 MP.Video    = require('./mp/SimpleVideo.js');
 MP.Privacy  = require('./mp/Privacy.js');
+MP.Modal    = require('./mp/SimpleModalManager.js');
 
 // fire privacy event
 // * to display cookie popup

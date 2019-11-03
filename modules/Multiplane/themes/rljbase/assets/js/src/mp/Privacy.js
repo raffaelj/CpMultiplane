@@ -1,6 +1,7 @@
 
 var d      = document,
     MP     = require('./MP.js'),
+    Modal  = require('./SimpleModalManager.js'),
     Cookie = require('./Cookie.js');
 
 module.exports = {
@@ -71,12 +72,12 @@ module.exports = {
         MP.trigger('privacy.show');
 
         // force focus to modal
-        d.addEventListener('focus', function(e) {
-            if ($this.active && !$this.modal.contains(e.target)) {
-                e.stopPropagation();
-                $this.modal.focus();
-            }
-        }, true);
+        Modal.keepFocus({
+            modal:     this.modal,
+            condition: function(){return $this.active;},
+            priority:  1000,
+            elements: 'button,a,input'
+        });
 
         // close modal with Escape
         // d.addEventListener('keydown', function(e) {
