@@ -157,6 +157,22 @@ class Fields extends \Lime\Helper {
 
         }
 
+        // fix image sources inside wysiwyg field when switching between remote
+        // and sub folder production setup
+        $images = $dom->getElementsByTagName('img');
+
+        foreach ($images as $img) {
+
+            $src = $img->getAttribute('src');
+
+            if (strpos($src, '/getImage') === 0 && strpos($src, '//') === false) {
+
+                $img->setAttribute('src', $this->app->routeUrl($src));
+
+            }
+
+        }
+
         return substr(trim($dom->saveHTML()), 199, -14);
 
     }
