@@ -59,7 +59,7 @@ class Base extends \LimeExtra\Controller {
 
         return $this->render($view, compact('page', 'posts', 'site'));
 
-    }
+    } // end of index()
 
     public function livePreview($params = []) {
 
@@ -87,13 +87,13 @@ class Base extends \LimeExtra\Controller {
 
         return $this->render('views:live-preview.php', compact('page', 'posts', 'site'));
 
-    }
+    } // end of livePreview()
 
     public function getPreview($data = []) {
 
         return $this->app->module('multiplane')->getPreview($data);
 
-    }
+    } // end of getPreview()
 
     public function getImage($options = []) {
 
@@ -154,7 +154,7 @@ class Base extends \LimeExtra\Controller {
 
         $this->app->stop();
 
-    }
+    } // end of getImage()
 
     public function search($params = null) {
 
@@ -199,7 +199,7 @@ class Base extends \LimeExtra\Controller {
 
         return $this->render('views:search.php', ['page' => [], 'site' => $site, 'list' => [], 'error' => $error]);
 
-    }
+    } // end of search()
 
     public function sitemap() {
 
@@ -212,8 +212,13 @@ class Base extends \LimeExtra\Controller {
 
         $xml->startElement('urlset');
         $xml->writeAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-        $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
-        // $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/TR/xhtml11/xhtml11_schema.html');
+
+        if (!mp()->isMultilingual) {
+            $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
+        } else {
+            $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/TR/xhtml11/xhtml11_schema.html');
+        }
+
         $xml->writeAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
         $xml->writeAttribute('xsi:schemaLocation', 'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd');
 
@@ -227,7 +232,7 @@ class Base extends \LimeExtra\Controller {
 
         return $xml->outputMemory();
 
-    }
+    } // end of sitemap()
 
     public function error($status = '') {
 
@@ -250,6 +255,6 @@ class Base extends \LimeExtra\Controller {
                 break;
         }
 
-    }
+    } // end of error()
 
 }
