@@ -12,4 +12,4 @@ if (PHP_SAPI == 'cli-server' && is_file(__DIR__.parse_url($_SERVER['REQUEST_URI'
 require(__DIR__.'/bootstrap.php');
 
 // run app
-$cockpit->trigger('multiplane.init')->run();
+$cockpit->trigger('multiplane.bootstrap')->run();

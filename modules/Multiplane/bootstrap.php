@@ -998,7 +998,7 @@ include_once(__DIR__ . '/module/forms.php');
 include_once(__DIR__ . '/events.php');
 
 
-$this->on('multiplane.init', function() {
+$this->on('multiplane.bootstrap', function() {
 
     // overwrite default config
     $this->module('multiplane')->setConfig();
@@ -1134,6 +1134,8 @@ $this->on('multiplane.init', function() {
         });
 
     }
+
+    $this->trigger('multiplane.init');
 
 });
 
