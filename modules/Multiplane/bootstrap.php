@@ -435,6 +435,7 @@ $this->module('multiplane')->extend([
                 $this->navName => true,
                 '_pid' => true,
                 '_o' => true,
+                'startpage' => true,
             ],
         ];
 

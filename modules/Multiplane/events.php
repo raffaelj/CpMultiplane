@@ -204,6 +204,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
         'fields' => [
             $slugName => true,
             '_modified' => true,
+            'startpage' => true,
         ],
     ];
 
@@ -225,6 +226,8 @@ $this->on('multiplane.sitemap', function(&$xml) {
         $hasLocalizedSlug = isset($this['unique_slugs']['localize'][$collection]);
 
         foreach($this->module('collections')->find($collection, $options) as $page) {
+
+            $isStartpage = !empty($page['startpage']);
 
             if ($collection != mp()->pages) {
 
@@ -252,7 +255,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
                 $xml->startElement('url');
                   $xml->startElement('loc');
-                  $xml->text($siteUrl . $route . '/' . $page[mp()->slugName]);
+                  $xml->text($siteUrl . $route . (!$isStartpage ? '/' . $page[mp()->slugName] : ''));
                   $xml->endElement();
 
                   $xml->startElement('lastmod');
@@ -277,7 +280,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                     $xml->startElement('url');
 
                       $xml->startElement('loc');
-                      $xml->text($siteUrl . "/$lang" . $route . '/' . $page[$slugName.$suffix2]);
+                      $xml->text($siteUrl . "/$lang" . $route . (!$isStartpage ? '/' . $page[$slugName.$suffix2] : ''));
                       $xml->endElement();
 
                       foreach ($languages as $l) {
@@ -296,7 +299,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                           $xml->startElement('xhtml:link');
                           $xml->writeAttribute('rel', 'alternate');
                           $xml->writeAttribute('hreflang', $l);
-                          $xml->writeAttribute('href', $siteUrl . "/$l" . $route . '/' . $page[$slugName . $suffix]);
+                          $xml->writeAttribute('href', $siteUrl . "/$l" . $route . (!$isStartpage ? '/' . $page[$slugName . $suffix] : ''));
                           $xml->endElement();
 
                       }
