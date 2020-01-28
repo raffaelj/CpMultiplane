@@ -2,7 +2,9 @@
 
 $description = $app->escape(!empty($page['description']) ? $page['description'] : ($site['description'] ?? ''));
 $site_name = $site['site_name'] ?? $app['app.name'];
+$site_name = \html_entity_decode($site_name);
 $title = (!empty($page['title']) ? $page['title'] : $site_name);
+$title = \html_entity_decode($title);
 
 $img = $page['featured_image']['_id'] ?? $site['logo']['_id'] ?? $page['featured_image']['path'] ?? $site['logo']['path'] ?? null;
 if ($img) $image = $app['site_url'].'/getImage?src='.urlencode($img).'&w=1500&h=1500';
