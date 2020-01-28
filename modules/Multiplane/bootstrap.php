@@ -1001,7 +1001,7 @@ include_once(__DIR__ . '/events.php');
 $this->on('multiplane.bootstrap', function() {
 
     // overwrite default config
-    $this->module('multiplane')->setConfig();
+    mp()->setConfig();
 
     // load theme bootstrap file(s)
     if (mp()->parentTheme && mp()->parentThemeBootstrap
@@ -1014,15 +1014,15 @@ $this->on('multiplane.bootstrap', function() {
     }
 
     // extend lexy parser for custom image url templating
-    $this->module('multiplane')->extendLexy();
+    mp()->extendLexy();
 
     // skip binding routes if in maintenance mode
-    if (!$this->module('multiplane')->accessAllowed()) {
+    if (!mp()->accessAllowed()) {
         return;
     }
 
     // dont't bind any routes, if user wants to use only their own routes
-    if ($this->module('multiplane')->disableDefaultRoutes) {
+    if (mp()->disableDefaultRoutes) {
         return;
     }
 
@@ -1048,20 +1048,20 @@ $this->on('multiplane.bootstrap', function() {
     // routes for live preview
     $this->bind('/getPreview', function($params) {
         return $this->invoke('Multiplane\\Controller\\Base', 'getPreview', ['params' => $params]);
-    }, $this->module('multiplane')->isPreviewEnabled && $this->req_is('ajax'));
+    }, mp()->isPreviewEnabled && $this->req_is('ajax'));
 
     $this->bind('/livePreview', function($params) {
 
-        if ($this->param('token') != $this->module('multiplane')->livePreviewToken) {
+        if ($this->param('token') != mp()->livePreviewToken) {
             return false;
         }
 
         return $this->invoke('Multiplane\\Controller\\Base', 'livePreview', ['params' => $params]);
 
-    }, $this->module('multiplane')->isPreviewEnabled);
+    }, mp()->isPreviewEnabled);
 
     // bind wildcard routes
-    $isMultilingual = $this->module('multiplane')->isMultilingual && ($languages = $this->retrieve('languages', false));
+    $isMultilingual = mp()->isMultilingual && ($languages = $this->retrieve('languages', false));
 
     if (!$isMultilingual) {
 
@@ -1079,7 +1079,7 @@ $this->on('multiplane.bootstrap', function() {
         $this->bind('/*', function($params) {
 
             // fulltext search
-            if ($this->module('multiplane')->displaySearch && $this->param('search')) {
+            if (mp()->displaySearch && $this->param('search')) {
                 return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
             }
 
@@ -1111,7 +1111,7 @@ $this->on('multiplane.bootstrap', function() {
                 }
 
                 // fulltext search
-                if ($this->module('multiplane')->displaySearch && $this->param('search')) {
+                if (mp()->displaySearch && $this->param('search')) {
                     return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
                 }
 
@@ -1147,9 +1147,9 @@ $this->on('after', function() {
         $this->response->status = 404;
     }
  
-    if ($this->module('multiplane')->isInMaintenanceMode) {
+    if (mp()->isInMaintenanceMode) {
 
-        if (!$this->module('multiplane')->clientIpIsAllowed) {
+        if (!mp()->clientIpIsAllowed) {
             $this->response->status = 503;
         }
 
