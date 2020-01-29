@@ -6,20 +6,45 @@ var d      = document,
 
 module.exports = {
 
-    modal: d.getElementById('privacy-notice'),
-    active: false,
-    lastFocus: null,
+    modalSelector: 'privacy-notice',       // id of modal
+    formSelector:  'privacy-notice-form',  // id of form inside modal
+
+    modal:              null,
+    initialized:        false,
+    initializedEvents:  false,
+    active:             false,
+    lastFocus:          null,
+
+    init: function(options) {
+
+        if (options) {
+            if (options.modalSelector) this.modalSelector = options.modalSelector;
+            if (options.formSelector)  this.formSelector  = options.formSelector;
+        }
+
+        this.modal = d.getElementById(this.modalSelector);
+        if (!this.modal) return;
+
+        this.initialized = true;
+
+    },
 
     displayPrivacyNotice: function (params) {
 
-        var $this  = this,
-            target = params.target || d.activeElement,
-            form   = d.getElementById('privacy-notice-form')
-            ;
+        if (!this.initialized) this.init();
+
+        var $this  = this
+          , target = params.target || d.activeElement
+          , form   = d.getElementById(this.formSelector)
+          ;
+
+        if (!form) return;
 
         this.lastFocus = target,
 
         this.show();
+
+        if (this.initializedEvents) return; // avoid duplicated event listeners
 
         form.addEventListener('submit', function(e) {
 
@@ -56,9 +81,13 @@ module.exports = {
             $this.hide();
         });
 
+        this.initializedEvents = true;
+
     },
 
     show: function() {
+
+        if (!this.initialized) this.init();
 
         var $this = this;
 
@@ -89,6 +118,8 @@ module.exports = {
     },
 
     hide: function() {
+
+        if (!this.initialized) this.init();
 
         this.active = false;
 
