@@ -209,6 +209,16 @@ input[type=submit], input[type=reset], input[type=button], button {
     &:hover, &:focus {
         background-color: $color-link-hover;
     }
+    &:disabled {
+        background-color: $color-grey;
+        color: $color-darker;
+        cursor: default;
+        &:hover,&:focus {
+            background-color: $color-grey;
+        }
+    }
+}
+input, button {
     &[type=submit] {
         background-color: $color-link;
         &:hover, &:focus {
@@ -228,14 +238,6 @@ input[type=submit], input[type=reset], input[type=button], button {
         background-color: $color-darker;
         &:hover, &:focus {
             background-color: $color-link-hover;
-        }
-    }
-    &:disabled {
-        background-color: $color-grey;
-        color: $color-darker;
-        cursor: default;
-        &:hover,&:focus {
-            background-color: $color-grey;
         }
     }
 }
