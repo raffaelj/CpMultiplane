@@ -1139,11 +1139,11 @@ $this->module('multiplane')->extend([
 
 // module parts
 include_once(__DIR__ . '/module/forms.php');
-include_once(__DIR__ . '/module/matomo.php');
 
-// events
-include_once(__DIR__ . '/events.php');
-
+// experimental parts
+include_once(__DIR__ . '/experimental/fulltextsearch.php');
+include_once(__DIR__ . '/experimental/sitemap.php');
+include_once(__DIR__ . '/experimental/matomo.php');
 
 $this->on('multiplane.bootstrap', function() {
 
