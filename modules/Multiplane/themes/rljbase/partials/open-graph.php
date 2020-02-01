@@ -1,5 +1,7 @@
 <?php
 
+// deprecated - use seometa.php instead
+
 $description = $app->escape(!empty($page['description']) ? $page['description'] : ($site['description'] ?? ''));
 $site_name = $site['site_name'] ?? $app['app.name'];
 $site_name = \html_entity_decode($site_name);

@@ -7,11 +7,7 @@
         <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-
-        <title>{{ \html_entity_decode((!empty($page['title']) ? $page['title'] . ' - ' : '') . ($site['site_name'] ?? $app['app.name'])) }}</title>
-        <meta name="description" content="{{ $app->escape(!empty($page['description']) ? $page['description'] : ($site['description'] ?? '')) }}" />
-
-        @render('views:partials/open-graph.php', compact('page', 'site'))
+        @render('views:partials/seometa.php', compact('page'))
 
         <link rel="shortcut icon" href="{{ MP_BASE_URL }}/favicon.png?ver={{ mp()->version }}">
 
@@ -21,6 +17,8 @@
         </script>
         {{ $app->assets($app['multiplane.assets.top'], mp()->version) }}
         {{ mp()->userStyles() }}
+
+        @trigger('multiplane.head')
 
     </head>
 

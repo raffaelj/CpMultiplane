@@ -988,6 +988,152 @@ $this->module('multiplane')->extend([
 
     },
 
+    'getSeoMeta' => function($page = []) {
+
+        // to do: see themes/rljbase/views/partials/seometa.php
+
+        $site = $this->site;
+        
+        $spacer = !empty($site['seo']['spacer']) ? $site['seo']['spacer'] : ' - ';
+
+        $site_name = \html_entity_decode($site['seo']['branding']
+                      ?? $site['site_name'] ?? $this->app['app.name']);
+
+        $title = \html_entity_decode(!empty($page['title']) ? $page['title'] : '');
+        $description = $this->app->escape(!empty($page['description'])
+                       ? $page['description'] : ($site['description'] ?? ''));
+
+        $image = $page['featured_image']['_id'] ?? $site['logo']['_id']
+                 ?? $page['featured_image']['path'] ?? $site['logo']['path'] ?? '';
+        $image_url = $this->app['site_url'].'/getImage?src='.\urlencode($image).'&w=1500&h=1500';
+
+        $query_string = !empty($_SERVER['QUERY_STRING'])
+                        ? '?'.\urlencode($this->app->escape($_SERVER['QUERY_STRING'])) : '';
+        $url = $this->app['site_url'] . $this->app['route'] . $query_string;
+
+        $locale = $this('i18n')->locale;
+        $site_url = !$this->isMultilingual ? $this->app['site_url']
+                    : $this->app['site_url'] . '/' . $locale;
+
+        $seo = array_replace_recursive(
+            [
+                'title' => $title,
+                'description' => $description,
+                'image' => $image,
+                'og' => [
+                    'locale' => $locale,
+                    'type' => 'website', // to do: "website" or "article"
+                    'site_name' => $site_name,
+                    'url' => $url,
+                    'image' => $image_url,
+                    'title' => $title,
+                    'description' => $description,
+                ],
+                'twitter' => [
+                    'card' => 'summary_large_image', // to do...
+                    'image' => $image_url,
+                    'title' => $title,
+                    'description' => $description,
+                ],
+            ],
+            isset($site['seo']) && is_array($site['seo']) ? $site['seo'] : [],
+            isset($page['seo']) && is_array($page['seo']) ? $page['seo'] : []
+        );
+
+        foreach ($seo as $k => &$v) {
+            // add spacer and site name to titles
+            if ($k == 'title') {
+                $v = empty($v) ? $site_name : $v . $spacer . $site_name;
+                continue;
+            }
+            // skip empty values
+            if (empty($v)) {
+                unset($seo[$k]);
+                continue;
+            }
+            if (is_array($v)) {
+                foreach ($v as $kk => &$vv) {
+                    // add spacer and site name to titles
+                    if ($kk == 'title') {
+                        $vv = empty($vv) ? $site_name : $vv . $spacer . $site_name;
+                        continue;
+                    }
+                    // convert asset array to image url
+                    if ($kk == 'image' && is_array($vv)) {
+                        if (isset($vv['_id'])) {
+                            $vv = $this->app['site_url'].'/getImage?src='.$vv['_id'].'&w=1500&h=1500';
+                        } else {
+                            unset($seo[$k][$kk]);
+                        }
+                    }
+                }
+                unset($vv);
+            }
+        }
+        unset($v);
+
+        $schemas = [];
+
+        if ($this->isStartpage) {
+
+            $schemas[] = [
+                '@context' => 'https://schema.org',
+                '@type' => 'Organization', // to do...
+                'url' => $site_url,
+                'name' => $site_name,
+                'logo' => $image_url
+            ];
+
+            if ($this->displaySearch) {
+
+                $schemas[] = [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'WebSite',
+                    'url' => $site_url,
+                    'name' => $site_name,
+                    'potentialAction' => [
+                        '@type' => 'SearchAction',
+                        'target' => $site_url . '?search={search_term_string}',
+                        'query-input' => 'required name=search_term_string'
+                    ]
+                ];
+            }
+
+        }
+        else {
+
+            $schema = [
+                '@context' => 'https://schema.org',
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => []
+            ];
+
+            $breadcrumbs = $this->breadcrumbs;
+            $c = count($breadcrumbs);
+
+            $p = '';
+            foreach ($breadcrumbs as $k => $v) {
+                $p .= $v;
+                $schema['itemListElement'][] = [
+                    '@type' => 'ListItem',
+                    'position' => $k + 1,
+                    'item' => [
+                        '@id' => $k == 0 ? $site_url : ( $k < $c - 1
+                                 ? $site_url . $p
+                                 : $url ),
+                         // to do: parent page title
+                        'name' => $k == 0 ? $site_name : ( $k < $c - 1 ? $v : $title )
+                    ]
+                ];
+            }
+            $schemas[] = $schema;
+        }
+        $seo['schemas'] = $schemas;
+
+        return $seo;
+
+    },
+
 ]);
 
 
