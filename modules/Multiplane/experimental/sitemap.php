@@ -1,5 +1,18 @@
 <?php
 
+/**
+ * Generate example.com/sitemap.xml
+ *
+ * config.yaml example for multiple collections in sitemap:
+
+```yaml
+multiplane:
+    sitemap: ['pages', 'posts', 'calendar'] # array of collection names
+```
+
+ *
+ */
+
 $this->on('multiplane.sitemap', function(&$xml) {
 
     $siteUrl        = $this['site_url'];
@@ -36,7 +49,8 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
     foreach ($collections as $collection) {
 
-        if (!$collection) continue;
+        $_collection = $this->module('collections')->collection($collection);
+        if (!$_collection) continue;
 
         $hasLocalizedSlug = isset($this['unique_slugs']['localize'][$collection]);
 

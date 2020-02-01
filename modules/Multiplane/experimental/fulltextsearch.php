@@ -1,12 +1,48 @@
 <?php
 
+/**
+ * fulltext search - experimental
+ *
+ * to do:
+    * [x] special chars in wysiwyg (ä = &auml;...)
+          --> install rljUtils addon and run cli `./cp fix-entity-encoding`
+          https://github.com/raffaelj/cockpit_rljUtils/blob/master/cli/fix-entity-encoding.php
+    * [ ] fix interference, if field names are 'url', 'collection' or 'weight'
+    * [ ] search method AND - currently only OR
+ *
+ * config.yaml example for multiple collections in search results:
 
-// fulltext search - experimental
+```yaml
+multiplane:
+    searchInCollections:
+        pages:
+            label: Pages
+            weight: 10
+            fields:
+                - name: title
+                  weight: 10
+                - name: content
+                  type: markdown
+        posts:
+            label: Blog
+            weight: 5
+            fields:
+                - name: title
+                  weight: 8
+                - name: content
+                  type: markdown
+        calendar:
+            label: Dates
+            weight: 3
+            fields:
+                - name: title
+                  weight: 8
+                - name: content
+                  type: wysiwyg
+```
 
-// to do:
-// * [ ] special chars in wysiwyg (ä = &auml;...)
-// * [ ] fix interference, if field names are 'url', 'collection' or 'weight'
-// * [ ] search method AND - currently only OR
+ *
+ */
 
 $this->on('multiplane.search', function($search, $list) {
 
