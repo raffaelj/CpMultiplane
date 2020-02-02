@@ -144,7 +144,7 @@ $this->module('multiplane')->extend([
             '_id' => $link['_id'],
         ];
 
-        $lang = $this('i18n')->locale;
+        $lang = $this->lang;
 
         if ($lang == $this->defaultLang) {
             $projection = [

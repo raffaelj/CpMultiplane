@@ -74,7 +74,7 @@ class Base extends \LimeExtra\Controller {
         // fix language specific paths + i18n
         if ($this->app->module('multiplane')->isMultilingual) {
 
-            $lang = $this('i18n')->locale;
+            $lang = mp()->lang;
 
             // init + load i18n
             if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {

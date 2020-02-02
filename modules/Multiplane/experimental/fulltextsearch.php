@@ -49,8 +49,8 @@ $this->on('multiplane.search', function($search, $list) {
     $isMultilingual = mp()->isMultilingual;
     $defaultLang    = mp()->defaultLang;
     $slugName       = mp()->slugName;
-    $languages      = [];
-    $lang           = $this('i18n')->locale;
+    $languages      = mp()->getLanguages();
+    $lang           = mp()->lang;
 
     $searchInCollections = mp()->searchInCollections;
 
@@ -153,13 +153,10 @@ $this->on('multiplane.search', function($search, $list) {
             $slugName => true,
         ];
 
-        if ($isMultilingual && is_array($this['languages'])) {
-            foreach ($this['languages'] as $l => $label) {
-                if ($l == 'default') {
-                    $languages[] = $defaultLang;
-                } else {
-                    $languages[] = $l;
-                    $options['fields'][$slugName . '_' . $l] = true;
+        if ($isMultilingual) {
+            foreach ($languages as $l) {
+                if ($l != $defaultLang) {
+                    $options['fields']["{$slugName}_{$l}"] = true;
                 }
             }
         }

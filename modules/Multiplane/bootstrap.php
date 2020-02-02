@@ -242,7 +242,7 @@ $this->module('multiplane')->extend([
             }
             else {
                 // filter by localized slug
-                $lang = $this('i18n')->locale;
+                $lang = $this->lang;
 
                 $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$collection, false);
 
@@ -256,7 +256,7 @@ $this->module('multiplane')->extend([
         
         $projection = null;
         $populate = false;
-        $fieldsFilter = ['lang' => $this('i18n')->locale];
+        $fieldsFilter = ['lang' => $this->lang];
 
         $this->app->trigger('multiplane.getpage.before', [$collection, &$filter, &$projection, &$populate, &$fieldsFilter]);
 
@@ -349,7 +349,8 @@ $this->module('multiplane')->extend([
 
         if ($event != 'cockpit:collections.preview') return false;
 
-        $lang       = isset($data['lang']) && $data['lang'] != 'default' ? $data['lang'] : $this->defaultLang;
+        $lang       = isset($data['lang']) && $data['lang'] != 'default'
+                      ? $data['lang'] : $this->defaultLang;
         $page       = $data['entry'] ?? false;
         $collection = $data['collection'] ?? false;
 
@@ -359,7 +360,7 @@ $this->module('multiplane')->extend([
 
         if ($this->isMultilingual) {
 
-            $this('i18n')->locale = $lang;
+            $this('i18n')->locale = $this->lang = $lang;
             $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
 
             if ($translationspath = $this->app->path("mp_config:i18n/{$lang}.php")) {
@@ -445,7 +446,7 @@ $this->module('multiplane')->extend([
 
         if ($this->isMultilingual) {
 
-            $lang = $this('i18n')->locale;
+            $lang = $this->lang;
 
             $options['lang'] = $lang;
 
@@ -490,52 +491,76 @@ $this->module('multiplane')->extend([
 
     },
 
-    'getLanguageSwitch' => function($_id) {
+    'getLanguages' => function($extended = false) {
 
-        $languages   = [];
+        static $languages;
+        static $languagesExt;
 
-        foreach($this->app['languages'] as $languageCode => $name) {
+        if ($languages && !$extended)   return $languages;
+        if ($languagesExt && $extended) return $languagesExt;
 
+        $languages = $languagesExt = [];
+
+        if ($this->isMultilingual && is_array($this->app['languages'])) {
+
+            foreach ($this->app['languages'] as $l => $label) {
+
+                $code = $l == 'default' ? $this->defaultLang : $l;
+
+                $languages[] = $code;
+                $languagesExt[] = [
+                    'code'    => $code,
+                    'name'    => $label,
+                    'active'  => $code == $this->lang,
+                    'default' => $code == $this->defaultLang,
+                ];
+
+            }
+        }
+
+        return !$extended ? $languages : $languagesExt;
+
+    },
+
+    'getLanguageSwitch' => function($id) {
+
+        $languages = $this->getLanguages(true);
+        $slugName  = $this->slugName;
+        
+        foreach ($languages as &$l) {
+
+            $lang = $l['code'];
             $slug = '';
 
-            $lang = ($languageCode == 'default') ? $this->defaultLang : $languageCode;
+            if ($this->isStartpage) {
+                $l['url'] = MP_BASE_URL . '/' . $lang;
+                continue;
+            }
 
-            $active = $this('i18n')->locale == $lang;
-
-            if (!$this->isStartpage) {
-
+            else {
                 $filter = [
                     'published' => true,
-                    '_id' => $_id ?? '',
+                    '_id'       => $id ?? '',
                 ];
-
                 $projection = [
-                    $this->slugName => true,
-                    $this->slugName . '_' . $lang => true
+                    $slugName   => true,
+                    "{$slugName}_{$lang}" => true
                 ];
 
-                $fieldsFilter = [
-                    'lang' => $lang
-                ];
+                $entry = $this->app->module('collections')->findOne($this->collection, $filter, $projection, false, ['lang' => $lang]);
 
-                $entry = $this->app->module('collections')->findOne($this->collection, $filter, $projection, false, $fieldsFilter);
-                if (isset($entry[$this->slugName])) $slug = $entry[$this->slugName];
-
+                $slug = $entry[$slugName] ?? '';
             }
 
-            $subpage = null;
-
-            if ($this->hasParentPage == true) { // was set in resolveSlug()
-                $route = $lang == $this->defaultLang ? 'route' : 'route_'.$lang;
-                $subpage = $this->parentPage['subpagemodule'][$route] ?? null;
+            if (!$this->hasParentPage) {
+                $l['url'] = MP_BASE_URL . '/' . $lang . '/' . $slug;
+                continue;
             }
 
-            $languages[] = [
-                'code' => $lang,
-                'name' => $name,
-                'active' => $active,
-                'url' => MP_BASE_URL . '/' . $lang . '/' . ($subpage ? trim($subpage, '/') . '/' : '') . $slug,
-            ];
+            $key   = 'route' . ($l['default'] ? '' : "_{$lang}");
+            $route = $this->parentPage['subpagemodule'][$key] ?? null;
+
+            $l['url'] = MP_BASE_URL . '/' . $lang . '/' . ($route ? trim($route, '/') . '/' : '') . $slug;
 
         }
 
@@ -557,7 +582,7 @@ $this->module('multiplane')->extend([
 
         $name = $collection['name'];
 
-        $lang  = $this('i18n')->locale;
+        $lang  = $this->lang;
         $page  = $this->app->param('page', 1);
         $limit = (isset($opts['limit']) && (int)$opts['limit'] ? $opts['limit'] : null) ?? $this->displayPostsLimit ?? 5;
         $skip  = ($page - 1) * $limit;
@@ -623,7 +648,7 @@ $this->module('multiplane')->extend([
         
         if (!$type) $type = 'post';
 
-        $lang  = $this('i18n')->locale;
+        $lang  = $this->lang;
         $page  = $this->app->param('page', 1);
         $limit = (isset($opts['limit']) && (int)$opts['limit'] ? $opts['limit'] : null)
                   ?? $this->displayPostsLimit ?? 5;
@@ -766,7 +791,7 @@ $this->module('multiplane')->extend([
 
     'resolveParentPage' => function($route = '') {
 
-        $lang = $this('i18n')->locale;
+        $lang = $this->lang;
 
         $slugName = $this->slugName . ($lang == $this->defaultLang ? '' : '_'.$lang);
 
@@ -856,7 +881,7 @@ $this->module('multiplane')->extend([
             'privacypage' => true
         ];
 
-        $lang = $this('i18n')->locale;
+        $lang = $this->lang;
 
         $projection = [
             $this->slugName => true,
@@ -1011,7 +1036,7 @@ $this->module('multiplane')->extend([
                         ? '?'.\urlencode($this->app->escape($_SERVER['QUERY_STRING'])) : '';
         $url = $this->app['site_url'] . $this->app['route'] . $query_string;
 
-        $locale = $this('i18n')->locale;
+        $locale = $this->lang;
         $site_url = !$this->isMultilingual ? $this->app['site_url']
                     : $this->app['site_url'] . '/' . $locale;
 
@@ -1249,7 +1274,7 @@ $this->on('multiplane.bootstrap', function() {
 
             $this->bind('/'.$lang.'/*', function($params) use($lang) {
 
-                $this('i18n')->locale = $lang;
+                $this('i18n')->locale = mp()->lang = $lang;
                 $this->set('base_url', MP_BASE_URL . '/' . $lang);
 
                 // init + load i18n

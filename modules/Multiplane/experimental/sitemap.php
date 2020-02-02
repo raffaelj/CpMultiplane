@@ -19,7 +19,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
     $isMultilingual = mp()->isMultilingual;
     $defaultLang    = mp()->defaultLang;
     $slugName       = mp()->slugName;
-    $languages      = [];
+    $languages      = mp()->getLanguages();
     $parentPage     = null;
     $route          = '';
 
@@ -36,13 +36,10 @@ $this->on('multiplane.sitemap', function(&$xml) {
         ],
     ];
 
-    if ($isMultilingual && is_array($this['languages'])) {
-        foreach ($this['languages'] as $lang => $label) {
-            if ($lang == 'default') {
-                $languages[] = $defaultLang;
-            } else {
-                $languages[] = $lang;
-                $options['fields'][$slugName . '_' . $lang] = true;
+    if ($isMultilingual) {
+        foreach ($languages as $lang) {
+            if ($lang != $defaultLang) {
+                $options['fields']["{$slugName}_{$lang}"] = true;
             }
         }
     }
