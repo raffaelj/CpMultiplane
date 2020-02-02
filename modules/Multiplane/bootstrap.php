@@ -7,15 +7,15 @@ if (!$this->retrieve('multiplane/version', false)) {
 
 // adjust some auto-detected directory routes to current dir, otherwise inbuilt
 // functions from Lime\App, like pathToUrl() would return wrong paths
-$this->set('docs_root', MP_DOCS_ROOT);
-$this->set('base_url', MP_BASE_URL);
+$this->set('docs_root',  MP_DOCS_ROOT);
+$this->set('base_url',   MP_BASE_URL);
 $this->set('base_route', MP_BASE_URL); // for reroute()
-$this->set('site_url', $this->getSiteUrl(true)); // for pathToUrl(), which is used in thumbnail function
+$this->set('site_url',   $this->getSiteUrl(true)); // for pathToUrl(), which is used in thumbnail function
 
 // rewrite filestorage paths to get correct image urls
 $this->on('cockpit.filestorages.init', function(&$storages) {
     $storages['uploads']['url'] = $this->pathToUrl('#uploads:', true);
-    $storages['thumbs']['url'] = $this->pathToUrl('#thumbs:', true);
+    $storages['thumbs']['url']  = $this->pathToUrl('#thumbs:', true);
 });
 
 // set config path
@@ -61,10 +61,10 @@ $this->module('multiplane')->extend([
     'siteSingleton'         => 'site',            // singleton name for default config
 
     'pages'                 => 'pages',           // collection name for pages
-    'pagesPattern'          => '{title}',         // to do...
+    // 'pagesPattern'          => '{title}',         // to do...
 
     'posts'                 => 'posts',           // collection name for posts
-    'postsPattern'          => '{collection}/{title}',        // to do...
+    // 'postsPattern'          => '{collection}/{title}',        // to do...
     // 'postsPattern'         => '{YYYY}/{MM}/{DD}/{title}',  // to do...
 
     // content preview
@@ -89,8 +89,8 @@ $this->module('multiplane')->extend([
     'searchInCollections'   => [],              // full list of collections to search in, overwrites pages and posts
 
     'sitemap'               => null,            // array of collections
-    
-    'hasBackgroundImage'    => false,             // enable background image
+
+    'hasBackgroundImage'    => false,           // enable background image
     'backgroundBreakpoints' => [
         'mini' => [
             'points' => [
@@ -122,6 +122,7 @@ $this->module('multiplane')->extend([
 
     // changes dynamically
     'defaultLang'           => $this->retrieve('i18n', 'en'),
+    'lang'                  => $this('i18n')->locale,
     'breadcrumbs'           => ['/'],
     'isStartpage'           => false,
     'collection'            => null,            // current collection
@@ -130,7 +131,6 @@ $this->module('multiplane')->extend([
     'parentPage'            => null,
     'themePath'             => null,
     'parentThemePath'       => null,
-
 
     'set' => function($key, $value) {
 

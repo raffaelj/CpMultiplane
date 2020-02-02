@@ -37,7 +37,7 @@ if (!defined('COCKPIT_SITE_DIR'))   define('COCKPIT_SITE_DIR',  MP_ENV_ROOT);
 // include cockpit, now `$cockpit` and `cockpit()` are available
 if (file_exists(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php')) {
     require_once(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php');
-} else { echo "Cockpit doesn't exist."; die; } // to do: cockpit downloader
+} else { echo 'Cockpit doesn\'t exist.'; die; } // to do: cockpit downloader
 
 // load custom config
 if (file_exists(MP_CONFIG_PATH)) {
@@ -45,8 +45,8 @@ if (file_exists(MP_CONFIG_PATH)) {
 }
 
 $cockpit->loadModules(array_merge([
-    MP_DOCS_ROOT.'/modules',  # core
-    MP_ENV_ROOT.'/addons' # addons
+    MP_DOCS_ROOT . '/modules', # core
+    MP_ENV_ROOT . '/addons' # addons
 ], $config['loadmodules'] ?? []));
 
 // shorthand module call
