@@ -46,23 +46,34 @@ multiplane:
 
 $this->on('multiplane.search', function($search, $list) {
 
+    $_search = trim($search);
+
     $isMultilingual = mp()->isMultilingual;
     $defaultLang    = mp()->defaultLang;
     $slugName       = mp()->slugName;
     $languages      = mp()->getLanguages();
     $lang           = mp()->lang;
+    $minLength      = mp()->searchMinLength;
+    $searches       = [];
 
     $searchInCollections = mp()->searchInCollections;
 
     $pages = mp()->pages;
     $posts = mp()->posts;
 
-    if (preg_match('/^(["\']).*\1$/m', $search)) {
+    if (preg_match('/^(["\']).*\1$/m', $_search)) {
         // exact match in quotes, still case insensitive
-        $searches = [trim($search, '"\' \t\n\r\0\x0B')];
+        $searches = [trim($_search, '"\' \t\n\r\0\x0B')];
     }
     else {
-        $searches = array_filter(explode(' ', $search), 'strlen');
+        $all = array_filter(explode(' ', $_search), 'strlen');
+        if (count($all) > 1) {
+            foreach ($all as $s) {
+                if (mb_strlen($s) > $minLength) {
+                    $searches[] = $s;
+                }
+            }
+        }
     }
 
     // to do...
@@ -203,31 +214,54 @@ $this->on('multiplane.search', function($search, $list) {
         foreach ($this->module('collections')->find($collection, $options) as $entry) {
 
             $weight = !empty($c['weight']) ? $c['weight'] : 0;
+            $label  = !empty($c['label'])  ? $c['label']
+                      : (!empty($_collection['label']) ? $_collection['label']
+                        : $collection);
 
             $item = [
+                '_id'        => $entry['_id'],
                 'url'        => $this->baseUrl(($c['route'] ?? '') . '/' . $entry[$slugName]),
-                'collection' => !empty($c['label']) ? $c['label']
-                                : (!empty($_collection['label'])
-                                    ? $_collection['label']
-                                    : $collection),
+                'collection' => $label,
             ];
 
             foreach ($c['fields'] as $field) {
 
-                $name = $field['name'];
-
+                $name     = $field['name'];
                 $increase = !empty($field['weight']) ? (int) $field['weight'] : 1;
+                $content  = !empty($field['type'])
+                            ? $this('fields')->{$field['type']}($entry[$name])
+                            : (is_string($entry[$name]) ? $entry[$name] : '');
 
-                $item[$name] = preg_replace_callback(
-                    '#((?:(?!<[/a-z]).)*)([^>]*>|$)#si',
-                    function($match) use ($searches, &$weight, $increase) {
-                        return preg_replace('~('.implode('|', $searches).')~iu', '<mark>$1</mark>', $match[1], -1, $count) . $match[2] // highlight
-                        . ($count && ($weight = $weight + $count * $increase) ? '' : ''); // increase weight
-                    },
-                    !empty($field['type'])
-                        ? $this('fields')->{$field['type']}($entry[$name])
-                        : (is_string($entry[$name]) ? $entry[$name] : '')
-                );
+                if (count($searches) > 1) {
+                    // give it a weight boost, if the full expression of
+                    // multiple search terms was found
+                    $regex = "/(?<!&[^\s])".$_search."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+
+                    preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
+
+                    if ($count = count($matches)) {
+                        $weight += $count * $increase + 10;
+                    }
+                }
+
+                $regex = "/(?<!&[^\s])".implode('|', $searches)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+
+                preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
+
+                $weight += count($matches) * $increase;
+
+                if ($this->param('highlight', $this->param('hilit', false))) {
+
+                    $all = count($searches) > 1
+                           ? array_merge([$_search], $searches) : $searches;
+
+                    $regex = "/(?<!&[^\s])".implode('|', $all)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+
+                    $content = preg_replace($regex, '<mark>$0</mark>', $content);
+
+                }
+
+                $item[$name] = $content;
 
                 // optional: rename keys to use the same/default theme template with different field names
                 if (!empty($field['rename'])) {
