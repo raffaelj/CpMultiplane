@@ -46,6 +46,12 @@ multiplane:
 
 $this->on('multiplane.search', function($search, $list) {
 
+    $isMultilingual = mp()->isMultilingual;
+    $defaultLang    = mp()->defaultLang;
+    $slugName       = mp()->slugName;
+    $languages      = [];
+    $lang           = $this('i18n')->locale;
+
     $searchInCollections = mp()->searchInCollections;
 
     $pages = mp()->pages;
@@ -101,10 +107,6 @@ $this->on('multiplane.search', function($search, $list) {
 
     }
 
-    $slugName = mp()->slugName;
-
-    $lang = $this('i18n')->locale;
-
     $options = [
         'filter' => ['published' => true],
         'lang' => $lang,
@@ -134,7 +136,7 @@ $this->on('multiplane.search', function($search, $list) {
 
             $postRouteEntry = $this->module('collections')->findOne($pages, $filter, $projection, false, ['lang' => $lang]);
 
-            $route = $lang == mp()->defaultLang ? 'route' : 'route_'.$lang;
+            $route = $lang == $defaultLang ? 'route' : 'route_'.$lang;
 
             if (isset($postRouteEntry['subpagemodule'][$route])) {
                 $c['route'] = $postRouteEntry['subpagemodule'][$route];
@@ -151,19 +153,45 @@ $this->on('multiplane.search', function($search, $list) {
             $slugName => true,
         ];
 
+        if ($isMultilingual && is_array($this['languages'])) {
+            foreach ($this['languages'] as $l => $label) {
+                if ($l == 'default') {
+                    $languages[] = $defaultLang;
+                } else {
+                    $languages[] = $l;
+                    $options['fields'][$slugName . '_' . $l] = true;
+                }
+            }
+        }
+
         $options['filter']['$or'] = [];
 
-        $suffix = $lang == mp()->defaultLang ? '' : '_'.$lang;
+        $suffix = $lang == $defaultLang ? '' : '_'.$lang;
 
         foreach ($c['fields'] as $field) {
 
             $options['fields'][$field['name']] = true;
-            if ($lang != mp()->defaultLang) $options['fields'][$field['name'].$suffix] = true;
+            if ($lang != $defaultLang) $options['fields'][$field['name'].$suffix] = true;
 
             if (isset($field['type']) && $field['type'] == 'repeater') {
 
                 // to do: cleanup/find cleaner solution
                 $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'repeaterSearch']];
+
+            }
+
+            elseif (isset($field['type']) && in_array($field['type'], ['wysiwyg', 'markdown'])) {
+
+                // try to find only text inside html tags
+
+                foreach ($searches as $search) {
+
+                    // source: discussion in https://stackoverflow.com/a/39656464
+                    // https://regex101.com/r/ZwXr4Y/4
+                    $regex = "/(?<!&[^\s]){$search}(?![^<>]*(([\/\"']|]]|\b)>))/iu";
+
+                    $options['filter']['$or'][] = [$field['name'].$suffix => ['$regex' => $regex]];
+                }
 
             }
 
@@ -196,7 +224,7 @@ $this->on('multiplane.search', function($search, $list) {
                 $item[$name] = preg_replace_callback(
                     '#((?:(?!<[/a-z]).)*)([^>]*>|$)#si',
                     function($match) use ($searches, &$weight, $increase) {
-                        return preg_replace('~('.implode('|', $searches).')~i', '<mark>$1</mark>', $match[1], -1, $count) . $match[2] // highlight
+                        return preg_replace('~('.implode('|', $searches).')~iu', '<mark>$1</mark>', $match[1], -1, $count) . $match[2] // highlight
                         . ($count && ($weight = $weight + $count * $increase) ? '' : ''); // increase weight
                     },
                     !empty($field['type'])
