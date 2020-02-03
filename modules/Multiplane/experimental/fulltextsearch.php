@@ -79,10 +79,6 @@ $this->on('multiplane.search', function($search, $list) {
 
     if (empty($searches)) return;
 
-    // to do...
-    // $multipleSearchTerms = count($searches) > 1 ? true : false;
-    // $searchMethod        = $this->param('method', 'and');
-
     if (empty($searchInCollections)) {
 
         $searchInCollections = [
