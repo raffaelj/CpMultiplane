@@ -23,6 +23,7 @@ multiplane:
                   weight: 10
                 - name: content
                   type: markdown
+                  display: false
         posts:
             label: Blog
             weight: 5
@@ -31,6 +32,7 @@ multiplane:
                   weight: 8
                 - name: content
                   type: markdown
+                  display: false
         calendar:
             label: Dates
             weight: 3
@@ -231,6 +233,7 @@ $this->on('multiplane.search', function($search, $list) {
                 $content  = !empty($field['type'])
                             ? $this('fields')->{$field['type']}($entry[$name])
                             : (is_string($entry[$name]) ? $entry[$name] : '');
+                $display  = !isset($field['display']) ? true : $field['display'];
 
                 if (count($searches) > 1) {
                     // give it a weight boost, if the full expression of
@@ -250,18 +253,22 @@ $this->on('multiplane.search', function($search, $list) {
 
                 $weight += count($matches) * $increase;
 
-                if ($this->param('highlight', $this->param('hilit', false))) {
+                if ($display) {
 
-                    $all = count($searches) > 1
-                           ? array_merge([$_search], $searches) : $searches;
+                    if ($this->param('highlight', false)) {
 
-                    $regex = "/(?<!&[^\s])".implode('|', $all)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+                        $all = count($searches) > 1
+                               ? array_merge([$_search], $searches) : $searches;
 
-                    $content = preg_replace($regex, '<mark>$0</mark>', $content);
+                        $regex = "/(?<!&[^\s])".implode('|', $all)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
 
-                }
+                        $content = preg_replace($regex, '<mark>$0</mark>', $content);
 
-                $item[$name] = $content;
+                    }
+
+                    $item[$name] = $content;
+
+                } else { $item[$name] = ''; }
 
                 // optional: rename keys to use the same/default theme template with different field names
                 if (!empty($field['rename'])) {
