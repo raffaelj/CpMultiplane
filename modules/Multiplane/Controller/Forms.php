@@ -26,15 +26,15 @@ class Forms extends \LimeExtra\Controller {
 
         return false;
 
-    }
+    } // end of index()
 
     public function form($form = '', $options = []) {
 
-        $sessionName = $this->app->module('multiplane')->formSessionName;
+        $sessionName = mp()->formSessionName;
 
         $this('session')->init($sessionName);
 
-        $fields = $this->app->module('multiplane')->getFormFields($form);
+        $fields = mp()->getFormFields($form);
 
         if (!$fields) return false;
 
@@ -44,54 +44,58 @@ class Forms extends \LimeExtra\Controller {
         $notice  = false;
 
         // hide messages if session is expired and user calls the url again
-        $expire = $this->app->module('multiplane')->formSessionExpire;
+        $expire = mp()->formSessionExpire;
 
-        $call = $this('session')->read('mp_form_call', null);
+        $call = $this('session')->read("mp_form_call_$form", null);
 
         if (!$call || ($call && (time() - $call > $expire))) {
 
-            $this('session')->destroy();
+            $this('session')->delete("mp_form_call_$form");
+            $this('session')->delete("mp_form_notice_$form");
+            $this('session')->delete("mp_form_response_$form");
+            $this('session')->delete("mp_form_success_$form");
+            $this('session')->delete("mp_form_notice_$form");
+            $this('session')->delete("mp_form_response_$form");
 
             $success = false;
             $notice  = false;
 
         }
-        
-        
-        if ($this('session')->read('mp_form_notice', false)) {
+
+        if ($this('session')->read("mp_form_notice_$form", false)) {
             $notice = true;
         }
 
-        if ($this('session')->read('mp_form_success', false)) {
+        if ($this('session')->read("mp_form_success_$form", false)) {
             $success = true;
         }
 
         $message = [
-            'success' => $success ? $this->app->module('multiplane')->formMessages['success'] : '',
-            'notice'  => $notice  ? $this->app->module('multiplane')->formMessages['notice']  : '',
-            'error'   => $this->app->module('multiplane')->formatErrorMessage(),
+            'success' => $success ? mp()->formMessages['success'] : '',
+            'notice'  => $notice  ? mp()->formMessages['notice']  : '',
+            'error'   => mp()->formatErrorMessage($form),
         ];
 
-        $this('session')->delete('mp_form_notice');
-        $this('session')->delete('mp_form_success');
+        $this('session')->delete("mp_form_notice_$form");
+        $this('session')->delete("mp_form_success_$form");
 
         return $this->render('views:partials/form.php', compact('page', 'form', 'fields', 'message', 'options'));
 
-    }
+    } // end of form()
 
     public function submit($form = '') {
 
-        $sessionName = $this->app->module('multiplane')->formSessionName;
+        $sessionName = mp()->formSessionName;
 
         $this('session')->init($sessionName);
-        $this('session')->write('mp_form_call', time());
+        $this('session')->write("mp_form_call_$form", time());
 
         $referer = !empty($_SERVER['HTTP_REFERER']) ? parse_url(htmlspecialchars($_SERVER['HTTP_REFERER'])) : null;
 
         if (!$referer) {
             // might be disabled, use a default fallback
             // to do...
-            $path = $this->app['site_url'] . '/form/contact';
+            $path = $this->app['site_url'] . '/form/' . mp()->contact;
             $referer = parse_url($path);
         }
 
@@ -108,11 +112,11 @@ class Forms extends \LimeExtra\Controller {
 
         // cast user input and remove optional id prefix before sending it to validator
         $postedData = [];
-        $prefix = $this->app->module('multiplane')->formIdPrefix;
-        $formSubmitButtonName = $this->app->module('multiplane')->formSubmitButtonName;
+        $prefix = mp()->formIdPrefix;
+        $formSubmitButtonName = mp()->formSubmitButtonName;
 
         $strlen = strlen($prefix);
-        foreach($_POST as $key => $val) {
+        foreach($_POST[$form] as $key => $val) {
             if ($key == $formSubmitButtonName) continue;
 
             if (substr($key, 0, $strlen) == $prefix) {
@@ -122,7 +126,7 @@ class Forms extends \LimeExtra\Controller {
             $postedData[$k] = htmlspecialchars(trim($val));
         }
         
-        if ($this->app->module('multiplane')->formSendReferer) {
+        if (mp()->formSendReferer) {
             $postedData['referer'] = $refererUrl;
         }
 
@@ -134,26 +138,20 @@ class Forms extends \LimeExtra\Controller {
         }
 
         if (!isset($response['error'])) {
-            $this('session')->delete('mp_form_response');
-            $this('session')->delete('mp_form_notice');
-            
-            $this('session')->write('mp_form_success', 1);
+            $this('session')->delete("mp_form_response_$form");
+            $this('session')->delete("mp_form_notice_$form");
+
+            $this('session')->write("mp_form_success_$form", [$form => 1]);
         }
         else {
-            $this('session')->write('mp_form_response', $response);
-            $this('session')->write('mp_form_notice', 1);
+            $this('session')->write("mp_form_response_$form", $response);
+            $this('session')->write("mp_form_notice_$form", 1);
         }
 
-        // send the visitor to the top of the form after submitting
-        $anchor = $this->app->param('anchor', false);
-
-        // fallback for xss attacks
-        if (!$anchor || $anchor !== htmlentities(strip_tags($anchor))) {
-            $anchor = $this->app->module('multiplane')->currentFormId;
-        }
+        $anchor = mp()->formIdPrefix.$form;
 
         $this->reroute($refererUrl.'#'.$anchor);
 
-    }
+    } // end of submit()
 
 }

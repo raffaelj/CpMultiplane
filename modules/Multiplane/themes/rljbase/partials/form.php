@@ -1,6 +1,8 @@
-<?php $id = $options['id'] ?? mp()->currentFormId; ?>
+<?php
+$id = mp()->formIdPrefix.$form;
+?>
 
-<form id="{{ $id }}" method="post" action="@base('/form/submit/' . $form . '?anchor='.$id)">
+<form id="{{ $id }}" method="post" action="@base('/form/submit/'.$form)">
 
     <fieldset>
         <legend>@lang(!empty($options['title']) ? $options['title'] : 'Contact Me')</legend>
