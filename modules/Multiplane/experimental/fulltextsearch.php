@@ -1,7 +1,7 @@
 <?php
 
 /**
- * fulltext search - experimental
+ * full-text search - experimental
  *
  * to do:
     * [x] special chars in wysiwyg (ä = &auml;...)

@@ -40,14 +40,15 @@ if (file_exists(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php')) {
 } else { echo 'Cockpit doesn\'t exist.'; die; } // to do: cockpit downloader
 
 // load custom config
+$customConfig = [];
 if (file_exists(MP_CONFIG_PATH)) {
-    $config = include(MP_CONFIG_PATH);
+    $customConfig = include(MP_CONFIG_PATH);
 }
 
 $cockpit->loadModules(array_merge([
     MP_DOCS_ROOT . '/modules', # core
     MP_ENV_ROOT . '/addons' # addons
-], $config['loadmodules'] ?? []));
+], $customConfig['loadmodules'] ?? []));
 
 // shorthand module call
 function mp() {

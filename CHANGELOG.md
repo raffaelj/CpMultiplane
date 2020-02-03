@@ -3,11 +3,10 @@
 ## upcoming
 
 * changed event `multiplane.getposts.before`
-* moved event `multiplane.init`
 * moved npm build scripts to theme folders
 * restructured `mp.js` to browserify modules
 * restructured/moved page/posts templates
-* added events `multiplane.getpage.before`, `multiplane.bootstrap`, `multiplane.head`, `multiplane.getpreview.before`
+* added events `multiplane.getpage.before`, `multiplane.head`, `multiplane.getpreview.before`
 * added rljstripes theme (experimental)
 * added support for repeater as content field (experimental)
 * added optional i18n date format for posts meta
@@ -16,6 +15,7 @@
 * improved child theming
 * improved menu/nav - multi level dropdown, responsive, touch friendly
 * improved sitemap
+* improved full-text search
 * improved seo meta data (og:, twitter:, ld+json)
 * improved `mp.js` (event system, accessibility)
 * improved privacy popup
@@ -47,7 +47,7 @@
 
 * added child theme support
 * fixed error in getNav if no entries exist
-* improved full text search
+* improved full-text search
 * some i18n fixes
 * added cli commands `./mp check` and `./mp account/create`
 * rljbase theme

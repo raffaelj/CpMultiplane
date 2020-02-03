@@ -899,7 +899,7 @@ $this->module('multiplane')->extend([
 
     },
 
-    'setConfig' => function() {
+    'loadConfig' => function() {
 
         // overwrite default config
 
@@ -914,7 +914,7 @@ $this->module('multiplane')->extend([
         if (!empty($config['parentTheme'])) $this->parentTheme = $config['parentTheme'];
         if (!empty($config['theme']))       $this->theme       = $config['theme'];
 
-        $themeConfig = $this->setTheme();
+        $themeConfig = $this->loadThemeConfig();
 
         if (is_array($themeConfig)) {
             $config = array_replace_recursive($themeConfig, $config);
@@ -933,7 +933,7 @@ $this->module('multiplane')->extend([
 
     },
 
-    'setTheme' => function() {
+    'loadThemeConfig' => function() {
 
         $themeConfig = $parentThemeConfig = [];
 
@@ -975,7 +975,7 @@ $this->module('multiplane')->extend([
 
     },
 
-    'extendLexy' => function() {
+    'extendLexyTemplateParser' => function() {
 
         if (empty($this->lexy) || !is_array($this->lexy)) return;
 
@@ -1018,7 +1018,7 @@ $this->module('multiplane')->extend([
         // to do: see themes/rljbase/views/partials/seometa.php
 
         $site = $this->site;
-        
+
         $spacer = !empty($site['seo']['spacer']) ? $site['seo']['spacer'] : ' - ';
 
         $site_name = \html_entity_decode($site['seo']['branding']
@@ -1170,35 +1170,33 @@ include_once(__DIR__ . '/experimental/fulltextsearch.php');
 include_once(__DIR__ . '/experimental/sitemap.php');
 include_once(__DIR__ . '/experimental/matomo.php');
 
-$this->on('multiplane.bootstrap', function() {
 
-    // overwrite default config
-    mp()->setConfig();
+// overwrite default config
+mp()->loadConfig();
 
-    // load theme bootstrap file(s)
-    if (mp()->parentTheme && mp()->parentThemeBootstrap
-        && file_exists(mp()->parentThemePath . '/bootstrap.php')) {
+// load theme bootstrap file(s)
+if (mp()->parentTheme && mp()->parentThemeBootstrap
+    && file_exists(mp()->parentThemePath . '/bootstrap.php')) {
 
-        include_once(mp()->parentThemePath . '/bootstrap.php');
-    }
-    if (file_exists(mp()->themePath . '/bootstrap.php')) {
-        include_once(mp()->themePath . '/bootstrap.php');
-    }
+    include_once(mp()->parentThemePath . '/bootstrap.php');
+}
+if (file_exists(mp()->themePath . '/bootstrap.php')) {
+    include_once(mp()->themePath . '/bootstrap.php');
+}
 
-    // extend lexy parser for custom image url templating
-    mp()->extendLexy();
+// load custom bootstrap file
+if (file_exists(MP_CONFIG_DIR.'/bootstrap.php')) {
+    include_once(MP_CONFIG_DIR.'/bootstrap.php');
+}
 
-    // skip binding routes if in maintenance mode
-    if (!mp()->accessAllowed()) {
-        return;
-    }
+// extend lexy parser for custom image url templating
+mp()->extendLexyTemplateParser();
 
-    // dont't bind any routes, if user wants to use only their own routes
-    if (mp()->disableDefaultRoutes) {
-        return;
-    }
+// bind routes
 
-    // bind routes
+// skip binding routes if in maintenance mode and
+// dont't bind any routes, if users wants to use only their own routes
+if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
 
     // clear cache (only in debug mode)
     $this->bind('/clearcache', function() {
@@ -1307,9 +1305,8 @@ $this->on('multiplane.bootstrap', function() {
 
     }
 
-    $this->trigger('multiplane.init');
+}
 
-});
 
 // error handling
 $this->on('after', function() {
@@ -1343,9 +1340,4 @@ $this->on('after', function() {
 // CLI
 if (COCKPIT_CLI) {
     $this->path('#cli', __DIR__.'/cli');
-}
-
-// load custom bootstrap file
-if (file_exists(MP_CONFIG_DIR.'/bootstrap.php')) {
-    include_once(MP_CONFIG_DIR.'/bootstrap.php');
 }
