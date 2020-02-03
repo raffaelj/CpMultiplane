@@ -63,18 +63,19 @@ $this->on('multiplane.search', function($search, $list) {
 
     if (preg_match('/^(["\']).*\1$/m', $_search)) {
         // exact match in quotes, still case insensitive
-        $searches = [trim($_search, '"\' \t\n\r\0\x0B')];
+        $searches = [preg_quote(trim($_search, '"\' \t\n\r\0\x0B'), '/')];
     }
     else {
         $all = array_filter(explode(' ', $_search), 'strlen');
-        if (count($all) > 1) {
-            foreach ($all as $s) {
-                if (mb_strlen($s) > $minLength) {
-                    $searches[] = $s;
-                }
+        $_search = preg_quote($_search, '/');
+        foreach ($all as $s) {
+            if (mb_strlen($s) > $minLength) { // skip single char words ("I", "a"...)
+                $searches[] = preg_quote($s, '/');
             }
         }
     }
+
+    if (empty($searches)) return;
 
     // to do...
     // $multipleSearchTerms = count($searches) > 1 ? true : false;
@@ -190,10 +191,9 @@ $this->on('multiplane.search', function($search, $list) {
 
             elseif (isset($field['type']) && in_array($field['type'], ['wysiwyg', 'markdown'])) {
 
-                // try to find only text inside html tags
-
                 foreach ($searches as $search) {
 
+                    // try to find only text inside html tags
                     // source: discussion in https://stackoverflow.com/a/39656464
                     // https://regex101.com/r/ZwXr4Y/4
                     $regex = "/(?<!&[^\s]){$search}(?![^<>]*(([\/\"']|]]|\b)>))/iu";
