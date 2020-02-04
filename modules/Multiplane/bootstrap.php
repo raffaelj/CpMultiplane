@@ -12,6 +12,12 @@ $this->set('base_url',   MP_BASE_URL);
 $this->set('base_route', MP_BASE_URL); // for reroute()
 $this->set('site_url',   $this->getSiteUrl(true)); // for pathToUrl(), which is used in thumbnail function
 
+if (class_exists('\Lime\Request')) {
+    // $this->request->site_url   = $this['site_url'];
+    $this->request->base_url   = $this['base_url'];
+    $this->request->base_route = $this['base_route'];
+}
+
 // rewrite filestorage paths to get correct image urls
 $this->on('cockpit.filestorages.init', function(&$storages) {
     $storages['uploads']['url'] = $this->pathToUrl('#uploads:', true);
@@ -42,7 +48,7 @@ $this->module('multiplane')->extend([
     'isMultilingual'        => false,
     'disableDefaultRoutes'  => false,             // don't use any default routes
     'outputMethod'          => 'dynamic',         // to do: static
-    'pageTypeDetection'     => 'collections',     // 'collections' or 'type'
+    'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
     'slugName'              => '_id',
     'navName'               => 'nav',             // field name for navigation
     'nav'                   => null,              // hard coded navigation
@@ -343,7 +349,7 @@ $this->module('multiplane')->extend([
 
     'getPreview' => function() {
 
-        $data = $_REQUEST;
+        $data = class_exists('\Lime\Request') ? $this->app->request->request : $_REQUEST;
 
         $event      = $data['event'] ?? false;
 
@@ -1216,19 +1222,23 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
     });
 
     // routes for live preview
-    $this->bind('/getPreview', function($params) {
-        return $this->invoke('Multiplane\\Controller\\Base', 'getPreview', ['params' => $params]);
-    }, mp()->isPreviewEnabled && $this->req_is('ajax'));
+    if (mp()->isPreviewEnabled) {
 
-    $this->bind('/livePreview', function($params) {
+        $this->bind('/getPreview', function($params) {
+            return $this->invoke('Multiplane\\Controller\\Base', 'getPreview', ['params' => $params]);
+        }, $this->req_is('ajax'));
 
-        if ($this->param('token') != mp()->livePreviewToken) {
-            return false;
-        }
+        $this->bind('/livePreview', function($params) {
 
-        return $this->invoke('Multiplane\\Controller\\Base', 'livePreview', ['params' => $params]);
+            if ($this->param('token') != mp()->livePreviewToken) {
+                return false;
+            }
 
-    }, mp()->isPreviewEnabled);
+            return $this->invoke('Multiplane\\Controller\\Base', 'livePreview', ['params' => $params]);
+
+        });
+    }
+
 
     // bind wildcard routes
     $isMultilingual = mp()->isMultilingual && ($languages = $this->retrieve('languages', false));

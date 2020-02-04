@@ -141,7 +141,9 @@ class Base extends \LimeExtra\Controller {
             $this->app->stop();
         }
 
-        $mime = \Lime\App::$mimeTypes[$ext];
+        $mime = (\property_exists('\Lime\App', 'mimeTypes'))
+                ? \Lime\App::$mimeTypes[$ext]
+                : \Lime\Response::$mimeTypes[$ext];
 
         header("Content-Type: " . $mime);
         header('Content-Length: '.$this->app->filestorage->getSize($thumbpath));
