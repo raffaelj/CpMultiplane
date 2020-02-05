@@ -21,7 +21,7 @@
 
                 document.getElementById('live-preview').innerHTML = data;
 
-                if(previewScripts) {
+                if (previewScripts) {
                     MP.ready(function() {
                         MP.replaceVideoLink();
                         MP.convertVideoLinksToIframes();

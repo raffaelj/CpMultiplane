@@ -13,6 +13,7 @@ main, header, footer, aside, nav {
 , body > footer
 , body > aside
 , body > form // in case of standalone form page without parent container
+, body > #live-preview > main
 {
     position: relative;
     margin: 1em auto;

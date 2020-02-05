@@ -110,10 +110,11 @@ multiplane:
 ## Reserved routes
 
 * `/login` - Calling `example.com/login` reroutes to the admin folder, e. g. `example.com/cockpit`
+* `/search` - full-text search
 * `/getImage` - Calling `/getImage?src=assets_id?w=100&h=100&m=thumbnail` returns images/thumbnails with predefined settings, that can be adjusted with params
-* `/submit` and `/forms` - for contact forms
+* `/submit/form_name` and `/form/form_name` - for contact forms
 * `/getPreview` and `/livePreview` for content preview
-* `/clearcache` to clear the cockpit's cache (only in debug mode)
+* `/clearcache` to clear cockpit's cache (**only in debug mode**)
 
 ## Copyright and License
 

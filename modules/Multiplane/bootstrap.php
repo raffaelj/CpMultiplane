@@ -127,7 +127,7 @@ $this->module('multiplane')->extend([
     ],
 
     // changes dynamically
-    'defaultLang'           => $this->retrieve('i18n', 'en'),
+    'defaultLang'           => $this->retrieve('multiplane/i18n', $this->retrieve('i18n', 'en')),
     'lang'                  => $this('i18n')->locale,
     'breadcrumbs'           => ['/'],
     'isStartpage'           => false,
@@ -365,14 +365,7 @@ $this->module('multiplane')->extend([
         $slug  = $this->resolveSlug(MP_BASE_URL . '/' . $page[$this->slugName]);
 
         if ($this->isMultilingual) {
-
-            $this('i18n')->locale = $this->lang = $lang;
-            $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
-
-            if ($translationspath = $this->app->path("mp_config:i18n/{$lang}.php")) {
-                $this('i18n')->load($translationspath, $lang);
-            }
-
+            $this->initI18n($lang);
         }
 
         if ($lang != 'default') {
@@ -385,7 +378,8 @@ $this->module('multiplane')->extend([
             $page = $this->renderFields($page);
         }
 
-        $hasSubpageModule = isset($page['subpagemodule']['active']) && $page['subpagemodule']['active'] === true;
+        $hasSubpageModule = isset($page['subpagemodule']['active'])
+                            && $page['subpagemodule']['active'] === true;
 
         if ($hasSubpageModule) {
 
@@ -499,32 +493,43 @@ $this->module('multiplane')->extend([
 
     'getLanguages' => function($extended = false) {
 
-        static $languages;
-        static $languagesExt;
-
-        if ($languages && !$extended)   return $languages;
-        if ($languagesExt && $extended) return $languagesExt;
-
         $languages = $languagesExt = [];
 
         if ($this->isMultilingual && is_array($this->app['languages'])) {
 
             foreach ($this->app['languages'] as $l => $label) {
 
-                $code = $l == 'default' ? $this->defaultLang : $l;
+                $languages[] = $l == 'default' ? $this->defaultLang : $l;
+            }
 
-                $languages[] = $code;
-                $languagesExt[] = [
-                    'code'    => $code,
-                    'name'    => $label,
-                    'active'  => $code == $this->lang,
-                    'default' => $code == $this->defaultLang,
-                ];
-
+            if ($extended) {
+                foreach ($languages as $code) {
+                    $languagesExt[] = [
+                        'code'    => $code,
+                        'name'    => $label,
+                        'active'  => $code == $this->lang,
+                        'default' => $code == $this->defaultLang,
+                    ];
+                }
             }
         }
 
         return !$extended ? $languages : $languagesExt;
+
+    },
+
+    'initI18n' => function($lang = 'en') {
+
+        $this('i18n')->locale = $this->lang = $lang;
+
+        if ($this->isMultilingual) {
+            $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
+        }
+
+        // init + load i18n
+        if ($translationspath = $this->app->path("mp_config:i18n/{$lang}.php")) {
+            $this('i18n')->load($translationspath, $lang);
+        }
 
     },
 
@@ -736,7 +741,13 @@ $this->module('multiplane')->extend([
                     // pagination for blog module
                     if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
                         $slug = $parts[0];
-                        $_REQUEST['page'] = $parts[2];
+
+                        if (class_exists('Lime\Request')) {
+                            $this->app->request->request['page'] = $parts[2];
+                        } else {
+                            $_REQUEST['page'] = $parts[2];
+                        }
+
                         unset($parts[1]); // I don't want "page" in breadcrumbs
                     }
 
@@ -761,7 +772,12 @@ $this->module('multiplane')->extend([
                 if ($parts[0] == 'page' && (int)$parts[1]) {
                     // pagination for blog module
                     $slug = ''; 
-                    $_REQUEST['page'] = $parts[1];
+
+                    if (class_exists('Lime\Request')) {
+                        $this->app->request->request['page'] = $parts[1];
+                    } else {
+                        $_REQUEST['page'] = $parts[1];
+                    }
                 }
 
             }
@@ -1019,7 +1035,7 @@ $this->module('multiplane')->extend([
 
     },
 
-    'getSeoMeta' => function($page = []) {
+    'getSeoMeta' => function($page = [], $withQueryString = false) {
 
         // to do: see themes/rljbase/views/partials/seometa.php
 
@@ -1038,9 +1054,13 @@ $this->module('multiplane')->extend([
                  ?? $page['featured_image']['path'] ?? $site['logo']['path'] ?? '';
         $image_url = $this->app['site_url'].'/getImage?src='.\urlencode($image).'&w=1500&h=1500';
 
-        $query_string = !empty($_SERVER['QUERY_STRING'])
-                        ? '?'.\urlencode($this->app->escape($_SERVER['QUERY_STRING'])) : '';
-        $url = $this->app['site_url'] . $this->app['route'] . $query_string;
+        $url = $this->app['site_url'] . $this->app['route'];
+
+        if ($withQueryString) {
+            $query_string = !empty($_SERVER['QUERY_STRING'])
+                ? '?'.\urlencode($this->app->escape($_SERVER['QUERY_STRING'])) : '';
+            $url .= $query_string;
+        }
 
         $locale = $this->lang;
         $site_url = !$this->isMultilingual ? $this->app['site_url']
@@ -1125,7 +1145,7 @@ $this->module('multiplane')->extend([
                     'name' => $site_name,
                     'potentialAction' => [
                         '@type' => 'SearchAction',
-                        'target' => $site_url . '?search={search_term_string}',
+                        'target' => $site_url . '/search?search={search_term_string}',
                         'query-input' => 'required name=search_term_string'
                     ]
                 ];
@@ -1251,62 +1271,50 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
 
 
     // bind wildcard routes
-    $isMultilingual = mp()->isMultilingual && ($languages = $this->retrieve('languages', false));
+    $isMultilingual = mp()->isMultilingual && $this->retrieve('languages', false);
 
     if (!$isMultilingual) {
 
-        // init + load i18n
-        $lang = mp()->defaultLang;
-        if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
-            $this('i18n')->load($translationspath, $lang);
-        }
+        mp()->initI18n(mp()->defaultLang);
 
         // routes for forms
         $this->bind('/form/*', function($params) {
             return $this->invoke('Multiplane\\Controller\\Forms', 'index', ['params' => $params]);
         });
 
-        $this->bind('/*', function($params) {
-
-            // fulltext search
-            if (mp()->displaySearch && $this->param('search')) {
+        // fulltext search
+        if (mp()->displaySearch) {
+            $this->bind('/search/*', function($params) {
                 return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
-            }
+            });
+        }
 
+        $this->bind('/*', function($params) {
             return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $params[':splat'][0]]);
         });
+
     }
     else {
 
-        $defaultLang = $this->retrieve('multiplane/i18n') ?? $this->retrieve('i18n', 'en');
-
-        foreach($languages as $languageCode => $name) {
-
-            if ($languageCode == 'default') $lang = $defaultLang;
-            else $lang = $languageCode;
+        foreach (mp()->getLanguages() as $lang) {
 
             // routes for forms
             $this->bind('/'.$lang.'/form/*', function($params) use($lang) {
-                $this('i18n')->locale = mp()->lang = $lang;
-                $this->set('base_url', MP_BASE_URL . '/' . $lang);
+                mp()->initI18n($lang);
                 return $this->invoke('Multiplane\\Controller\\Forms', 'index', ['params' => $params]);
             });
 
+            // fulltext search
+            if (mp()->displaySearch) {
+                $this->bind('/'.$lang.'/search/*', function($params) use($lang) {
+                    mp()->initI18n($lang);
+                    return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
+                });
+            }
+
             $this->bind('/'.$lang.'/*', function($params) use($lang) {
 
-                $this('i18n')->locale = mp()->lang = $lang;
-                $this->set('base_url', MP_BASE_URL . '/' . $lang);
-
-                // init + load i18n
-                if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
-                    $this('i18n')->load($translationspath, $lang);
-                }
-
-                // fulltext search
-                if (mp()->displaySearch && $this->param('search')) {
-                    return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
-                }
-
+                mp()->initI18n($lang);
                 return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => ($params[':splat'][0] ?? '')]);
 
             });
@@ -1314,11 +1322,13 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
         }
 
         // redirect "/" to "/en"
-        $this->bind('/*', function($params) use($languages, $defaultLang) {
+        $this->bind('/*', function($params) {
+
+            $defaultLang = mp()->defaultLang;
 
             $lang = $this->getClientLang($defaultLang);
 
-            if (!array_key_exists($lang, $languages)) {
+            if (!in_array($lang, mp()->getLanguages())) {
                 $lang = $defaultLang;
             }
             $this->reroute('/' . $lang . '/' . ($params[':splat'][0] ?? ''));

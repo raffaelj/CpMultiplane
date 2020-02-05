@@ -213,7 +213,7 @@ input[type=submit], input[type=reset], input[type=button], button {
         background-color: $color-grey;
         color: $color-darker;
         cursor: default;
-        &:hover,&:focus {
+        &:hover, &:focus {
             background-color: $color-grey;
         }
     }
@@ -238,6 +238,14 @@ input, button {
         background-color: $color-darker;
         &:hover, &:focus {
             background-color: $color-link-hover;
+        }
+    }
+    &:disabled {
+        background-color: $color-grey;
+        color: $color-darker;
+        cursor: default;
+        &:hover, &:focus {
+            background-color: $color-grey;
         }
     }
 }

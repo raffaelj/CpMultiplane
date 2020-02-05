@@ -1,12 +1,7 @@
-<?php
-
-$languages = mp()->getLanguageSwitch($page['_id'] ?? '');
-
-?>
 
             <nav class="language-switch">
                 <ul>
-@foreach($languages as $lang)
+@foreach(mp()->getLanguageSwitch($page['_id'] ?? '') as $lang)
                     <li>
 @if($lang['active'])
                         <span title="{{ $lang['name'] }}">{{ $lang['code'] }}</span>

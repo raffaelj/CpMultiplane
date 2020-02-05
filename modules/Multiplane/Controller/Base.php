@@ -172,12 +172,21 @@ class Base extends \LimeExtra\Controller {
         // * pagination
         // * snippet view
 
+        $error = null;
+        $count = null;
+        
         $query = $this->app->param('search', false);
         $list  = new \ArrayObject([]);
 
         $searchMinLength = mp()->searchMinLength;
 
         $site = $this->module('multiplane')->site;
+        
+        $page = [
+            'title' => $this('i18n')->get('Search'),
+            // 'description' => ''
+            'canonical' => $this->app->baseUrl('/search'), 
+        ];
 
         if (mp()->hasBackgroundImage) {
             mp()->addBackgroundImage();
@@ -199,14 +208,15 @@ class Base extends \LimeExtra\Controller {
             $list->uasort($sort);
 
             $count = count($list);
-
-            return $this->render('views:search.php', ['page' => [], 'site' => $site, 'list' => $list->getArrayCopy(), 'count' => $count]);
+            
+            $list = $list->getArrayCopy();
 
         }
+        else {
+            $error = 'Your search term must be at least '.$searchMinLength.' characters long.';
+        }
 
-        $error = 'Your search term must be at least '.$searchMinLength.' characters long.';
-
-        return $this->render('views:search.php', ['page' => [], 'site' => $site, 'list' => [], 'error' => $error]);
+        return $this->render('views:search.php', compact('page', 'site', 'list', 'error', 'count'));
 
     } // end of search()
 
