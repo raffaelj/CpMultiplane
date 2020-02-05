@@ -1,5 +1,7 @@
 <?php
 
+// to do: cleanup, move html helper functions to a helper class...
+
 // forms helper for widget usage
 $this->helpers['form'] = 'Multiplane\\Controller\\Forms';
 
@@ -114,7 +116,7 @@ $this->module('multiplane')->extend([
 
     'formatErrorMessage' => function($form = '') {
 
-        $response = $this('session')->read("mp_form_response_{$form}", null);
+        $response = $this('session')->read("mp_form_response_$form", null);
 
         if (!isset($response['error'])) return false;
 

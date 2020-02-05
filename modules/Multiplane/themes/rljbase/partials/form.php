@@ -1,8 +1,14 @@
 <?php
 $id = mp()->formIdPrefix.$form;
+
+$dataSessionExpires = '';
+if ($sessionStarted = $app('session')->read("mp_form_call_$form", null)) {
+    $seconds = mp()->formSessionExpire - (time() - $sessionStarted);
+    $dataSessionExpires = ' data-expire="'.$seconds.'"';
+}
 ?>
 
-<form id="{{ $id }}" method="post" action="@base('/form/submit/'.$form)">
+<form id="{{ $id }}" method="post" action="@base('/form/submit/'.$form)?submit=1"{{ $dataSessionExpires }}>
 
     <fieldset>
         <legend>@lang(!empty($options['title']) ? $options['title'] : 'Contact Me')</legend>
@@ -24,7 +30,7 @@ $id = mp()->formIdPrefix.$form;
 
     @foreach($fields as $field)
       @if(!isset($field['lst']) || $field['lst'] == true)
-<?php if (isset($options['fields'][$field['name']]) && $options['fields'][$field['name']] === false) continue; ?>
+      {% if (isset($options['fields'][$field['name']]) && $options['fields'][$field['name']] === false) continue; %}
         @render('views:formfields/'.($field['type'] ?? 'text').'.php with views:formfields/field-wrapper.php', ['field' => $field])
 
       @endif

@@ -1078,7 +1078,7 @@ $this->module('multiplane')->extend([
                 continue;
             }
             // skip empty values
-            if (empty($v)) {
+            if (empty($v) && $k != 'description') {
                 unset($seo[$k]);
                 continue;
             }
@@ -1276,7 +1276,9 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
             else $lang = $languageCode;
 
             // routes for forms
-            $this->bind('/'.$lang.'/form/*', function($params) {
+            $this->bind('/'.$lang.'/form/*', function($params) use($lang) {
+                $this('i18n')->locale = mp()->lang = $lang;
+                $this->set('base_url', MP_BASE_URL . '/' . $lang);
                 return $this->invoke('Multiplane\\Controller\\Forms', 'index', ['params' => $params]);
             });
 
