@@ -1,0 +1,118 @@
+
+.width-1-1 {width: 100%;}
+
+.width-1-2 {width: 50%;}
+
+.width-1-3 {width: 33.33%;}
+.width-2-3 {width: 66.66%;}
+
+.width-1-4 {width: 25%;}
+.width-3-4 {width: 75%;}
+
+.width-1-5 {width: 20%;}
+.width-2-5 {width: 40%;}
+.width-3-5 {width: 60%;}
+.width-4-5 {width: 80%;}
+
+.width-1-6 {width: 16.66%;}
+.width-5-6 {width: 83.33%;}
+
+@include breakpoint(small) {
+    .width-small-1-1 {width: 100%;}
+
+    .width-small-1-2 {width: 50%;}
+
+    .width-small-1-3 {width: 33.33%;}
+    .width-small-2-3 {width: 66.66%;}
+
+    .width-small-1-4 {width: 25%;}
+    .width-small-3-4 {width: 75%;}
+
+    .width-small-1-5 {width: 20%;}
+    .width-small-2-5 {width: 40%;}
+    .width-small-3-5 {width: 60%;}
+    .width-small-4-5 {width: 80%;}
+
+    .width-small-1-6 {width: 16.66%;}
+    .width-small-5-6 {width: 83.33%;}
+}
+
+@include breakpoint(medium) {
+    .width-medium-1-1 {width: 100%;}
+
+    .width-medium-1-2 {width: 50%;}
+
+    .width-medium-1-3 {width: 33.33%;}
+    .width-medium-2-3 {width: 66.66%;}
+
+    .width-medium-1-4 {width: 25%;}
+    .width-medium-3-4 {width: 75%;}
+
+    .width-medium-1-5 {width: 20%;}
+    .width-medium-2-5 {width: 40%;}
+    .width-medium-3-5 {width: 60%;}
+    .width-medium-4-5 {width: 80%;}
+
+    .width-medium-1-6 {width: 16.66%;}
+    .width-medium-5-6 {width: 83.33%;}
+}
+
+@include breakpoint(normal) {
+    .width-normal-1-1 {width: 100%;}
+
+    .width-normal-1-2 {width: 50%;}
+
+    .width-normal-1-3 {width: 33.33%;}
+    .width-normal-2-3 {width: 66.66%;}
+
+    .width-normal-1-4 {width: 25%;}
+    .width-normal-3-4 {width: 75%;}
+
+    .width-normal-1-5 {width: 20%;}
+    .width-normal-2-5 {width: 40%;}
+    .width-normal-3-5 {width: 60%;}
+    .width-normal-4-5 {width: 80%;}
+
+    .width-normal-1-6 {width: 16.66%;}
+    .width-normal-5-6 {width: 83.33%;}
+}
+
+@include breakpoint(large) {
+    .width-large-1-1 {width: 100%;}
+
+    .width-large-1-2 {width: 50%;}
+
+    .width-large-1-3 {width: 33.33%;}
+    .width-large-2-3 {width: 66.66%;}
+
+    .width-large-1-4 {width: 25%;}
+    .width-large-3-4 {width: 75%;}
+
+    .width-large-1-5 {width: 20%;}
+    .width-large-2-5 {width: 40%;}
+    .width-large-3-5 {width: 60%;}
+    .width-large-4-5 {width: 80%;}
+
+    .width-large-1-6 {width: 16.66%;}
+    .width-large-5-6 {width: 83.33%;}
+}
+
+@include breakpoint(xlarge) {
+    .width-xlarge-1-1 {width: 100%;}
+
+    .width-xlarge-1-2 {width: 50%;}
+
+    .width-xlarge-1-3 {width: 33.33%;}
+    .width-xlarge-2-3 {width: 66.66%;}
+
+    .width-xlarge-1-4 {width: 25%;}
+    .width-xlarge-3-4 {width: 75%;}
+
+    .width-xlarge-1-5 {width: 20%;}
+    .width-xlarge-2-5 {width: 40%;}
+    .width-xlarge-3-5 {width: 60%;}
+    .width-xlarge-4-5 {width: 80%;}
+
+    .width-xlarge-1-6 {width: 16.66%;}
+    .width-xlarge-5-6 {width: 83.33%;}
+}

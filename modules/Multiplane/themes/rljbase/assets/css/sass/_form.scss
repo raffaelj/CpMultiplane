@@ -168,7 +168,7 @@ input[type=checkbox], input[type=radio] {
             box-sizing: border-box;
         }
     }
-    &:hover,&:focus,&:active {
+    &:hover, &:focus, &:active {
         + label:before {
             border-color: $color-main;
             @include box-shadow(0 0 1em $color-main); // better accesibility and visibility
@@ -179,7 +179,7 @@ input[type=checkbox], input[type=radio] {
             
         }
         + label:after {
-            content:'';
+            content: '';
             position: absolute;
             top: 50%;
             left: -1rem;
@@ -187,6 +187,26 @@ input[type=checkbox], input[type=radio] {
             height: .6rem;
             margin-top: -.3rem;
             background-color: $color-main;
+        }
+        &.checkbox-icon-checked { // experimental
+            + label:after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -1.2rem;
+                width: .8rem;
+                height: .5rem;
+                margin: 0;
+                border-width: 0 0 .4rem .4rem;
+                border-style: solid;
+                border-top-color: transparent;
+                border-right-color: transparent;
+                background-color: transparent;
+                color: $color-main;
+                transform: rotate(-45deg);
+                transform-origin: 50% 50%;
+                -webkit-transform-style: preserve-3d; // fix cutted borders in FF
+            }
         }
     }
 }
@@ -306,7 +326,7 @@ label {
         margin: 0 .2rem;
         padding: .5rem;
         border-radius: $border-radius;
-        line-height:1.2rem;
+        line-height: 1.2rem;
     }
     &.success{
         font-size: 1.1rem;
