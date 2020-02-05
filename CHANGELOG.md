@@ -6,7 +6,7 @@
 * moved npm build scripts to theme folders
 * restructured `mp.js` to browserify modules
 * restructured/moved page/posts templates
-* added events `multiplane.getpage.before`, `multiplane.head`, `multiplane.getpreview.before`
+* added events `multiplane.getpage.before`, `multiplane.head`, `multiplane.getpreview.before`, `multiplane.seo`
 * added rljstripes theme (experimental)
 * added support for repeater as content field (experimental)
 * added optional i18n date format for posts meta

@@ -1066,6 +1066,7 @@ $this->module('multiplane')->extend([
                     'title' => $title,
                     'description' => $description,
                 ],
+                'robots' => [],
             ],
             isset($site['seo']) && is_array($site['seo']) ? $site['seo'] : [],
             isset($page['seo']) && is_array($page['seo']) ? $page['seo'] : []
@@ -1159,7 +1160,16 @@ $this->module('multiplane')->extend([
             }
             $schemas[] = $schema;
         }
+
         $seo['schemas'] = $schemas;
+
+        $canonical = !empty($page['seo']['canonical']) ? $page['seo']['canonical']
+                     : (!empty($page['canonical']) ? $page['canonical'] : null);
+        if ($canonical) $seo['canonical'] = $canonical;
+
+        $this->app->trigger('multiplane.seo', [&$seo]);
+
+        if (isset($seo['robots'])) $seo['robots'] = array_unique($seo['robots']);
 
         return $seo;
 

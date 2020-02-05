@@ -27,3 +27,9 @@ $seo = mp()->getSeoMeta($page);
 @foreach($seo['schemas'] as $s)
         <script type="application/ld+json">{{ json_encode($s) }}</script>
 @endforeach
+@if(!empty($seo['robots']))
+        <meta name="robots" content="{{ implode(', ', $seo['robots']) }}" />
+@endif
+@if(!empty($seo['canonical']))
+        <link rel="canonical" href="{{ $seo['canonical'] }}" />
+@endif

@@ -6,8 +6,11 @@ class Forms extends \LimeExtra\Controller {
 
     public function index($params = []) {
 
-        // standalone form page, e. g: example.com/form/form_name
+        // stand-alone form page, e. g: example.com/form/form_name
         // or if multilingual example.com/en/form/form_name
+        // useful as fallback for submit redirects if HTTP_REFERER is disabled
+
+        if (!mp()->formStandalone) return false;
 
         if (!empty($params[':splat'][0])) {
 
@@ -33,6 +36,19 @@ class Forms extends \LimeExtra\Controller {
 
             // load site data from site singleton
             $this->app->module('multiplane')->getSite();
+            
+            // add page to breadcrumbs
+            $breadcrumbs = mp()->breadcrumbs;
+            $breadcrumbs[] = ucfirst($form);
+            mp()->breadcrumbs = $breadcrumbs;
+
+            // hide from search engines
+            $this->app->on('multiplane.seo', function(&$seo) use($form) {
+                if (!isset($seo['robots'])) $seo['robots'] = [];
+                $seo['robots'][] = 'noindex';
+                $seo['robots'][] = 'nofollow';
+                $seo['canonical'] = $this->baseUrl("/form/$form");
+            });
 
             return $this->form($form);
         }

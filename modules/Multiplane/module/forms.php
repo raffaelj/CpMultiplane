@@ -21,6 +21,8 @@ $this->module('multiplane')->extend([
 
     'formSendReferer'       => false,           // send current page with contact form
 
+    'formStandalone'        => true,            // forms are accessible as stand-alone page via /form/form_name
+
     'formMessages' => [
         'success' => 'Thank you for your message. I will answer soon.',
         'notice'  => 'Please fill in all mandatory fields correctly.',

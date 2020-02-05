@@ -55,6 +55,13 @@ class Base extends \LimeExtra\Controller {
             }
         }
 
+        // add canonical, if page has a form
+        if (isset($page['contactform']['active']) && $page['contactform']['active'] == true) {
+            $this->app->on('multiplane.seo', function(&$seo) use($slug) {
+                $seo['canonical'] = $this->baseUrl($slug);
+            });
+        }
+
         $this->app->trigger('multiplane.page', [&$page, &$posts, &$site]);
 
         return $this->render($view, compact('page', 'posts', 'site'));
