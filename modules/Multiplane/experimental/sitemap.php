@@ -36,7 +36,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
         ],
     ];
 
-    if ($isMultilingual) {
+    if ($isMultilingual && $slugName != '_id') {
         foreach ($languages as $lang) {
             if ($lang != $defaultLang) {
                 $options['fields']["{$slugName}_{$lang}"] = true;
@@ -79,9 +79,11 @@ $this->on('multiplane.sitemap', function(&$xml) {
                     $route = '/' . ltrim($parentPage['subpagemodule']['route'], '/');
                 }
 
+                if (empty($page[$slugName])) continue;
+
                 $xml->startElement('url');
                   $xml->startElement('loc');
-                  $xml->text($siteUrl . $route . (!$isStartpage ? '/' . $page[mp()->slugName] : ''));
+                  $xml->text($siteUrl . $route . ($isStartpage ? '' : '/' . $page[$slugName]));
                   $xml->endElement();
 
                   $xml->startElement('lastmod');
@@ -94,44 +96,51 @@ $this->on('multiplane.sitemap', function(&$xml) {
             else {
                 foreach ($languages as $lang) {
 
-                    $suffix = $lang == $defaultLang ? '' : '_' . $lang;
-                    $suffix2 = ($lang == $defaultLang) || !$hasLocalizedSlug  ? '' : '_' . $lang;
-                    $route = '';
+                    $route      = '';
+                    $slugSuffix = ($lang == $defaultLang) || !$hasLocalizedSlug
+                                  || $slugName == '_id' ? '' : '_' . $lang;
 
+                    $suffix = $lang == $defaultLang ? '' : '_' . $lang;
                     if ($collection != mp()->pages
                         && !empty($parentPage['subpagemodule']['route'.$suffix])) {
                         $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
                     }
 
-                    $xml->startElement('url');
+                    if (!empty($page[$slugName.$slugSuffix]) || $isStartpage) {
 
-                      $xml->startElement('loc');
-                      $xml->text($siteUrl . "/$lang" . $route . (!$isStartpage ? '/' . $page[$slugName.$suffix2] : ''));
+                      $xml->startElement('url');
+
+                        $xml->startElement('loc');
+                        $xml->text($siteUrl . "/$lang" . $route . ($isStartpage ? '' : '/' . $page[$slugName.$slugSuffix]));
+                        $xml->endElement();
+
+                        foreach ($languages as $l) {
+
+                            if ($l == $lang) continue;
+                            $suffix = $l == $defaultLang ? '' : '_' . $l;
+                            $route = '';
+
+                            if ($collection != mp()->pages
+                                && !empty($parentPage['subpagemodule']['route'.$suffix])) {
+                                $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
+                            }
+
+                            $suffix = ($l == $defaultLang) || !$hasLocalizedSlug
+                                      || $slugName == '_id' ? '' : '_' . $l;
+
+                            if (empty($page[$slugName . $suffix])) continue;
+                            
+                            $xml->startElement('xhtml:link');
+                            $xml->writeAttribute('rel', 'alternate');
+                            $xml->writeAttribute('hreflang', $l);
+                            $xml->writeAttribute('href', $siteUrl . "/$l" . $route . ($isStartpage ? '' : '/' . $page[$slugName . $suffix]));
+                            $xml->endElement();
+
+                        }
+
                       $xml->endElement();
 
-                      foreach ($languages as $l) {
-
-                          if ($l == $lang) continue;
-                          $suffix = $l == $defaultLang ? '' : '_' . $l;
-                          $route = '';
-
-                          if ($collection != mp()->pages
-                              && !empty($parentPage['subpagemodule']['route'.$suffix])) {
-                              $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
-                          }
-
-                          $suffix = ($l == $defaultLang) || !$hasLocalizedSlug ? '' : '_' . $l;
-
-                          $xml->startElement('xhtml:link');
-                          $xml->writeAttribute('rel', 'alternate');
-                          $xml->writeAttribute('hreflang', $l);
-                          $xml->writeAttribute('href', $siteUrl . "/$l" . $route . (!$isStartpage ? '/' . $page[$slugName . $suffix] : ''));
-                          $xml->endElement();
-
-                      }
-
-                    $xml->endElement();
-
+                    }
                 }
             }
 
