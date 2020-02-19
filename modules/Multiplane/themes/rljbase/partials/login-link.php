@@ -1,2 +1,2 @@
 
-<p><a href="@route('/login')">@lang('Login')</a></p>
+            <p><a href="@route('/login')">@lang('Login')</a></p>

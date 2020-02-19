@@ -1,14 +1,14 @@
 
             <nav class="language-switch">
                 <ul>
-@foreach(mp()->getLanguageSwitch($page['_id'] ?? '') as $lang)
+                  @foreach(mp()->getLanguageSwitch($page['_id'] ?? '') as $lang)
                     <li>
-@if($lang['active'])
+                      @if($lang['active'])
                         <span title="{{ $lang['name'] }}">{{ $lang['code'] }}</span>
-@else
+                      @else
                         <a class="{{ $lang['active'] ? 'active' : '' }}" href="{{ $lang['url'] }}" title="{{ $lang['name'] }}">{{ $lang['code'] }}</a>
-@endif
+                      @endif
                     </li>
-@endforeach
+                  @endforeach
                 </ul>
             </nav>
