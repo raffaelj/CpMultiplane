@@ -157,3 +157,26 @@ $color-icon-background: $color-white-transp !default;
         -webkit-transform-style: preserve-3d; // fix cutted borders in FF
     }
 }
+
+.icon-home { // experimental - rounding issues in different browsers...
+    &:before, &:after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        border-style: solid;
+    }
+    &:before {
+        top: 50%;
+        margin-left: - $icon-width / 2 * .6;
+        border-width: ($icon-width / 10) ($icon-width / 4) 0 ($icon-width / 4);
+        height: $icon-width / 2 * .3;
+        width: $icon-width / 10;
+    }
+    &:after {
+        bottom: 50%;
+        margin-left: - $icon-width / 2 * .7;
+        border-width: 0 ($icon-width / 2 * .7) ($icon-width / 2 * .6) ($icon-width / 2 * .7);
+        border-left-color: transparent;
+        border-right-color: transparent;
+    }
+}

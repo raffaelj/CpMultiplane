@@ -1,6 +1,40 @@
 
-.breadcrumbs {
-    li:first-child a {
-        // to do: home icon
+$color-breadcrumbs: #888 !default;
+$color-breadcrumbs-spacer: #bbb !default;
+
+nav.breadcrumbs {
+    font-size: 1em;
+    font-weight: bold;
+    color: $color-breadcrumbs;
+    a {
+        padding: 0;
+        text-decoration: none;
+        color: $color-breadcrumbs;
+        &:hover {
+            color: $color-link-hover;
+        }
+    }
+    > ol > li {
+        margin: 0;
+    }
+    li + li:before { // triangle spacer
+        content: '';
+        display: inline-block;
+        vertical-align: middle;
+        color: $color-breadcrumbs-spacer;
+        border-style: solid;
+        border-width: .2em 0 .2em .3em;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        background-color: transparent;
+    }
+    .icon-home {
+        background-color: transparent;
+        font-size: 0.8em;
+        width: 1em;
+        height: 1em;
+        margin-right: 0.2em;
+        border-radius: 1px;
     }
 }

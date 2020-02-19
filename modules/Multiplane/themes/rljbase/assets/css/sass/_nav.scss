@@ -15,7 +15,7 @@ nav {
     font-size: 1.2em;
     @include box-sizing(border-box);
 
-    ul {
+    ul, ol {
         padding: 0;
         display: block;
     }
@@ -30,13 +30,17 @@ nav {
                 padding-right: 1em;
             }
         }
-        > ul {
+        > ul, > ol {
             display: none;
         }
         &:hover > ul,
         &:focus > ul,
         > a:hover + ul,
-        > a:focus + ul
+        > a:focus + ul,
+        &:hover > ol,
+        &:focus > ol,
+        > a:hover + ol,
+        > a:focus + ol
         {
             display: block;
             position: absolute;
@@ -48,7 +52,8 @@ nav {
             white-space: nowrap;
             @include box-sizing(border-box);
         }
-        &:focus-within > ul
+        &:focus-within > ul,
+        &:focus-within > ol
         {
             display: block;
             position: absolute;
@@ -62,7 +67,9 @@ nav {
         }
         li {
             &:hover > ul,
-            &:focus > ul
+            &:focus > ul,
+            &:hover > ol,
+            &:focus > ol
             {
                 @include breakpoint(small) {
                     right: 0;
@@ -74,7 +81,8 @@ nav {
                     padding-left: 0;
                 }
             }
-            &:focus-within > ul
+            &:focus-within > ul,
+            &:focus-within > ol
             {
                 @include breakpoint(small) {
                     right: 0;
@@ -94,19 +102,26 @@ nav {
             &:hover > ul,
             &:focus > ul,
             > a:hover + ul,
-            > a:focus + ul
+            > a:focus + ul,
+            &:hover > ol,
+            &:focus > ol,
+            > a:hover + ol,
+            > a:focus + ol
             {
                 top: auto;
                 left: 0;
             }
-            &:focus-within > ul
+            &:focus-within > ul,
+            &:focus-within > ol
             {
                 top: auto;
                 left: 0;
             }
             li {
                 &:hover > ul,
-                &:focus > ul
+                &:focus > ul,
+                &:hover > ol,
+                &:focus > ol
                 {
                     @include breakpoint(small) {
                         right: 0;
@@ -119,7 +134,8 @@ nav {
                         padding-left: 0;
                     }
                 }
-                &:focus-within > ul
+                &:focus-within > ul,
+                &:focus-within > ol
                 {
                     @include breakpoint(small) {
                         right: 0;
@@ -134,7 +150,7 @@ nav {
                 }
             }
         }
-        > ul {
+        > ul, > ol {
             > li {
                 display:inline-block;
                 margin:.5em;
@@ -220,7 +236,7 @@ nav#nav {
         z-index: 100;
         margin: 0;
         padding: 0;
-        > ul {
+        > ul, > ol {
             display: none;
         }
         a[href="#nav"], .icon-close {
@@ -255,7 +271,7 @@ nav#nav {
                 right: .5em;
                 left: auto;
             }
-            > ul {
+            > ul, > ol {
                 display: block;
             }
             input[type=checkbox] {
@@ -285,7 +301,11 @@ nav#nav {
                 &:hover > ul,
                 &:focus > ul,
                 > a:hover + ul,
-                > a:focus + ul
+                > a:focus + ul,
+                &:hover > ol,
+                &:focus > ol,
+                > a:hover + ol,
+                > a:focus + ol
                 {
                     position: static;
                     background-color: transparent;
@@ -294,7 +314,8 @@ nav#nav {
                         border-left: 1px solid $color-nav-mini;
                     }
                 }
-                &:focus-within > ul
+                &:focus-within > ul,
+                &:focus-within > ol
                 {
                     position: static;
                     background-color: transparent;
