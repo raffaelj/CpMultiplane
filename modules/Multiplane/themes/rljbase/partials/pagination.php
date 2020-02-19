@@ -1,12 +1,10 @@
 <?php
-
 if (isset($pagination['hide']) && $pagination['hide'] == true) return;
-
 $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
 ?>
 
-@if($pagination['pages'] > 1)
-            <nav class="pagination {{ $pagination['pages'] > $dropdownLimit ? 'dropdown' : '' }}">
+          @if($pagination['pages'] > 1)
+            <nav class="pagination {{ $pagination['pages'] > $dropdownLimit ? 'dropdown' : '' }}" aria-label="@lang('Pagination')">
                 <span class="pagination_label">@lang('Page')</span>
                 <ul>
                 @if($pagination['pages'] > $dropdownLimit && $pagination['page'] > 1)
@@ -53,4 +51,4 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
                 @endif
                 </ul>
             </nav>
-@endif
+          @endif

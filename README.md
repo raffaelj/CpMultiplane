@@ -1,6 +1,6 @@
 # CpMultiplane
 
-a small PHP front end for the fast and headless [Cockpit CMS][1]
+A small PHP front end for the fast and headless [Cockpit CMS][1].
 
 **My main goals:**
 
@@ -27,7 +27,7 @@ It is the refactored version of [Monoplane][8], which is not maintained anymore.
 * GD extension
 * mod_rewrite, mod_versions enabled (on apache)
 
-make also sure that `$_SERVER['DOCUMENT_ROOT']` exists and is set correctly.
+Make also sure that `$_SERVER['DOCUMENT_ROOT']` exists and is set correctly.
 
 ## Installation
 
