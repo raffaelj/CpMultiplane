@@ -1,5 +1,5 @@
 
-            <nav class="language-switch">
+            <nav class="language-switch" aria-label="@lang('Language')">
                 <ul>
                   @foreach(mp()->getLanguageSwitch($page['_id'] ?? '') as $lang)
                     <li>
