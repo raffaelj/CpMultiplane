@@ -185,8 +185,8 @@ class Base extends \LimeExtra\Controller {
         $page = [
             'title' => $this('i18n')->get('Search'),
             // 'description' => ''
-            'canonical' => $this->app->baseUrl('/search'), 
         ];
+        $page['seo']['canonical'] = $this->app->baseUrl('/search');
 
         if (mp()->hasBackgroundImage) {
             mp()->addBackgroundImage();
