@@ -38,7 +38,7 @@ body > header {
     text-align: center;
     padding: 0 1em;
     > a {
-        // display: table;
+        display: inline-block;
         margin:0 auto;
         img {
             width: 100px;

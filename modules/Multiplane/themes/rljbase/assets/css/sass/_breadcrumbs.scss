@@ -1,12 +1,17 @@
 
-$color-breadcrumbs: #888 !default;
+$color-breadcrumbs: #666 !default;
 $color-breadcrumbs-spacer: #bbb !default;
 
 nav.breadcrumbs {
+    display: block;
     font-size: 1em;
-    font-weight: bold;
+    font-weight: bolder;
     color: $color-breadcrumbs;
+    li, a {
+        display: inline;
+    }
     a {
+        // display: inline;
         padding: 0;
         text-decoration: none;
         color: $color-breadcrumbs;
@@ -34,7 +39,9 @@ nav.breadcrumbs {
         font-size: 0.8em;
         width: 1em;
         height: 1em;
-        margin-right: 0.2em;
-        border-radius: 1px;
+        margin-right: 0.8em;
+        &:before, &:after {
+            border-radius: 1px;
+        }
     }
 }
