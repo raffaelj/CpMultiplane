@@ -5,7 +5,7 @@ namespace Multiplane\Controller;
 class Base extends \LimeExtra\Controller {
 
     public function before() {
-        
+
         // load site data from site singleton
         $this->app->module('multiplane')->getSite();
 
@@ -13,11 +13,12 @@ class Base extends \LimeExtra\Controller {
 
     public function index($slug = '') {
 
-        $page  = $this->module('multiplane')->findOne($slug);
-        $posts = null;
-        $site  = $this->module('multiplane')->site;
+        $page  = $this->module('multiplane')->getPage($slug);
 
         if (!$page) return false;
+
+        $posts = null;
+        $site  = $this->module('multiplane')->site;
 
         $hasSubpageModule = isset($page['subpagemodule']['active'])
                             && $page['subpagemodule']['active'] === true;

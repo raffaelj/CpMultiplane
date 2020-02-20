@@ -259,7 +259,7 @@ $this->module('multiplane')->extend([
                 }
             }
         }
-        
+
         $projection = null;
         $populate = false;
         $fieldsFilter = ['lang' => $this->lang];
@@ -269,6 +269,14 @@ $this->module('multiplane')->extend([
         $page = $this->app->module('collections')->findOne($collection, $filter, $projection, $populate, $fieldsFilter);
 
         if (!$page) return false;
+
+        // reroute startpage if called via slug to avoid duplicated content
+        if (strlen($slug) && true === $page['startpage'] || false) {
+            $path = '/' . ($this->isMultilingual ? $this->lang : '');
+            $url = $this->app->routeUrl($path);
+            \header('Location: '.$url, true, 301);
+            $this->app->stop();
+        }
 
         if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
@@ -568,8 +576,14 @@ $this->module('multiplane')->extend([
                 continue;
             }
 
-            $key   = 'route' . ($l['default'] ? '' : "_{$lang}");
-            $route = $this->parentPage['subpagemodule'][$key] ?? null;
+            $key = 'route' . ($this->slugName == '_id' || $l['default'] ? '' : "_{$lang}");
+            if (!empty($this->parentPage['subpagemodule'][$key])) {
+                $route = $this->parentPage['subpagemodule'][$key];
+            }
+            else { // fallback to slug of parent page
+                $key   = $this->slugName . ($this->slugName == '_id' || $l['default'] ? '' : "_{$lang}");
+                $route = $this->parentPage[$key] ?? null;
+            }
 
             $l['url'] = MP_BASE_URL . '/' . $lang . '/' . ($route ? trim($route, '/') . '/' : '') . $slug;
 
@@ -577,7 +591,7 @@ $this->module('multiplane')->extend([
 
         return $languages;
 
-    },
+    }, // end of getLanguageSwitch()
 
     'getPosts' => function($collection = null, $slug = '', $opts = []) {
 
@@ -635,9 +649,15 @@ $this->module('multiplane')->extend([
 
             $parentPage = $this->resolveParentPage();
 
-            $route = 'route' . ($lang == $this->defaultLang ? '' : '_'.$lang);
+            $key = 'route' . ($lang == $this->defaultLang ? '' : '_'.$lang);
 
-            $slug = $parentPage['subpagemodule'][$route] ?? '';
+            if (!empty($parentPage['subpagemodule'][$key])) {
+                $slug = $parentPage['subpagemodule'][$key];
+            }
+            else {
+                $key = $this->slugName . ($this->slugName == '_id' || $lang == $this->defaultLang ? '' : "_{$lang}");
+                $slug = $parentPage[$key];
+            }
 
         }
 
@@ -653,7 +673,7 @@ $this->module('multiplane')->extend([
 
         return compact('posts', 'pagination', 'collection');
 
-    },
+    }, // end of getPosts()
     
     'getPostsByType' => function($type = null, $slug = '', $opts = []) {
         
@@ -825,9 +845,13 @@ $this->module('multiplane')->extend([
 
         $projection = [
             $this->slugName => true,
-            $this->slugName . '_' . $lang => true,
             'subpagemodule' => true,
         ];
+        if ($this->slugName != '_id') {
+            foreach($this->getLanguages() as $l) {
+                $projection[$this->slugName.'_'.$l] = true;
+            }
+        }
 
         if ($this->isStartpage) {
 
@@ -839,15 +863,13 @@ $this->module('multiplane')->extend([
 
         }
 
-        $fieldsFilter = [
-            'lang' => $lang
-        ];
+        $fieldsFilter = [];
 
         $parentPage = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, $fieldsFilter);
 
         return $parentPage;
 
-    },
+    }, // end of resolveParentPage()
 
     'renderFields' => function($page) {
 
