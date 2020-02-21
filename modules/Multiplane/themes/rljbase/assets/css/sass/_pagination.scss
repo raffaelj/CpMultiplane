@@ -1,9 +1,10 @@
 
-.pagination {
-    > ul {
+nav.pagination {
+    display: block;
+    > ol {
         display: inline;
     }
-    ul {
+    ol {
         text-align: left;
     }
     li {
@@ -20,7 +21,7 @@
     &.dropdown {
         .pagination_dropdown_headline {
             &:hover, &:focus {
-                ul {
+                ol {
                     display: block;
                     width: 10em;
                     height: 5em;
@@ -31,7 +32,7 @@
                 }
             }
             &:focus-within {
-                ul {
+                ol {
                     display: block;
                     width: 10em;
                     height: 5em;

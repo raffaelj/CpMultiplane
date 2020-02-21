@@ -1,4 +1,4 @@
 
 <aside class="widget contactform">
-{{ $app('form')->form(mp()->contact, $options) }} 
+{{ $app('form')->form($options['form'] ?? mp()->contact, $options) }} 
 </aside>

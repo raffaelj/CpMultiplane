@@ -25,8 +25,8 @@ if ($provider == 'vimeo') {
 
 ?>
 <div class="video_embed_container ratio-{{$ratio}}">
-    <iframe class="video_embed" src="about:blank" data-src="{{ $src }}" data-provider="{{ $provider }}" style="background-image: url('@route('/getImage')?src={{ $asset['_id'] }}&w=480&o=1');" width="{{ $width }}" height="{{ $height }}" allow="autoplay; fullscreen" allowfullscreen=""></iframe>
-    <a href="#" class="icon-play"></a>
+    <iframe class="video_embed" src="about:blank" data-src="{{ $src }}" data-provider="{{ $provider }}" style="background-image: url('@route('/getImage')?src={{ $asset['_id'] }}&w=480&o=1');" width="{{ $width }}" height="{{ $height }}" allow="autoplay; fullscreen" allowfullscreen="" title="@lang('Video')"></iframe>
+    <a href="#" class="icon-play" aria-label="@lang('Play')"></a>
 </div>
 @if($video['provider'] == 'youtube')
     <a href="https://www.youtube.com/watch?v={{ $video['id'] }}"{{ $title }}>{{ $video['text'] }}</a>

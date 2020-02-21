@@ -69,6 +69,7 @@ module.exports = {
             iframe.setAttribute('src', 'about:blank');
             iframe.setAttribute('allow', 'autoplay; fullscreen');
             iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('title', 'Video');
             iframe.style['background-image'] = 'url(' + thumb + ')';
 
             if (!iframe.getAttribute('id')) {
@@ -82,6 +83,7 @@ module.exports = {
             var play_button = d.createElement('a');
             play_button.setAttribute('class', 'icon-play');
             play_button.setAttribute('href', '#');
+            play_button.setAttribute('aria-label', 'Play');
             play_button.tabIndex = 0;
 
             container.appendChild(play_button);

@@ -6,7 +6,7 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
           @if($pagination['pages'] > 1)
             <nav class="pagination {{ $pagination['pages'] > $dropdownLimit ? 'dropdown' : '' }}" aria-label="@lang('Pagination')">
                 <span class="pagination_label">@lang('Page')</span>
-                <ul>
+                <ol>
                 @if($pagination['pages'] > $dropdownLimit && $pagination['page'] > 1)
                     <li class="pagination_first"><a href="@base($pagination['slug'])" title="@lang('first')">&laquo;</a></li>
                 @endif
@@ -24,7 +24,7 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
                         </li>
                       @endif
                     @endfor
-                    <li class="pagination_dropdown_headline" tabindex="0" title="@lang('Page') {{ $pagination['page'] }} @lang('of') {{ $pagination['pages'] }}"><span>{{ $pagination['page'] }}</span><ul>
+                    <li class="pagination_dropdown_headline" tabindex="0" title="@lang('Page') {{ $pagination['page'] }} @lang('of') {{ $pagination['pages'] }}"><span>{{ $pagination['page'] }}</span><ol>
                 @endif
                 @for($i = 1; $i <= $pagination['pages']; $i++)
                     <li class="pagination_item {{ $i == $pagination['page'] ? 'active' : '' }}">
@@ -36,7 +36,7 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
                     </li>
                 @endfor
                 @if($pagination['pages'] > $dropdownLimit)
-                    </ul></li>
+                    </ol></li>
                     @for($i = $pagination['page'] + 1; $i < $pagination['page'] + 3 && $i <= $pagination['pages']; $i++)
                         <li class="pagination_item">
                             <a href="@base($pagination['slug'].'/page/'.$i)" title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</a>
@@ -49,6 +49,6 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
                 @if($pagination['pages'] > $dropdownLimit && $pagination['page'] < $pagination['pages'])
                     <li class="pagination_last"><a href="@base($pagination['slug'].'/page/'.$pagination['pages'])" title="@lang('last')">&raquo;</a></li>
                 @endif
-                </ul>
+                </ol>
             </nav>
           @endif

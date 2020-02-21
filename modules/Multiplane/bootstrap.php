@@ -271,7 +271,7 @@ $this->module('multiplane')->extend([
         if (!$page) return false;
 
         // reroute startpage if called via slug to avoid duplicated content
-        if (strlen($slug) && true === $page['startpage'] || false) {
+        if (strlen($slug) && isset($page['startpage']) && $page['startpage'] === true) {
             $path = '/' . ($this->isMultilingual ? $this->lang : '');
             $url = $this->app->routeUrl($path);
             \header('Location: '.$url, true, 301);
