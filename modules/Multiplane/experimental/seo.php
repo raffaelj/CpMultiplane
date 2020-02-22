@@ -110,7 +110,19 @@ $this->module('multiplane')->extend([
         }
         else {
             $currentOgKeys = [];
-            foreach ($seo['og'] as $item) $currentOgKeys[] = key($item);
+            $ogFromObj = [];
+            foreach ($seo['og'] as $k => $item) {
+                if (is_array($item)) {
+                    $currentOgKeys[] = key($item);
+                }
+                else {
+                    $ogFromObj[] = [$k => $item];
+                    $currentOgKeys[] = $k;
+                }
+            }
+            if (!empty($ogFromObj)) {
+                $seo['og'] = $ogFromObj;
+            }
 
             foreach ($ogDefault as $k => $v) {
                 if (in_array($k, $currentOgKeys)) {

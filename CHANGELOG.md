@@ -1,6 +1,6 @@
 # Changelog
 
-## upcoming
+## upcoming (0.1.6)
 
 * changed event `multiplane.getposts.before`
 * moved npm build scripts to theme folders
