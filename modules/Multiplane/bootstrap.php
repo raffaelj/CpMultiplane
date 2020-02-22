@@ -949,9 +949,16 @@ $this->module('multiplane')->extend([
 
         // load config
         $config = array_replace_recursive(
-            $this->app->storage->getKey('cockpit/options', 'multiplane', []), // ui
+            $this->app->storage->getKey('cockpit/options', 'multiplane', []), // old ui
             $this->app->retrieve('multiplane', [])                            // config file
         );
+
+        if (isset($this->app['modules']['cpmultiplanegui'])
+          && isset($config['profile'])
+          && $profile = $this->app->module('cpmultiplanegui')->profile($config['profile'])
+          ) {
+            $config = array_replace_recursive($config, $profile);
+        }
 
         // load theme config file(s), if available
 
@@ -1045,10 +1052,10 @@ $this->module('multiplane')->extend([
             $pattern = '/(\s*)@'.$k.'\((.+?)\)/';
 
             $replacement = '$1<?php echo MP_BASE_URL."/getImage?src=".urlencode($2)';
-            if (isset($v['width'])   && $v['width'])    $replacement .= '."&w=".mp()->get("lexy/'.$k.'/width", '   . $v['width'].')';
-            if (isset($v['height'])  && $v['height'])   $replacement .= '."&h=".mp()->get("lexy/'.$k.'/height", '  . $v['height'].')';
-            if (isset($v['quality']) && $v['quality'])  $replacement .= '."&q=".mp()->get("lexy/'.$k.'/quality", ' . $v['quality'].')';
-            if (isset($v['method'])  && $v['method'])   $replacement .= '."&m=".mp()->get("lexy/'.$k.'/method", "' . $v['method'].'")';
+            if (isset($v['width'])   && $v['width'])    $replacement .= '."&w=".$app->module(\'multiplane\')->get("lexy/'.$k.'/width", '   . $v['width'].')';
+            if (isset($v['height'])  && $v['height'])   $replacement .= '."&h=".$app->module(\'multiplane\')->get("lexy/'.$k.'/height", '  . $v['height'].')';
+            if (isset($v['quality']) && $v['quality'])  $replacement .= '."&q=".$app->module(\'multiplane\')->get("lexy/'.$k.'/quality", ' . $v['quality'].')';
+            if (isset($v['method'])  && $v['method'])   $replacement .= '."&m=".$app->module(\'multiplane\')->get("lexy/'.$k.'/method", "' . $v['method'].'")';
             $replacement .= '; ?>';
 
             $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
@@ -1072,16 +1079,16 @@ include_once(__DIR__ . '/experimental/seo.php');
 
 
 // overwrite default config
-mp()->loadConfig();
+$this->module('multiplane')->loadConfig();
 
 // load theme bootstrap file(s)
-if (mp()->parentTheme && mp()->parentThemeBootstrap
-    && file_exists(mp()->parentThemePath . '/bootstrap.php')) {
+if ($this->module('multiplane')->parentTheme && $this->module('multiplane')->parentThemeBootstrap
+    && file_exists($this->module('multiplane')->parentThemePath . '/bootstrap.php')) {
 
-    include_once(mp()->parentThemePath . '/bootstrap.php');
+    include_once($this->module('multiplane')->parentThemePath . '/bootstrap.php');
 }
-if (file_exists(mp()->themePath . '/bootstrap.php')) {
-    include_once(mp()->themePath . '/bootstrap.php');
+if (file_exists($this->module('multiplane')->themePath . '/bootstrap.php')) {
+    include_once($this->module('multiplane')->themePath . '/bootstrap.php');
 }
 
 // load custom bootstrap file
@@ -1090,13 +1097,13 @@ if (file_exists(MP_CONFIG_DIR.'/bootstrap.php')) {
 }
 
 // extend lexy parser for custom image url templating
-mp()->extendLexyTemplateParser();
+$this->module('multiplane')->extendLexyTemplateParser();
 
 // bind routes
 
 // skip binding routes if in maintenance mode and
 // dont't bind any routes, if users wants to use only their own routes
-if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
+if ($this->module('multiplane')->accessAllowed() && !$this->module('multiplane')->disableDefaultRoutes) {
 
     // clear cache (only in debug mode)
     $this->bind('/clearcache', function() {
@@ -1116,7 +1123,7 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
     });
 
     // routes for live preview
-    if (mp()->isPreviewEnabled) {
+    if ($this->module('multiplane')->isPreviewEnabled) {
 
         $this->bind('/getPreview', function($params) {
             return $this->invoke('Multiplane\\Controller\\Base', 'getPreview', ['params' => $params]);
@@ -1124,7 +1131,7 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
 
         $this->bind('/livePreview', function($params) {
 
-            if ($this->param('token') != mp()->livePreviewToken) {
+            if ($this->param('token') != $this->module('multiplane')->livePreviewToken) {
                 return false;
             }
 
@@ -1135,11 +1142,11 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
 
 
     // bind wildcard routes
-    $isMultilingual = mp()->isMultilingual && $this->retrieve('languages', false);
+    $isMultilingual = $this->module('multiplane')->isMultilingual && $this->retrieve('languages', false);
 
     if (!$isMultilingual) {
 
-        mp()->initI18n(mp()->defaultLang);
+        $this->module('multiplane')->initI18n($this->module('multiplane')->defaultLang);
 
         // routes for forms
         $this->bind('/form/*', function($params) {
@@ -1147,7 +1154,7 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
         });
 
         // fulltext search
-        if (mp()->displaySearch) {
+        if ($this->module('multiplane')->displaySearch) {
             $this->bind('/search/*', function($params) {
                 return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
             });
@@ -1160,25 +1167,25 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
     }
     else {
 
-        foreach (mp()->getLanguages() as $lang) {
+        foreach ($this->module('multiplane')->getLanguages() as $lang) {
 
             // routes for forms
             $this->bind('/'.$lang.'/form/*', function($params) use($lang) {
-                mp()->initI18n($lang);
+                $this->module('multiplane')->initI18n($lang);
                 return $this->invoke('Multiplane\\Controller\\Forms', 'index', ['params' => $params]);
             });
 
             // fulltext search
-            if (mp()->displaySearch) {
+            if ($this->module('multiplane')->displaySearch) {
                 $this->bind('/'.$lang.'/search/*', function($params) use($lang) {
-                    mp()->initI18n($lang);
+                    $this->module('multiplane')->initI18n($lang);
                     return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
                 });
             }
 
             $this->bind('/'.$lang.'/*', function($params) use($lang) {
 
-                mp()->initI18n($lang);
+                $this->module('multiplane')->initI18n($lang);
                 return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => ($params[':splat'][0] ?? '')]);
 
             });
@@ -1188,11 +1195,11 @@ if (mp()->accessAllowed() && !mp()->disableDefaultRoutes) {
         // redirect "/" to "/en"
         $this->bind('/*', function($params) {
 
-            $defaultLang = mp()->defaultLang;
+            $defaultLang = $this->module('multiplane')->defaultLang;
 
             $lang = $this->getClientLang($defaultLang);
 
-            if (!in_array($lang, mp()->getLanguages())) {
+            if (!in_array($lang, $this->module('multiplane')->getLanguages())) {
                 $lang = $defaultLang;
             }
             $this->reroute('/' . $lang . '/' . ($params[':splat'][0] ?? ''));
@@ -1212,9 +1219,9 @@ $this->on('after', function() {
         $this->response->status = 404;
     }
  
-    if (mp()->isInMaintenanceMode) {
+    if ($this->module('multiplane')->isInMaintenanceMode) {
 
-        if (!mp()->clientIpIsAllowed) {
+        if (!$this->module('multiplane')->clientIpIsAllowed) {
             $this->response->status = 503;
         }
 
