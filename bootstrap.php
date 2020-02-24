@@ -29,7 +29,9 @@ if (!defined('MP_ENV_URL'))         define('MP_ENV_URL',      MP_DOCS_ROOT == MP
 if (!defined('MP_CONFIG_DIR'))      define('MP_CONFIG_DIR',   MP_ENV_ROOT.'/config');
 if (!defined('MP_CONFIG_PATH'))     define('MP_CONFIG_PATH',  MP_CONFIG_DIR.'/config.php');
 
-if (!defined('COCKPIT_CLI'))        define('COCKPIT_CLI', PHP_SAPI == 'cli');
+if (!defined('MP_CONFIG_PATH'))     define('MP_CONFIG_PATH',  MP_CONFIG_DIR.'/config.php');
+
+if (!defined('MP_SELF_EXPORT'))     define('MP_SELF_EXPORT',  false);
 
 // for thumbnails of CpMultiplane assets
 if (!defined('COCKPIT_SITE_DIR'))   define('COCKPIT_SITE_DIR',  MP_ENV_ROOT);

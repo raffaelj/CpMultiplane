@@ -5,7 +5,9 @@ if (!$this->retrieve('multiplane/version', false)) {
         : json_decode($this('fs')->read(MP_DOCS_ROOT.'/package.json'), true)['version']);
 }
 
-require_once(__DIR__ . '/override.php');
+if (!MP_SELF_EXPORT) {
+    require_once(__DIR__ . '/override.php');
+}
 
 // set config path
 $this->path('mp_config', MP_ENV_ROOT . '/config');
@@ -14,7 +16,7 @@ $this->path('mp_config', MP_ENV_ROOT . '/config');
 // `MP_DOCS_ROOT/Controller`, e. g.: `/Controller/Products.php`
 spl_autoload_register(function($class){
     $class_path = MP_ENV_ROOT.'/Controller'.str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
-    if(file_exists($class_path)) include_once($class_path);
+    if (\file_exists($class_path)) include_once($class_path);
 });
 
 // add helpers
@@ -974,7 +976,7 @@ $this->module('multiplane')->extend([
         if (  ($this->themePath = $this->app->path(MP_ENV_ROOT.'/themes/'.$this->theme))
            || ($this->themePath = $this->app->path(__DIR__.'/themes/'.$this->theme)) ) {
 
-            if (file_exists($this->themePath . '/config/config.php')) {
+            if (\file_exists($this->themePath . '/config/config.php')) {
                 $themeConfig = include($this->themePath . '/config/config.php');
 
                 if (!$this->parentTheme && !empty($themeConfig['parentTheme'])) {
@@ -989,7 +991,7 @@ $this->module('multiplane')->extend([
                     // parent theme path must be set before theme path
                     $this->app->path('views', $this->parentThemePath);
 
-                    if (file_exists($this->parentThemePath . '/config/config.php')) {
+                    if (\file_exists($this->parentThemePath . '/config/config.php')) {
                         $parentThemeConfig = include($this->parentThemePath . '/config/config.php');
                     }
                 }
@@ -1049,6 +1051,57 @@ $this->module('multiplane')->extend([
 
     },
 
+    'self_export' => function() {
+
+        $constants = [
+            'MP_ENV_ROOT'     => MP_ENV_ROOT,
+            'MP_ADMIN_FOLDER' => MP_ADMINFOLDER,
+            'MP_ENV_URL'      => MP_ENV_URL, // wrong url guess, if called from `/cockpit`
+        ];
+
+        $theme = [
+            'name'        => $this->theme,
+            'path'        => $this->themePath,
+            'parentTheme' => $this->parentTheme,
+            // 'config'      => $this->loadThemeConfig(),
+        ];
+
+        $themes = [];
+
+        $path = MP_DOCS_ROOT.'/modules/Multiplane/themes';
+        foreach($this('fs')->ls($path) as $dir) {
+
+            if (!$dir->isDir()) continue;
+
+            $name = $dir->getFileName();
+            $path = $dir->getPathName();
+
+            $themes[$name] = [
+                'name'   => $name,
+                'path'   => $path,
+                'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
+            ];
+        }
+
+        $path = MP_ENV_ROOT.'/themes';
+        foreach($this('fs')->ls($path) as $dir) {
+
+            if (!$dir->isDir()) continue;
+
+            $name = $dir->getFileName();
+            $path = $dir->getPathName();
+
+            $themes[$name] = [
+                'name'   => $name,
+                'path'   => $path,
+                'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
+            ];
+        }
+
+        return compact('constants', 'theme', 'themes');
+
+    },
+
 ]);
 
 // module parts
@@ -1084,10 +1137,15 @@ $this->module('multiplane')->extendLexyTemplateParser();
 
 // bind routes
 
-// skip binding routes if in maintenance mode and
-// dont't bind any routes, if users wants to use only their own routes
-if ($this->module('multiplane')->accessAllowed() && !$this->module('multiplane')->disableDefaultRoutes) {
-    require_once(__DIR__ . '/bind.php');
+if (!MP_SELF_EXPORT) {
+
+    // skip binding routes if in maintenance mode and
+    // dont't bind any routes, if users wants to use only their own routes
+    if ($this->module('multiplane')->accessAllowed()
+      && !$this->module('multiplane')->disableDefaultRoutes) {
+        require_once(__DIR__ . '/bind.php');
+    }
+
 }
 
 // CLI
