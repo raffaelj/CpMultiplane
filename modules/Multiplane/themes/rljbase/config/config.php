@@ -21,13 +21,13 @@ return [
             'method' => 'thumbnail',
         ],
         'image' => [
-            'width' => 800,
-            'height' => 800,
+            'width' => 1000,
+            'height' => 1000,
             'quality' => 80,
             'method' => 'bestFit',
         ],
         'headerimage' => [
-            'width' => 800,
+            'width' => 968,
             'height' => 200,
             'quality' => 80,
             'method' => 'thumbnail',
