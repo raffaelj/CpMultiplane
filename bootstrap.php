@@ -35,7 +35,9 @@ if (!defined('COCKPIT_CLI'))        define('COCKPIT_CLI', PHP_SAPI == 'cli');
 if (!defined('COCKPIT_SITE_DIR'))   define('COCKPIT_SITE_DIR',  MP_ENV_ROOT);
 
 // load modified Lexy class before the original autoloads to create pretty printed html
-include_once(__DIR__ . '/modules/Multiplane/lib/Lexy.php');
+if (!class_exists('Lexy')) {
+    include_once(__DIR__ . '/modules/Multiplane/lib/Lexy.php');
+}
 
 // include cockpit, now `$cockpit` and `cockpit()` are available
 if (file_exists(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php')) {
@@ -48,7 +50,7 @@ if (file_exists(MP_CONFIG_PATH)) {
     $customConfig = include(MP_CONFIG_PATH);
 }
 
-$cockpit->loadModules(array_merge([
+cockpit()->loadModules(array_merge([
     MP_DOCS_ROOT . '/modules', # core
     MP_ENV_ROOT . '/addons' # addons
 ], $customConfig['loadmodules'] ?? []));
