@@ -50,18 +50,18 @@ $this->on('multiplane.search', function($search, $list) {
 
     $_search = trim($search);
 
-    $isMultilingual = mp()->isMultilingual;
-    $defaultLang    = mp()->defaultLang;
-    $slugName       = mp()->slugName;
-    $languages      = mp()->getLanguages();
-    $lang           = mp()->lang;
-    $minLength      = mp()->searchMinLength;
+    $isMultilingual = $this->module('multiplane')->isMultilingual;
+    $defaultLang    = $this->module('multiplane')->defaultLang;
+    $slugName       = $this->module('multiplane')->slugName;
+    $languages      = $this->module('multiplane')->getLanguages();
+    $lang           = $this->module('multiplane')->lang;
+    $minLength      = $this->module('multiplane')->searchMinLength;
     $searches       = [];
 
-    $searchInCollections = mp()->searchInCollections;
+    $searchInCollections = $this->module('multiplane')->searchInCollections;
 
-    $pages = mp()->pages;
-    $posts = mp()->posts;
+    $pages = $this->module('multiplane')->pages;
+    $posts = $this->module('multiplane')->posts;
 
     if (preg_match('/^(["\']).*\1$/m', $_search)) {
         // exact match in quotes, still case insensitive
@@ -79,11 +79,11 @@ $this->on('multiplane.search', function($search, $list) {
 
     if (empty($searches)) return;
 
-    if (empty($searchInCollections)) {
+    if (empty($searchInCollections) && !empty($pages)) {
 
         $searchInCollections = [
-            'pages' => [
-                'name' => mp()->pages,
+            $pages => [
+                'name' => $pages,
                 'route' => '',
                 'weight' => 10,
                 'fields' => [

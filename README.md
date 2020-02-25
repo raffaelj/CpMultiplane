@@ -102,9 +102,21 @@ The fastest way to change some defaults, is to add some values to `/cockpit/conf
 
 ```yaml
 multiplane:
-    siteSingleton: config
+    pages: pages
+    posts: posts
+    siteSingleton: site
     slugName: slug
-    sitemap: ['pages', 'posts', 'products']
+    use:
+        collections: ['pages', 'posts', 'products']
+        singletons: ['site']
+        forms: ['contact']
+```
+
+The cleaner and more user friendly way is to use the GUI. Create a profile, name it `my-profile` and set multiplane to the profile name:
+
+```yaml
+multiplane:
+    profile: my-profile
 ```
 
 ## Reserved routes

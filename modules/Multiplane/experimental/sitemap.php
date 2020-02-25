@@ -16,14 +16,18 @@ multiplane:
 $this->on('multiplane.sitemap', function(&$xml) {
 
     $siteUrl        = $this['site_url'];
-    $isMultilingual = mp()->isMultilingual;
-    $defaultLang    = mp()->defaultLang;
-    $slugName       = mp()->slugName;
-    $languages      = mp()->getLanguages();
+    $isMultilingual = $this->module('multiplane')->isMultilingual;
+    $defaultLang    = $this->module('multiplane')->defaultLang;
+    $slugName       = $this->module('multiplane')->slugName;
+    $languages      = $this->module('multiplane')->getLanguages();
     $parentPage     = null;
     $route          = '';
+    $pages          = $this->module('multiplane')->pages;
+    $collections    = $this->module('multiplane')->sitemap;
 
-    $collections = mp()->sitemap ?? [mp()->pages, mp()->posts];
+    if (empty($collections)) {
+        $collections = $this->module('multiplane')->use['collections'];
+    }
 
     $options = [
         'filter' => [
@@ -55,7 +59,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
             $isStartpage = !empty($page['startpage']);
 
-            if ($collection != mp()->pages) {
+            if ($collection != $pages) {
 
                 $filter = [
                     'published' => true,
@@ -67,14 +71,14 @@ $this->on('multiplane.sitemap', function(&$xml) {
                     'subpagemodule' => true,
                 ];
 
-                $parentPage = $this->module('collections')->findOne(mp()->pages, $filter, $projection, false, null);
+                $parentPage = $this->module('collections')->findOne($pages, $filter, $projection, false, null);
 
             }
 
             if (!$isMultilingual) {
 
                 $route = '';
-                if ($collection != mp()->pages
+                if ($collection != $pages
                     && !empty($parentPage['subpagemodule']['route'])) {
                     $route = '/' . ltrim($parentPage['subpagemodule']['route'], '/');
                 }
@@ -101,7 +105,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                                   || $slugName == '_id' ? '' : '_' . $lang;
 
                     $suffix = $lang == $defaultLang ? '' : '_' . $lang;
-                    if ($collection != mp()->pages
+                    if ($collection != $pages
                         && !empty($parentPage['subpagemodule']['route'.$suffix])) {
                         $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
                     }
@@ -120,7 +124,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                             $suffix = $l == $defaultLang ? '' : '_' . $l;
                             $route = '';
 
-                            if ($collection != mp()->pages
+                            if ($collection != $pages
                                 && !empty($parentPage['subpagemodule']['route'.$suffix])) {
                                 $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
                             }

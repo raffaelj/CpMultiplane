@@ -2,6 +2,7 @@
 
 ## upcoming (0.1.6)
 
+* dropped setting default collections to `pages` and `posts` and site singleton to `site` - You have to specify them manually
 * changed event `multiplane.getposts.before`
 * moved npm build scripts to theme folders
 * restructured `mp.js` to browserify modules

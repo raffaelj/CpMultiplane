@@ -38,6 +38,12 @@ $this->module('multiplane')->extend([
     'navName'               => 'nav',             // field name for navigation
     'nav'                   => null,              // hard coded navigation
 
+    'use' => [
+        'collections' => [],                      // list of collection names
+        'singletons'  => [],                      // list of singleton names
+        'forms'       => [],                      // list of form names
+    ],
+
     // maintenance mode
     'isInMaintenanceMode'   => false,             // display under construction page with 503 status
     'allowedIpsInMaintenanceMode' => null,        // separate multiple ip addresses with whitespaces
@@ -49,12 +55,12 @@ $this->module('multiplane')->extend([
     'preRenderFields'       => [],
 
     'site'                  => [],                // default site config
-    'siteSingleton'         => 'site',            // singleton name for default config
+    'siteSingleton'         => '',                // singleton name for default config
 
-    'pages'                 => 'pages',           // collection name for pages
+    'pages'                 => '',                // collection name for pages
     // 'pagesPattern'          => '{title}',         // to do...
 
-    'posts'                 => 'posts',           // collection name for posts
+    'posts'                 => '',                // collection name for posts
     // 'postsPattern'          => '{collection}/{title}',        // to do...
     // 'postsPattern'         => '{YYYY}/{MM}/{DD}/{title}',  // to do...
 
@@ -957,10 +963,6 @@ $this->module('multiplane')->extend([
         }
 
         foreach($config as $key => $val) {
-
-            // prevent overwriting defaults with empty strings
-            if (($key == 'pages' || $key == 'posts' ) && empty($val)) continue;
-
             $this->set($key, $val);
         }
 
