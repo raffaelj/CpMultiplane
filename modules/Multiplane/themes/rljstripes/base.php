@@ -8,7 +8,7 @@
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
-        <title>{{ (!empty($page['title']) ? $page['title'] . ' - ' : '') . ($site['site_name'] ?? $app['app.name']) }}</title>
+        <title>{{{ (!empty($page['title']) ? $page['title'] . ' - ' : '') . ($site['site_name'] ?? $app['app.name']) }}}</title>
         <meta name="description" content="{{ $app->escape(!empty($page['description']) ? $page['description'] : ($site['description'] ?? '')) }}" />
 
         @render('views:partials/open-graph.php', compact('page', 'site'))
@@ -35,7 +35,7 @@
 
                 <img class="logo" alt="{{ $site['logo']['title'] ?? 'logo' }}" src="@logo($site['logo']['_id'] ?? $site['logo']['path'])" title="@lang('back to start page')" />
                 @endif
-                <h1>{{ $site['site_name'] ?? $app['app.name'] }}</h1>
+                <h1>{{{ $site['site_name'] ?? $app['app.name'] }}}</h1>
             </a>
 
             @if(mp()->isMultilingual)

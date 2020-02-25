@@ -3,7 +3,7 @@
 
             <header>
                 @render('views:partials/featured-media.php', ['page' => $page, 'mode' => 'image'])
-                <h2>{{ $page['title'] }}</h2>
+                <h2>{{{ $page['title'] }}}</h2>
             </header>
 
             @render('views:partials/content.php', ['content' => $page['content']])
