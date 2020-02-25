@@ -1,7 +1,9 @@
 # Changelog
 
-## upcoming (0.1.6)
+## 0.1.6
 
+* massive rewrite
+* added profiles
 * dropped setting default collections to `pages` and `posts` and site singleton to `site` - You have to specify them manually
 * changed event `multiplane.getposts.before`
 * moved npm build scripts to theme folders
