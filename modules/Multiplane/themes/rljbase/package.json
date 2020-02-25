@@ -1,7 +1,10 @@
 {
-  "name": "cpmultiplane-rljbase",
-  "version": "0.1.0",
+  "name": "cpmultiplane-theme-rljbase",
+  "version": "0.1.1",
+  "author": "Raffael Jesche",
   "license": "MIT",
+  "description": "Basic styling and skeleton for CpMultiplane.",
+  "keywords": ["Cockpit CMS","wysiwsg","markdown","lightbox","privacy friendly"],
   "scripts": {
     "build": "npm run build-js",
     "build-js": "browserify assets/js/src/mp.js -s MP | uglifyjs > assets/js/mp.min.js",
