@@ -1055,6 +1055,7 @@ $this->module('multiplane')->extend([
 
         $constants = [
             'MP_ENV_ROOT'     => MP_ENV_ROOT,
+            'MP_BASE_URL'     => MP_BASE_URL,
             'MP_ADMIN_FOLDER' => MP_ADMINFOLDER,
             'MP_ENV_URL'      => MP_ENV_URL, // wrong url guess, if called from `/cockpit`
         ];
@@ -1066,36 +1067,32 @@ $this->module('multiplane')->extend([
             // 'config'      => $this->loadThemeConfig(),
         ];
 
-        $themes = [];
+        $themes    = [];
+        $themedirs = [MP_DOCS_ROOT.'/modules/Multiplane/themes', MP_ENV_ROOT.'/themes'];
 
-        $path = MP_DOCS_ROOT.'/modules/Multiplane/themes';
-        foreach($this('fs')->ls($path) as $dir) {
+        foreach ($themedirs as $themedir) {
+            foreach($this('fs')->ls($themedir) as $dir) {
 
-            if (!$dir->isDir()) continue;
+                if (!$dir->isDir()) continue;
 
-            $name = $dir->getFileName();
-            $path = $dir->getPathName();
+                $name = $dir->getFileName();
+                $path = $dir->getPathName();
 
-            $themes[$name] = [
-                'name'   => $name,
-                'path'   => $path,
-                'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
-            ];
-        }
+                $thm = [
+                    'name'   => $name,
+                    'path'   => $path,
+                    'image'  => '',
+                    'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
+                    'info'   => json_decode($this('fs')->read("{$path}/package.json")) ?? [],
+                ];
 
-        $path = MP_ENV_ROOT.'/themes';
-        foreach($this('fs')->ls($path) as $dir) {
+                if ( ($image = $this->app->pathToUrl("{$path}/screenshot.png"))
+                  || ($image = $this->app->pathToUrl("{$path}/screenshot.jpg"))) {
+                    $thm['image'] = $image;
+                }
 
-            if (!$dir->isDir()) continue;
-
-            $name = $dir->getFileName();
-            $path = $dir->getPathName();
-
-            $themes[$name] = [
-                'name'   => $name,
-                'path'   => $path,
-                'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
-            ];
+                $themes[$name] = $thm;
+            }
         }
 
         return compact('constants', 'theme', 'themes');
