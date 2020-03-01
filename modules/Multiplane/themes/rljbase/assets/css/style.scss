@@ -1,9 +1,9 @@
+/**
+ * npm run build:sass
+ * npm run watch:sass
+ */
 
-// navigate to theme folder
-// sass --watch style.scss:style.min.css --style compressed --scss
-
-// or navigate to CpMultiplane root
-// sass --watch modules/Multiplane/themes/rljbase/assets/css/style.scss:modules/Multiplane/themes/rljbase/assets/css/style.min.css --style compressed --scss
+@import 'sass/copyright-preamble';
 
 // fonts
 $font: system-ui, Helvetica, sans-serif;

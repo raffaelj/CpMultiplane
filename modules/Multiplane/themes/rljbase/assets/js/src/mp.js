@@ -1,3 +1,7 @@
+/**
+ * npm run build:js
+ * npm run watch:js
+ */
 
 var MP = require('./mp/MP.js');
 
