@@ -12,11 +12,21 @@ if (!MP_SELF_EXPORT) {
 // set config path
 $this->path('mp_config', MP_ENV_ROOT . '/config');
 
-// register autoload classes in namespace Multiplane\Controller from
-// `MP_DOCS_ROOT/Controller`, e. g.: `/Controller/Products.php`
 spl_autoload_register(function($class){
+
+    // register autoload classes in namespace Multiplane\Controller from
+    // `MP_DOCS_ROOT/Controller`, e. g.: `/Controller/Products.php`
     $class_path = MP_ENV_ROOT.'/Controller'.str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
     if (\file_exists($class_path)) include_once($class_path);
+
+    // autoload from /modules/Multiplane/lib
+    $class_path = __DIR__.'/lib/'.$class.'.php';
+    if (\file_exists($class_path)) include_once($class_path);
+
+});
+
+spl_autoload_register(function($class){
+    
 });
 
 // add helpers

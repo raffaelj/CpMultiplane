@@ -19,6 +19,19 @@ $this->on('cockpit.filestorages.init', function(&$storages) {
     $storages['thumbs']['url']  = $this->pathToUrl('#thumbs:', true);
 });
 
+// use a modified renderer, that extends the core Lexy class
+$lexy = $this->renderer;
+$this->service('renderer', function() use ($lexy) {
+
+    $renderer = new \MPLexy($lexy);
+
+    // remove some white space to prettify the html output
+    $renderer->after(function($content) {
+        return preg_replace('/([\r\n])(\s*)\<\?php(?!\s*(echo|\$app->trigger))/', '$1<?php', $content);
+    });
+
+    return $renderer;
+});
 
 // error handling
 $this->on('after', function() {

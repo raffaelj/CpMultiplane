@@ -36,11 +36,6 @@ if (!defined('MP_SELF_EXPORT'))     define('MP_SELF_EXPORT',  false);
 // for thumbnails of CpMultiplane assets
 if (!defined('COCKPIT_SITE_DIR'))   define('COCKPIT_SITE_DIR',  MP_ENV_ROOT);
 
-// load modified Lexy class before the original autoloads to create pretty printed html
-if (!class_exists('Lexy')) {
-    include_once(__DIR__ . '/modules/Multiplane/lib/Lexy.php');
-}
-
 // include cockpit, now `$cockpit` and `cockpit()` are available
 if (file_exists(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php')) {
     require_once(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php');
