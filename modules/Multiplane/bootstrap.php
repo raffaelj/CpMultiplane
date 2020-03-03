@@ -596,7 +596,7 @@ $this->module('multiplane')->extend([
 
     'getPosts' => function($collection = null, $slug = '', $opts = []) {
 
-        if ($this->pageTypeDetection == 'tpye') {
+        if ($this->pageTypeDetection == 'type') {
             return $this->getPostsByType($collection, $slug, $opts);
         }
 
