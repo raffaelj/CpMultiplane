@@ -13,8 +13,10 @@ class MPLexy extends \Lexy {
     // construct with existing extensions from core Lexy
     public function __construct($lexy = null) {
 
-        if ($lexy && property_exists($lexy, 'extensions')) {
+        if ($lexy) {
             $this->extensions = $lexy->extensions;
+            $this->cachePath  = $lexy->cachePath;
+            $this->srcinfo    = $lexy->srcinfo;
         }
 
         // add compiler to the end of the list
