@@ -56,5 +56,4 @@
         {{ mp()->userScripts() }}
 
     </body>
-
 </html>
