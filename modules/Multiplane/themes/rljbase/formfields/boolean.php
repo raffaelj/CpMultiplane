@@ -1,5 +1,7 @@
 <?php
-$attributes = cockpit('multiplane')->arrayToAttributeString($field['attr']);
+$attr = $field['attr'];
+if (isset($attr['value'])) unset($attr['value']);
+$attributes = $app->module('multiplane')->arrayToAttributeString($attr);
 $value = $field['attr']['value'] ?? 1;
 $checked = isset($field['value']) && $field['value'] == $value ? ' checked' : '';
 ?>
