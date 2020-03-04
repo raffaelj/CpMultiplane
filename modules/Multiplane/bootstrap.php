@@ -1035,7 +1035,7 @@ $this->module('multiplane')->extend([
 
                 if ($v == 'raw') {
                     $this->app->renderer->extend(function($content) use ($k) {
-                        return preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . $2); ?>', $content);
+                        return preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . ltrim($2, "/")); ?>', $content);
                     });
                     continue;
                 }
@@ -1109,6 +1109,53 @@ $this->module('multiplane')->extend([
 
         return compact('constants', 'theme', 'themes');
 
+    },
+
+    // same as Lime\App->assets(), but with a switch to different script function
+    // temporary fix to avoid nu validator warning
+    'assets' => function($src, $version=false){
+
+        $list = [];
+
+        foreach ((array)$src as $asset) {
+
+            $src = $asset;
+
+            if (\is_array($asset)) {
+                extract($asset);
+            }
+
+            if (@\substr($src, -3) == '.js') {
+                $list[] = $this->script($asset, $version);
+            }
+
+            if (@\substr($src, -4) == '.css') {
+                $list[] = $this->app->style($asset, $version);
+            }
+        }
+
+        return \implode("\n", $list);
+    },
+
+    // same as Lime\App->script(), but without `type=javascript`
+    // temporary fix to avoid nu validator warning
+    'script' => function ($src, $version=false){
+
+        $list = [];
+
+        foreach ((array)$src as $script) {
+
+            $src  = $script;
+
+            if (\is_array($script)) {
+                extract($script);
+            }
+
+            $ispath = \strpos($src, ':') !== false && !\preg_match('#^(|http\:|https\:)//#', $src);
+            $list[] = '<script src="'.($ispath ? $this->pathToUrl($src):$src).($version ? "?ver={$version}":"").'"></script>';
+        }
+
+        return \implode("\n", $list);
     },
 
 ]);
