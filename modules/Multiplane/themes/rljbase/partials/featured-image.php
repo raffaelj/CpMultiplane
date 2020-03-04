@@ -1,7 +1,7 @@
 <?php
 $format = isset($format) && $format ? $format : 'headerimage';
-$width  = mp()->get('lexy/'.$format.'/width', 800)  . 'px';
-$height = mp()->get('lexy/'.$format.'/height', 200) . 'px';
+$width  = mp()->get('lexy/'.$format.'/width', 800);
+$height = mp()->get('lexy/'.$format.'/height', 200);
 ?>
 
 @if($format == 'headerimage')
