@@ -9,7 +9,8 @@ body {
     > main,
     > footer,
     > aside,
-    > section
+    > section,
+    > .section
     {
         width: 100%;
         margin: 0;
@@ -20,6 +21,8 @@ body {
     > header,
     > main > header > h2,
     > main > section,
+    > main > .section,
+    > main > nav,
     > main > article,
     > main > article > section, // multiple blog posts (no excerpt)
     > footer
@@ -184,6 +187,7 @@ body {
             bottom: 0;
             width: 100%;
             background-color: $color-black-transp-light;
+            color: $color-white;
             @include box-sizing(border-box);
         }
     }

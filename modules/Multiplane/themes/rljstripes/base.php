@@ -4,7 +4,6 @@
     <head>
 
         <meta charset="utf-8" />
-        <meta content='text/html; charset=utf-8' http-equiv='Content-Type'>
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
 
@@ -19,7 +18,7 @@
             var MP_BASE_URL = '{{ MP_BASE_URL }}',
                 MP_POLYFILLS_URL = '{{ MP_BASE_URL }}/modules/Multiplane/themes/rljbase/assets/js/polyfills.min.js';
         </script>
-        {{ $app->assets($app['multiplane.assets.top'], mp()->version) }}
+        {{ mp()->assets($app['multiplane.assets.top'], mp()->version) }}
         {{ mp()->userStyles() }}
 
     </head>
@@ -64,7 +63,7 @@
 
         @render('views:partials/privacy-notice.php')
 
-        {{ $app->assets($app['multiplane.assets.bottom'], mp()->version) }}
+        {{ mp()->assets($app['multiplane.assets.bottom'], mp()->version) }}
 
         {{ mp()->userScripts() }}
 

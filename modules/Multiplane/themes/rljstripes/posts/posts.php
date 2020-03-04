@@ -3,7 +3,7 @@
 @foreach($posts as $post)
             <article class="excerpt">
                 @if(!empty($post['title']))
-                <h3> <a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">{{ $post['title'] }}</a></h3>
+                <h3><a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">{{{ $post['title'] }}}</a></h3>
                 @endif
 
                 @render('views:partials/posts-meta.php', compact('post'))
