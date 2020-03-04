@@ -51,34 +51,14 @@ fieldset {
       position: relative;
       width: 100%;
       margin: 0 0 .5rem;
-      padding: 0;
+      padding-left: .2rem;
+      padding-right: .2rem;
       vertical-align: top;
       &:last-of-type { // contains submit button
           text-align: center;
       }
-      @include breakpoint(medium) {
-          width: 100%;
-          float: left;
-          padding-left: .2rem;
-          padding-right: .2rem;
-          &.width-1-1 {
-              width: 100%;
-          }
-          &.width-1-2 {
-              width: 50%;
-          }
-          &.width-1-3 {
-              width: 33%;
-          }
-          &.width-2-3 {
-              width: 66%;
-          }
-          &.width-1-4 {
-              width: 25%;
-          }
-          &.width-3-4 {
-              width: 75%;
-          }
+      &[class^=width-] {
+          float: left; // fix inline white spaces
       }
       > label{
           position: absolute;

@@ -1,5 +1,5 @@
 
-<div class="width-{{ $field['width'] ?? '1-1' }}">
+<div class="width-small-{{ $field['width'] ?? '1-1' }}">
     {{ $content_for_layout }}
 @if(!empty($field['error']))
     <p class="message error">@lang($field['error'])</p>
