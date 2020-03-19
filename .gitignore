@@ -19,6 +19,7 @@ sitemap.xml
 favicon.ico
 
 # dev files and directories
+/tests
 .sass-cache
 node_modules
 package-lock.json

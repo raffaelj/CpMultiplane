@@ -160,8 +160,15 @@ $this->module('multiplane')->extend([
                     'name' => $site_name,
                     'potentialAction' => [
                         '@type' => 'SearchAction',
-                        'target' => $site_url . '/search?search={search_term_string}',
-                        'query-input' => 'required name=search_term_string'
+                        'target' => [
+                            '@type' => 'EntryPoint',
+                            'urlTemplate' => $site_url . '/search?search={search_term_string}',
+                        ],
+                        'query-input' => [
+                            '@type' => 'PropertyValueSpecification',
+                            'valueName' => 'search_term_string',
+                            'valueRequired' => 'http://schema.org/True'
+                        ]
                     ]
                 ];
             }
