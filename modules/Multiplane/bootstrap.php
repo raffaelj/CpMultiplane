@@ -512,7 +512,8 @@ $this->module('multiplane')->extend([
             }
 
             if ($extended) {
-                foreach ($languages as $code) {
+                foreach ($this->app['languages'] as $l => $label) {
+                    $code = $l == 'default' ? $this->defaultLang : $l;
                     $languagesExt[] = [
                         'code'    => $code,
                         'name'    => $label,
@@ -546,7 +547,7 @@ $this->module('multiplane')->extend([
 
         $languages = $this->getLanguages(true);
         $slugName  = $this->slugName;
-        
+
         foreach ($languages as &$l) {
 
             $lang = $l['code'];
