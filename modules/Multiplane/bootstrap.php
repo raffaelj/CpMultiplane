@@ -500,21 +500,18 @@ $this->module('multiplane')->extend([
 
     },
 
-    'getLanguages' => function($extended = false) {
+    'getLanguages' => function($extended = false, $withDefault = true) {
 
-        $languages = $languagesExt = [];
+        $languages = [];
 
         if ($this->isMultilingual && is_array($this->app['languages'])) {
 
             foreach ($this->app['languages'] as $l => $label) {
 
-                $languages[] = $l == 'default' ? $this->defaultLang : $l;
-            }
+                if ($l != 'default' || ($l == 'default' && $withDefault)) {
 
-            if ($extended) {
-                foreach ($this->app['languages'] as $l => $label) {
                     $code = $l == 'default' ? $this->defaultLang : $l;
-                    $languagesExt[] = [
+                    $languages[] = !$extended ? $code : [
                         'code'    => $code,
                         'name'    => $label,
                         'active'  => $code == $this->lang,
@@ -522,9 +519,10 @@ $this->module('multiplane')->extend([
                     ];
                 }
             }
+
         }
 
-        return !$extended ? $languages : $languagesExt;
+        return $languages;
 
     },
 
