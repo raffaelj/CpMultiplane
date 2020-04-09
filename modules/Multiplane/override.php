@@ -7,7 +7,7 @@ $this->set('base_url',   MP_BASE_URL);
 $this->set('base_route', MP_BASE_URL); // for reroute()
 $this->set('site_url',   $this->getSiteUrl(true)); // for pathToUrl(), which is used in thumbnail function
 
-if (class_exists('\Lime\Request')) {
+if (class_exists('\Lime\Request') && !COCKPIT_CLI) {
     // $this->request->site_url   = $this['site_url'];
     $this->request->base_url   = $this['base_url'];
     $this->request->base_route = $this['base_route'];
