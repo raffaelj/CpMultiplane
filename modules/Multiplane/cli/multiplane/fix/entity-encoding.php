@@ -9,44 +9,30 @@ $time_all = time();
 
 $collections = cockpit('collections')->collections();
 
-$languages = [];
-if (isset($app['languages']) && is_array($app['languages'])) {
-    foreach ($app['languages'] as $lang => $label) {
-        if ($lang == 'default') continue;
-        $languages[] = $lang;
-    }
-}
+$languages = $app->module('multiplane')->getLanguages(false, false);
 
 $fixes = [];
 
+// collect wysiwyg field names
+$fixFields = [];
 foreach ($collections as $col) {
-
     if (isset($col['fields']) && is_array($col['fields'])) {
-
         $f = [];
-
         foreach ($col['fields'] as $field) {
-
-            // check for wysiwyg fields
             if ($field['type'] == 'wysiwyg') {
-
                 $f[] = $field['name'];
-
-                if ($field['localize'] == true) {
-
-                    // check translated fields
+                if ($field['localize'] == true) { // check translated fields
                     foreach ($languages as $lang) {
                         $f[] = $field['name'] . '_' . $lang;
                     }
                 }
             }
         }
-
-        if (!empty($f)) $fixes[$col['name']] = $f;
+        if (!empty($f)) $fixFields[$col['name']] = $f;
     }
 }
 
-foreach ($fixes as $collection => $fields) {
+foreach ($fixFields as $collection => $fields) {
 
     $count = cockpit('collections')->count($collection);
 
