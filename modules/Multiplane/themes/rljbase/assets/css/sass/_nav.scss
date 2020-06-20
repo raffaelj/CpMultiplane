@@ -230,6 +230,13 @@ nav {
 }
 
 // mobile main nav
+
+@include breakpoint(small) {
+    .nav-visible-tiny {
+        display: none !important;
+    }
+}
+
 nav#nav {
 
     @include breakpoint(mini) {
@@ -239,7 +246,7 @@ nav#nav {
         > ul, > ol {
             display: none;
         }
-        a[href="#nav"], .icon-close {
+        a[href="#nav"], .icon-close, .icon-home {
             position: fixed;
             top: .5em;
             left: .5em;
@@ -250,10 +257,10 @@ nav#nav {
             padding: 0;
             z-index: 11;
         }
-        .icon-close {
+        .icon-close, .icon-home {
             display: none;
         }
-        &:target {
+        &:target, &.mobile-nav-targeted {
             display: block;
             position: fixed;
             top: 0;
@@ -266,10 +273,13 @@ nav#nav {
             a[href="#nav"] {
                 display: none;
             }
-            .icon-close {
+            .icon-home {
                 display: block;
                 right: .5em;
                 left: auto;
+            }
+            .icon-close {
+                display: block;
             }
             > ul, > ol {
                 display: block;
@@ -323,6 +333,9 @@ nav#nav {
                     a {
                         border-left: 1px solid $color-nav-mini;
                     }
+                }
+                &.nav-spacer {
+                    border-top: 4px solid $color-nav-mini;
                 }
             }
         }

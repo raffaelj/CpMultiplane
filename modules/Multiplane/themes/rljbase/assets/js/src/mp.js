@@ -31,6 +31,26 @@ MP.on('privacy', function(e) {
 
 });
 
+// fix pure css mobile nav :target jump
+MP.ready(function() {
+
+    var nav         = document.getElementById('nav'),
+        navButton   = nav ? nav.querySelector('a.icon-menu') : null,
+        closeButton = nav ? nav.querySelector('a.icon-close') : null;
+
+    if (nav) {
+        navButton.addEventListener('click', function(e) {
+            if (e) e.preventDefault();
+            nav.classList.add('mobile-nav-targeted');
+        });
+        closeButton.addEventListener('click', function(e) {
+            if (e) e.preventDefault();
+            nav.classList.remove('mobile-nav-targeted');
+        });
+    }
+
+});
+
 // deprecated, but still necessary for video links in wysiwyg field
 MP.convertVideoLinksToIframes = function() {
     MP.Video.convertVideoLinksToIframes();

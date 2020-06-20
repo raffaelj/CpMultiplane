@@ -19,6 +19,8 @@
         "watch:sass": "npm run build:sass && npm run build:sass -- -w",
         "build:js": "browserify assets/js/src/mp.js -s MP | uglifyjs --config-file uglify.json > assets/js/mp.min.js",
         "watch:js": "npm run build:js && onchange \"assets/js/src/mp.js\" \"assets/js/src/mp/*.js\" -- npm run build:js",
+        "build:js:dev": "browserify assets/js/src/mp.js -s MP > assets/js/mp.min.js",
+        "watch:js:dev": "npm run build:js:dev && onchange \"assets/js/src/mp.js\" \"assets/js/src/mp/*.js\" -- npm run build:js:dev",
         "build:polyfills": "browserify assets/js/src/polyfills.js | uglifyjs > assets/js/polyfills.min.js",
         "generate-preamble-files": "node scripts/generate-preamble-files.js",
         "update": "npm run generate-preamble-files && npm run build"

@@ -451,6 +451,8 @@ $this->module('multiplane')->extend([
 
         if (!empty($type)) {
             $options['filter'][$this->navName] = ['$has' => $type];
+        } else {
+            $options['filter'][$this->navName] = ['$size' => ['$gt' => 0]];
         }
 
         if ($this->isMultilingual) {
