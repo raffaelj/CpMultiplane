@@ -69,7 +69,7 @@ module.exports = {
             replace = this.replace || '@$1.'; // replace match with '@domain.' and ignore all whitespaces
 
         Array.prototype.forEach.call(document.querySelectorAll(this.selector), function(el) {
-            el.innerHTML = el.innerHTML.replace(regex, replace);
+            MP.Utils.replaceInText(el, regex, replace); 
         });
 
     },
