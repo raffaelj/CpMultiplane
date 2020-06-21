@@ -1,7 +1,8 @@
 <?php
+$type = $type ?? 'main';
 $types = $types ?? ['main', 'footer'];
 $navs = [];
-foreach($types as $type) $navs[] = mp()->getNav(null, $type);
+foreach($types as $t) $navs[] = mp()->getNav(null, $t);
 if (empty($navs)) return;
 ?>
 
@@ -11,8 +12,9 @@ if (empty($navs)) return;
             <a href="@base('/')" class="icon-home nav-visible-tiny" title="@lang('Home')" aria-label="@lang('Home')"></a>
             <ul>
           @foreach($navs as $k => $nav)
-            @render('views:partials/nav-mobile-subnav.php', ['nav' => $nav, 'onlyMobile' => $k > 0])
+           @if(!empty($nav))
+            @render('views:partials/nav-mobile-subnav.php', ['nav' => $nav, 'onlyMobile' => $types[$k] != $type])
+           @endif
           @endforeach
             </ul>
         </nav>
- 
