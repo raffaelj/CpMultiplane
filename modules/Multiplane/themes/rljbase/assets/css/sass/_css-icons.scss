@@ -174,8 +174,8 @@ $color-icon-background: $color-white-transp !default;
     }
     &:after {
         bottom: 50%;
-        margin-left: - $icon-width / 2 * .7;
-        border-width: 0 ($icon-width / 2 * .7) ($icon-width / 2 * .6) ($icon-width / 2 * .7);
+        margin-left: - $icon-width / 2 * .8;
+        border-width: 0 ($icon-width / 2 * .8) ($icon-width / 2 * .6) ($icon-width / 2 * .8);
         border-left-color: transparent;
         border-right-color: transparent;
     }
