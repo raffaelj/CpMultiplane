@@ -210,7 +210,7 @@ $this->module('multiplane')->extend([
 
     'getSite' => function() {
 
-        $site = $this->app->module('singletons')->getData($this->siteSingleton);
+        $site = $this->app->module('singletons')->getData($this->siteSingleton, ['lang' => $this->lang]);
 
         if ($site && is_array($site)) $this->site = $site;
 
