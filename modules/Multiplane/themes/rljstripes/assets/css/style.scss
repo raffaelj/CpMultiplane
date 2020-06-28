@@ -6,7 +6,7 @@
 @import 'sass/copyright-preamble';
 
 // fonts
-$font: system-ui, Helvetica, sans-serif;
+$font: system-ui, system-ui-fallback, Helvetica, sans-serif;
 $font_extra: $font; // webfont for headlines
 
 // other

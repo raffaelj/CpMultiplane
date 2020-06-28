@@ -1,10 +1,12 @@
 
-// it always felt back to Tahoma in Chrome and Opera, so I had to remove it from the list
- 
-// system-font.css v2.0.2 | CC0-1.0 License | github.com/jonathantneal/system-font-css
+// system-font.css v2.0.2 | CC0-1.0 License | https://github.com/jonathantneal/system-font-css
+// --> it always felt back to Tahoma in Chrome and Opera, so I had to remove it from the list
+
+// deprecated, but I keep it as a fallback for older browsers like IE11
+// https://caniuse.com/#search=system-ui
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: normal;
 	font-weight: 300;
 	src:
@@ -20,7 +22,7 @@
 }
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: italic;
 	font-weight: 300;
 	src: 
@@ -36,7 +38,7 @@
 }
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: normal;
 	font-weight: 400;
 	src:
@@ -52,7 +54,7 @@
 }
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: italic;
 	font-weight: 400;
 	src:
@@ -68,7 +70,7 @@
 }
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: normal;
 	font-weight: 500;
 	src:
@@ -84,7 +86,7 @@
 }
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: italic;
 	font-weight: 500;
 	src:
@@ -100,7 +102,7 @@
 }
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: normal;
 	font-weight: 700;
 	src:
@@ -116,7 +118,7 @@
 }
 
 @font-face {
-	font-family: system-ui;
+	font-family: system-ui-fallback;
 	font-style: italic;
 	font-weight: 700;
 	src:
