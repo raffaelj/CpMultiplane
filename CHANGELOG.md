@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.7
+
+* fixed minor issues in forms
+* fixed wrong language labels in lang menu
+* added compatibility with Cockpit's Lime update (2020-02-05)
+* added cli commands
+  * fix html entities in wysiwyg fields
+  * replace url bases in wysiwyg fields
+* added simple mail protection script
+* improved HTMl indentation (custom Lexy template parser)
+* improved build scripts (themes)
+* improved mobile nav
+* minor code and css fixes
+
 ## 0.1.6
 
 * massive rewrite

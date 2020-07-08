@@ -2,6 +2,6 @@
     "output": {
         "comments": "some",
         "beautify": false,
-        "preamble": "/*\r\ncpmultiplane-theme-rljstripes - version: 0.1.1\r\nCopyright © 2020 Raffael Jesche, MIT Licensed, https://github.com/raffaelj/CpMultiplane\r\n*/"
+        "preamble": "/*\r\ncpmultiplane-theme-rljstripes - version: 0.1.2\r\nCopyright © 2020 Raffael Jesche, MIT Licensed, https://github.com/raffaelj/CpMultiplane\r\n*/"
     }
 }
