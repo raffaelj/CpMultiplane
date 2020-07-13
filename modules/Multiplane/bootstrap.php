@@ -1018,8 +1018,10 @@ $this->module('multiplane')->extend([
         }
 
         else {
-            echo 'The theme "'.$this->theme.'" doesn\'t exist.';
-            $this->app->stop();
+            if (!COCKPIT_CLI) {
+                echo 'The theme "'.$this->theme.'" doesn\'t exist.';
+                $this->app->stop();
+            }
         }
 
     },
@@ -1157,6 +1159,10 @@ $this->module('multiplane')->extend([
         }
 
         return \implode("\n", $list);
+    },
+
+    'generateToken' => function() {
+        return \uniqid(\bin2hex(\random_bytes(16)));
     },
 
 ]);

@@ -11,6 +11,7 @@ defines.php
 .htaccess
 robots.txt
 sitemap.xml
+.env
 
 # common user files and directories
 /assets

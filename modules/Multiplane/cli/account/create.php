@@ -1,11 +1,12 @@
 <?php
 /**
- * This file is an adapted verison of
+ * This file is an adapted version of
  * https://github.com/agentejo/cockpit/blob/next/modules/Cockpit/cli/account/create.php
  * author of original file: Artur Heinze, http://agentejo.com, MIT License
- * 
- * It allows user input if parameters are missing and it doesn't allow a password parameter
- * to prevent keeping the password in the bash history
+ *
+ * It allows user input if parameters are missing.
+ *
+ * It differs from the core by allowing non-hashed passwords!
  */
 
 if (!COCKPIT_CLI) return;
@@ -33,8 +34,11 @@ if (!$app->helper('utils')->isEmail($email)) {
     return CLI::writeln('Valid email required', false);
 }
 
-echo "Type a password and press Enter:\n";
-$password = fread(STDIN, 80);
+$password = $app->param('password', null);
+if (!$password) {
+    echo "Type a password and press Enter:\n";
+    $password = fread(STDIN, 80);
+}
 
 // remove line breaks and white spaces at start and end of password
 $password = $app->hash(trim($password));
