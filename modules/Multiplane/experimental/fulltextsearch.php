@@ -61,7 +61,7 @@ $this->on('multiplane.search', function($search, $list) {
     $searchInCollections = $this->module('multiplane')->searchInCollections;
 
     $pages = $this->module('multiplane')->pages;
-    $posts = $this->module('multiplane')->posts;
+//     $posts = $this->module('multiplane')->posts;
 
     if (preg_match('/^(["\']).*\1$/m', $_search)) {
         // exact match in quotes, still case insensitive
@@ -79,39 +79,43 @@ $this->on('multiplane.search', function($search, $list) {
 
     if (empty($searches)) return;
 
-    if (empty($searchInCollections) && !empty($pages)) {
+    // build a default configuration if not explicitly specified
+    if (empty($searchInCollections)) {
 
-        $searchInCollections = [
-            $pages => [
-                'name' => $pages,
-                'route' => '',
-                'weight' => 10,
+        $collections = $this->module('multiplane')->use['collections'] ?? [];
+
+        foreach ($collections as $col) {
+
+            $_collection = $this->module('collections')->collection($col);
+
+            if (!$_collection) continue;
+            
+            $name = $_collection['name'];
+            $pageType = $_collection['multiplane']['type'] ?? 'pages';
+            
+            $contentType = 'wysiwyg';
+            foreach ($_collection['fields'] ?? [] as $field) {
+                if ($field['name'] == 'content') {
+                    $contentType = $field['type'];
+                    break;
+                }
+            }
+            
+            $searchInCollections[$name] = [
+                'name'   => $name,
+                'route'  => '',
+                'weight' => $pageType == 'pages' ? 10 : 5,
                 'fields' => [
                     [
                         'name' => 'title',
-                        'weight' => 10,
+                        'weight' => $pageType == 'pages' ? 10 : 8,
                     ],
                     [
                         'name' => 'content',
+                        'type' => $contentType
                     ],
                 ],
-            ],
-        ];
-
-        if (!empty($posts)) {
-            $searchInCollections[$posts] = [
-                'name' => $posts,
-                'route' => '/blog', // to do: dynamic detection
-                'weight' => 5,
-                'fields' => [
-                    [
-                        'name' => 'title',
-                        'weight' => 8,
-                    ],
-                    [
-                        'name' => 'content',
-                    ],
-                ],
+                
             ];
         }
 
@@ -161,6 +165,7 @@ $this->on('multiplane.search', function($search, $list) {
 
         $options['fields'] = [
             $slugName => true,
+            'startpage' => true,
         ];
 
         if ($isMultilingual) {
@@ -216,9 +221,11 @@ $this->on('multiplane.search', function($search, $list) {
                       : (!empty($_collection['label']) ? $_collection['label']
                         : $collection);
 
+            $isStartpage = isset($entry['startpage']) && $entry['startpage'] == true;
+
             $item = [
                 '_id'        => $entry['_id'],
-                'url'        => $this->baseUrl(($c['route'] ?? '') . '/' . $entry[$slugName]),
+                'url'        => $this->baseUrl(($c['route'] ?? '') . '/' . ($isStartpage ? '' : $entry[$slugName])),
                 'collection' => $label,
             ];
 
