@@ -44,14 +44,15 @@ class Base extends \LimeExtra\Controller {
         }
 
         // custom views
-        $view = 'views:index.php';
+        $view = 'views:layouts/default.php';
         if ($this->module('multiplane')->pageTypeDetection == 'collections') {
-            if ($path = $this->app->path('views:page/' . $this->module('multiplane')->collection . '.php')) {
+            $currentCollectionName = $this->module('multiplane')->collection;
+            if ($path = $this->app->path("views:layouts/collections/{$currentCollectionName}.php")) {
                 $view = $path;
             }
         }
         if ($this->module('multiplane')->pageTypeDetection == 'type' && !empty($page['type'])) {
-            if ($path = $this->app->path('views:page/' . $page['type'] . '.php')) {
+            if ($path = $this->app->path("views:layouts/types/{$page['type']}.php")) {
                 $view = $path;
             }
         }
@@ -93,7 +94,7 @@ class Base extends \LimeExtra\Controller {
 
         }
 
-        return $this->render('views:live-preview.php', compact('page', 'posts', 'site'));
+        return $this->render('views:layouts/live-preview.php', compact('page', 'posts', 'site'));
 
     } // end of livePreview()
 
@@ -217,7 +218,7 @@ class Base extends \LimeExtra\Controller {
             $error = 'Your search term must be at least '.$searchMinLength.' characters long.';
         }
 
-        return $this->render('views:search.php', compact('page', 'site', 'list', 'error', 'count'));
+        return $this->render('views:layouts/search.php', compact('page', 'site', 'list', 'error', 'count'));
 
     } // end of search()
 

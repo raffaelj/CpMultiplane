@@ -7,7 +7,7 @@
  */
 
 // pass custom layout file to LimeExtra
-$this->layout = 'views:base.php';
+$this->layout = 'views:index.php';
 
 // set assets
 $this->set('multiplane.assets.top', [

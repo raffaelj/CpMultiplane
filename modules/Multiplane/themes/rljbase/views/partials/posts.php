@@ -1,3 +1,13 @@
+<?php
+// allow custom partials for different sub page collections
+if ($path = $app->path("views:collections/{$posts['collection']['name']}/posts.php")) {
+    $app->renderView($path, $posts);
+    return;
+}
+
+// make $posts, $collection and $pagination available
+extract($posts);
+?>
 
             @render('views:partials/pagination.php', compact('pagination'))
 

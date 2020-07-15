@@ -408,8 +408,8 @@ $this->module('multiplane')->extend([
             $olayout = $this->app->layout;
             $this->app->layout = false;
 
-            $view = 'views:index.php';
-            if ($path = $this->app->path('views:page/' . $collection . '.php')) {
+            $view = 'views:layouts/default.php';
+            if ($path = $this->app->path("views:layouts/collections/{$collection}.php")) {
                 $view = $path;
             }
 
@@ -1002,7 +1002,7 @@ $this->module('multiplane')->extend([
                    || ($this->parentThemePath = $this->app->path(__DIR__.'/themes/'.$this->parentTheme)) ) {
 
                     // parent theme path must be set before theme path
-                    $this->app->path('views', $this->parentThemePath);
+                    $this->app->path('views', $this->parentThemePath . '/views');
 
                     if (\file_exists($this->parentThemePath . '/config/config.php')) {
                         $parentThemeConfig = include($this->parentThemePath . '/config/config.php');
@@ -1010,7 +1010,7 @@ $this->module('multiplane')->extend([
                 }
             }
 
-            $this->app->path('views', $this->themePath);
+            $this->app->path('views', $this->themePath . '/views');
 
             // return theme config
             return array_replace_recursive($parentThemeConfig, $themeConfig);
