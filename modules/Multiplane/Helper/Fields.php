@@ -100,6 +100,12 @@ class Fields extends \Lime\Helper {
     public function repeater($content = null, $options = []) {
 
         if (!$content || !is_array($content)) return '';
+        
+        if ($fieldTemplate = $this->app->path('views:fields/repeater.php')) {
+
+            return $this->render($fieldTemplate, compact('content', 'options'));
+
+        }
 
         $out = '';
 

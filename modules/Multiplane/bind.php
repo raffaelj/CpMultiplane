@@ -57,6 +57,22 @@ if (!$isMultilingual) {
         });
     }
 
+    // tags page
+    $this->bind('/tags', function($params) {
+        $this->reroute("/{$lang}/tags/");
+    });
+    $this->bind('/tags/*', function($params) {
+
+        if ($params[':splat'][0] == '') return false; // to do: tags overview page
+
+        $tags = explode('/', $params[':splat'][0]);
+        return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
+    });
+    $this->bind('/'.$lang.'/tag/:tag', function($params) {
+        $tag = \urldecode($params['tag']);
+        return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
+    });
+
     $this->bind('/*', function($params) {
         return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $params[':splat'][0]]);
     });
@@ -73,12 +89,30 @@ else {
         });
 
         // fulltext search
-        if ($this->module('multiplane')->displaySearch) {
+        if ($this->module('multiplane')->get('search/enabled')) {
             $this->bind('/'.$lang.'/search/*', function($params) use($lang) {
                 $this->module('multiplane')->initI18n($lang);
                 return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
             });
         }
+
+        // tags page
+        $this->bind('/'.$lang.'/tags', function($params) {
+            $this->reroute("/{$lang}/tags/");
+        });
+        $this->bind('/'.$lang.'/tags/*', function($params) use($lang) {
+            $this->module('multiplane')->initI18n($lang);
+
+            if ($params[':splat'][0] == '') return false; // to do: tags overview page
+
+            $tags = explode('/', $params[':splat'][0]);
+            return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
+        });
+        $this->bind('/'.$lang.'/tag/:tag', function($params) use($lang) {
+            $this->module('multiplane')->initI18n($lang);
+            $tag = \urldecode($params['tag']);
+            return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
+        });
 
         $this->bind('/'.$lang.'/*', function($params) use($lang) {
 

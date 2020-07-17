@@ -5,7 +5,7 @@
                   @endif
                   @if(!empty($post['tags']))
                     @foreach($post['tags'] as $tag)
-                    <span class="label tag">{{ $tag }}</span>
+                    <a href="@base('/tags/'.urlencode($tag))" class="label tag">{{ $tag }}</a>
                     @endforeach
                   @endif
                 </p>

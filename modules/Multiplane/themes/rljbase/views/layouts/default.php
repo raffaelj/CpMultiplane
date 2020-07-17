@@ -4,6 +4,10 @@
 
             <h2>{{{ $page['title'] }}}</h2>
 
+          @if(mp()->collection != mp()->pages)
+            @render('views:partials/posts-meta.php', ['post' => $page])
+          @endif
+
             {{ $page['content'] }}
 
           @if(!empty($page['gallery']))
@@ -14,7 +18,8 @@
             @render('views:partials/video.php', ['video' => $page['video']])
           @endif
 
-          @if (!empty($posts))
+          @if(!empty($posts))
             @render('views:partials/posts.php', ['posts' => $posts, 'pagination' => $posts['pagination']])
           @endif
+
         </main>

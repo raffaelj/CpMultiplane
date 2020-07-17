@@ -20,6 +20,7 @@ body {
 
     > header,
     > main > header > h2,
+    > main > header > div,
     > main > section,
     > main > .section,
     > main > nav,
@@ -33,6 +34,12 @@ body {
         }
         @include breakpoint(normal) {
             padding: 3rem 3rem;
+        }
+        @include breakpoint(large) {
+            padding: 3rem 4rem;
+        }
+        @include breakpoint(xlarge) {
+            padding: 3rem 5rem;
         }
     }
 
@@ -181,7 +188,8 @@ body {
 .featured_image {
     width: 100%;
     max-width: 100%;
-    + h2 {
+    display: block;
+    + h2, + div {
         @include breakpoint(small) {
             position: absolute;
             bottom: 0;
@@ -337,4 +345,11 @@ _:-ms-fullscreen, :root header .search form {
 
 .gallery {
     margin-top: auto;
+}
+
+.search-entries {
+    > section {
+        padding-left: 0;
+        padding-right: 0;
+    }
 }

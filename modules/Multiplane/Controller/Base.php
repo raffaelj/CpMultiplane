@@ -76,14 +76,14 @@ class Base extends \LimeExtra\Controller {
         $site = $this->module('multiplane')->site;
         $posts = null;
 
-        if (mp()->hasBackgroundImage) {
-            mp()->addBackgroundImage();
+        if ($this->app->module('multiplane')->hasBackgroundImage) {
+            $this->app->module('multiplane')->addBackgroundImage();
         }
 
         // fix language specific paths + i18n
         if ($this->app->module('multiplane')->isMultilingual) {
 
-            $lang = mp()->lang;
+            $lang = $this->app->module('multiplane')->lang;
 
             // init + load i18n
             if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
@@ -169,54 +169,22 @@ class Base extends \LimeExtra\Controller {
 
     public function search($params = null) {
 
-        // to do:
-        // * advanced search
-        // * pagination
-        // * snippet view
-
-        $error = null;
-        $count = null;
-        
-        $query = $this->app->param('search', false);
-        $list  = new \ArrayObject([]);
-
-        $searchMinLength = mp()->searchMinLength;
-
         $site = $this->module('multiplane')->site;
-        
+
         $page = [
             'title' => $this('i18n')->get('Search'),
             // 'description' => ''
         ];
         $page['seo']['canonical'] = $this->app->baseUrl('/search');
 
-        if (mp()->hasBackgroundImage) {
-            mp()->addBackgroundImage();
+        if ($this->app->module('multiplane')->hasBackgroundImage) {
+            $this->app->module('multiplane')->addBackgroundImage();
         }
 
-        if ($query && mb_strlen($query) >= $searchMinLength) {
+        $return = $this->app->helper('search')->search($params);
 
-            $this->app->trigger('multiplane.search', [$query, $list]);
-
-            // custom sorting
-            $sort = null;
-            $this->app->trigger('multiplane.search.sort', [&$sort]);
-
-            if (!$sort || !is_callable($sort)) {
-                // sort by weight
-                $sort = function($a, $b) {return $a['weight'] < $b['weight'];};
-            }
-
-            $list->uasort($sort);
-
-            $count = count($list);
-            
-            $list = $list->getArrayCopy();
-
-        }
-        else {
-            $error = 'Your search term must be at least '.$searchMinLength.' characters long.';
-        }
+        // make $list, $query, $error, $count available
+        extract($return);
 
         return $this->render('views:layouts/search.php', compact('page', 'site', 'list', 'error', 'count'));
 
@@ -234,7 +202,7 @@ class Base extends \LimeExtra\Controller {
         $xml->startElement('urlset');
         $xml->writeAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
-        if (!mp()->isMultilingual) {
+        if (!$this->app->module('multiplane')->isMultilingual) {
             $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
         } else {
             $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/TR/xhtml11/xhtml11_schema.html');
@@ -260,8 +228,8 @@ class Base extends \LimeExtra\Controller {
         $site = $this->module('multiplane')->site;
         $page = [];
 
-        if (mp()->hasBackgroundImage) {
-            mp()->addBackgroundImage();
+        if ($this->app->module('multiplane')->hasBackgroundImage) {
+            $this->app->module('multiplane')->addBackgroundImage();
         }
 
         // To do: 401, 500

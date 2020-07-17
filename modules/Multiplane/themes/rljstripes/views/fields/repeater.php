@@ -20,7 +20,7 @@ $c = count($content);
   @elseif($block['field']['type'] == 'videolink')
     @render('views:partials/video.php', ['video' => $block['value']])
   @elseif($block['field']['type'] == 'repeater')
-    @render('views:partials/content.php', ['content' => $block['value'], 'children' => true])
+    @render('views:fields/repeater.php', ['content' => $block['value'], 'children' => true])
   @endif
 @if($children)</div>@else</section>@endif
 @endforeach

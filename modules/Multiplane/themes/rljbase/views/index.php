@@ -31,7 +31,7 @@
           @if(mp()->displayBreadcrumbs)
             @render('views:partials/breadcrumbs.php', ['page' => $page])
           @endif
-          @if(mp()->displaySearch)
+          @if(mp()->get('search/enabled'))
             @render('views:partials/search.php')
           @endif
         </header>

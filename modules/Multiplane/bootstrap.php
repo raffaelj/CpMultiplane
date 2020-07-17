@@ -31,6 +31,7 @@ spl_autoload_register(function($class){
 
 // add helpers
 $this->helpers['fields'] = 'Multiplane\\Helper\\Fields';
+$this->helpers['search'] = 'Multiplane\\Helper\\Search';
 
 
 $this->module('multiplane')->extend([
@@ -87,13 +88,16 @@ $this->module('multiplane')->extend([
 
     'lexy'                  => [],              // extend Lexy parser for image url templates
 
-    //breadcrumbs
+    // breadcrumbs
     'displayBreadcrumbs'    => false,
 
-    //search
-    'displaySearch'         => false,           // experimental full text search
-    'searchMinLength'       => 3,               // minimum charcter length for search
-    'searchInCollections'   => [],              // full list of collections to search in, defaults to "multiplane/use/collections"
+    // experimental full text search
+    'search' => [
+        'enabled'     => false,
+        'minLength'   => 3,                     // minimum charcter length for search
+        'collections' => [],                    // full list of collections to search in,
+                                                // defaults to "multiplane/use/collections"
+    ],
 
     'sitemap'               => null,            // array of collections
 
@@ -162,7 +166,7 @@ $this->module('multiplane')->extend([
 
     },
 
-    // modified version of Lime - fetch_from_array
+    // modified version of Lime\fetch_from_array()
     'get' => function($index, $default = null) {
 
         if (is_null($index)) {
@@ -1165,13 +1169,46 @@ $this->module('multiplane')->extend([
         return \uniqid(\bin2hex(\random_bytes(16)));
     },
 
+    'getSubPageRoute' => function($collection) {
+
+        static $routes;
+
+        if (isset($routes[$collection])) return $routes[$collection];
+
+        $route = '';
+
+        // to do: hard coded variant for all subpage modules
+        $filter = [
+            'published'                => true,
+            'subpagemodule.active'     => true,
+            'subpagemodule.collection' => $collection
+        ];
+        $projection = [
+            '_id' => false,
+            'subpagemodule' => true,
+        ];
+
+        $postRouteEntry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $this->lang]);
+
+        $path = $this->lang == $this->defaultLang ? 'route' : 'route_'.$this->lang;
+
+        if (isset($postRouteEntry['subpagemodule'][$path])) {
+            $route = $postRouteEntry['subpagemodule'][$path];
+        }
+
+        $routes[$collection] = $route;
+
+        return $route;
+
+    }
+
 ]);
 
 // module parts
 include_once(__DIR__ . '/module/forms.php');
 
 // experimental parts
-include_once(__DIR__ . '/experimental/fulltextsearch.php');
+// include_once(__DIR__ . '/experimental/fulltextsearch.php');
 include_once(__DIR__ . '/experimental/sitemap.php');
 include_once(__DIR__ . '/experimental/matomo.php');
 include_once(__DIR__ . '/experimental/seo.php');

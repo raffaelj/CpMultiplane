@@ -1,7 +1,11 @@
-
+<?php
+$search = $app->param('search', '');
+// if (is_array($search)) $search = implode(' ', $search);
+if (is_array($search)) $search = json_encode($search);
+?>
             <div class="search">
                 <form action="@base('/search')">
-                    <input name="search" type="text" value="{{ $app->escape($app->param('search', '')) }}" minlength="{{ mp()->searchMinLength }}" aria-label="@lang('Search')" />
+                    <input name="search" type="text" value="{{{ $search }}}" minlength="{{ mp()->get('search/minLength') }}" aria-label="@lang('Search')" />
                     <input name="highlight" type="hidden" value="1" />
                     <button type="submit" aria-label="@lang('Search')"><i class="icon-search"></i>@lang('Search')</button>
                 </form>
