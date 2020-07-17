@@ -1,23 +1,32 @@
 
 // colours
-$color-white: #fafafa !default;
-$color-black: #000 !default;
+$color-white:       #fafafa !default;
+$color-black:       #000 !default;
 
-$color-white-transp: rgba(255,255,255,.9) !default;
+$color-white-transp:        rgba(255,255,255,.9) !default;
 $color-white-transp-medium: rgba(255,255,255,.5) !default;
-$color-black-transp: rgba(0,0,0,.8) !default;
-$color-black-transp-dark: rgba(0,0,0,.95) !default;
-$color-black-transp-light: rgba(0,0,0,.2) !default;
+$color-white-transp-light:  rgba(255,255,255,.2) !default;
+$color-black-transp:        rgba(0,0,0,.8) !default;
+$color-black-transp-dark:   rgba(0,0,0,.95) !default;
+$color-black-transp-medium: rgba(0,0,0,.5) !default;
+$color-black-transp-light:  rgba(0,0,0,.2) !default;
 
-// $color-main: #470b7e !default;
-$color-main: #7fb85e !default;
-$color-bg: #f4f4f4 !default;
+$color-main:        #7fb85e !default;
+$color-bg:          #f4f4f4 !default;
 
-$color-dark: #222 !default;
-$color-darker: #444 !default;
-$color-grey: #ccc !default;
-$color-gray: $color-grey !default; // avoid typos
-$color-shadow: $color-grey !default;
+$color-dark:        #444 !default;
+$color-darker:      #222 !default;
+$color-grey:        #ccc !default;
+$color-grey-light:  #f4f4f4 !default;
+$color-gray:        $color-grey !default; // avoid typos
+$color-gray-light:  #f4f4f4 !default;     // avoid typos
 
-$color-link: #366a9c !default;
-$color-link-hover: #ac833c !default;
+$color-shadow:      $color-grey !default;
+
+$color-link:        #366a9c !default;
+$color-link-hover:  #ac833c !default;
+
+$color-text:        $color-darker !default;
+
+$color-breadcrumbs:        #666 !default;
+$color-breadcrumbs-spacer: #bbb !default;

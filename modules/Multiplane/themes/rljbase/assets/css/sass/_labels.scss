@@ -1,26 +1,36 @@
 
+$border-radius: 2px !default;
+
+$color-white:       #fafafa !default;
+$color-link:        #366a9c !default;
+$color-link-hover:  #ac833c !default;
+
+$color-label:            $color-white !default;
+$color-label-hover:      $color-link !default;
+$color-label-text:       $color-link !default;
+$color-label-text-hover: $color-white !default;
+
 .labels {
-    text-align:center;
-    line-height:1.75em;
+    text-align: center;
+    line-height: 1.75em;
 }
 .label {
-    padding: .25rem .5rem;
-    font-size: .8em;
+    padding: .25em .5em;
+    font-size: .9em;
     border-radius: $border-radius;
-    background-color: $color-white-transp;
+    color: $color-label-text;
+    background-color: $color-label;
     @include box-shadow(0 -1px 0 rgba(0, 0, 0, 0.12) inset);
     .icon {
-        height:1rem;
-        float:left;
-        margin-right:.2rem;
+        height: 1em;
+        float: left;
+        margin-right: .2em;
     }
 }
 a.label {
+    text-decoration: none;
     &:hover,&:focus {
-        background-color:$color-black-transp;
-    }
-    &.active {
-        color: $color-link;
-        border-bottom:2px solid $color-link-hover;
+        background-color: $color-label-hover;
+        color: $color-label-text-hover;
     }
 }

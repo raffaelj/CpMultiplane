@@ -1,12 +1,12 @@
 
-$color-bg: #fcfcfc !default;
-$color-shadow: #ccc !default;
-$color-white: #fefefe !default;
-$color-black-transp-dark: rgba(0,0,0,.95) !default;
+$color-bg:                  #fcfcfc !default;
+$color-shadow:              #ccc !default;
+$color-white:               #fefefe !default;
+$color-black-transp-dark:   rgba(0,0,0,.95) !default;
 
-$color-nav-mini: $color-white !default;
-$color-nav-mini-hover: $color-black !default;
-$color-nav-mini-bg: $color-black-transp-dark !default;
+$color-nav-mini:            $color-white !default;
+$color-nav-mini-hover:      $color-black !default;
+$color-nav-mini-bg:         $color-black-transp-dark !default;
 
 nav {
     display: inline-block;

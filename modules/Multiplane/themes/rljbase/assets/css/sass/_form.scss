@@ -3,28 +3,28 @@
 $border-radius: 2px !default;
 
 // colours
-$color-white: #fafafa !default;
-$color-black: #000 !default;
-$color-dark: #222 !default;
-$color-grey: #ccc !default;
-$color-shadow: #0c0c0c !default;
+$color-white:       #fafafa !default;
+$color-black:       #000 !default;
+$color-dark:        #222 !default;
+$color-grey:        #ccc !default;
+$color-shadow:      #0c0c0c !default;
 $color-black-transp-light: rgba(0,0,0,.2) !default;
 
 // form colors
-$color-main: #8d9444 !default;
-$color-main-dark: #ae5e69 !default;
+$color-main:        #8d9444 !default;
+$color-main-dark:   #ae5e69 !default;
 
-$color-text: #000000 !default;
-$color-text-light: #999 !default;
-$color-text-dark: #222 !default;
+$color-text:        #000000 !default;
+$color-text-light:  #999 !default;
+$color-text-dark:   #222 !default;
 $color-button-text: $color-white !default;
 
-$color-alarm: #AD000E !default;
-$color-error: #d50f2c !default;
+$color-alarm:       #AD000E !default;
+$color-error:       #d50f2c !default;
 
-$color-input: rgba(255,255,255,.9) !default;
+$color-input:       rgba(255,255,255,.9) !default;
 $color-input-hover: $color-white !default;
-$color-info: transparent !default;
+$color-info:        transparent !default;
 
 $color-fieldset-border: $color-text-dark !default;
 
@@ -41,37 +41,37 @@ fieldset {
     padding: .5rem;
     text-align: center;
     * {
-      text-align: left;
+        text-align: left;
     }
     > .message.error {
-      margin-bottom: .5rem;
+        margin-bottom: .5rem;
     }
     > div {
-      display: inline-block;
-      position: relative;
-      width: 100%;
-      margin: 0 0 .5rem;
-      padding-left: .2rem;
-      padding-right: .2rem;
-      vertical-align: top;
-      &:last-of-type { // contains submit button
-          text-align: center;
-      }
-      &[class^=width-] {
-          float: left; // fix inline white spaces
-      }
-      > label{
-          position: absolute;
-          top: 0rem;
-          font-size: .9rem;
-          transition: 0.2s;
-      }
-      .info {
-          padding: .2rem 0;
-          font-size: .9rem;
-          background-color: $color-info;
-          border-radius: $border-radius;
-      }
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        margin: 0 0 .5rem;
+        padding-left: .2rem;
+        padding-right: .2rem;
+        vertical-align: top;
+        &:last-of-type { // contains submit button
+            text-align: center;
+        }
+        &[class^=width-] {
+            float: left; // fix inline white spaces
+        }
+        > label{
+            position: absolute;
+            top: 0rem;
+            font-size: .9rem;
+            transition: 0.2s;
+        }
+        .info {
+            padding: .2rem 0;
+            font-size: .9rem;
+            background-color: $color-info;
+            border-radius: $border-radius;
+        }
     }
 }
 
@@ -321,5 +321,3 @@ label {
         border: 2px solid $color-alarm;
     }
 }
-
-

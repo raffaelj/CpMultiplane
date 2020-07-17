@@ -1,11 +1,10 @@
 
-
-$color-bg: #fcfcfc !default;
-$color-grey: #ccc !default;
-$color-link: #a771c5 !default;
+$color-bg:         #f4f4f4 !default;
+$color-grey:       #ccc !default;
+$color-link:       #366a9c !default;
 $color-link-hover: #ac833c !default;
 
-$font: system-ui, Helvetica, sans-serif !default;
+$font: system-ui, system-ui-fallback, Helvetica, sans-serif !default;
 
 html {
     font-family: $font;
@@ -18,12 +17,10 @@ body {
     font-weight: 300; // match Segoe UI Light as default
 }
 
-h1,h2,h3,h4,h5,h6 {
+h1, h2, h3, h4, h5, h6 {
     font-family: $font;
     font-weight: bolder;
-    // line-height: 1em;
     &:first-child {
-        // margin-top: .2em;
         margin-top: 0;
     }
 }
@@ -148,7 +145,7 @@ ul, ol {
 
 ul {
     list-style-type: circle;
-    list-style-type: disclosure-closed; // only supported in FF (experimental)
+    list-style-type: disclosure-closed; // only supported in Firefox (experimental)
     ul {
         list-style-type: disc;
         ul {
@@ -173,7 +170,7 @@ dt {
     display: list-item;
     list-style-position: inside;
     list-style-type: square;
-    list-style-type: disclosure-open; // only supported in FF (experimental)
+    list-style-type: disclosure-open; // only supported in Firefox (experimental)
 }
 
 dd {

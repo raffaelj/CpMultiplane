@@ -1,8 +1,14 @@
 
-$color-code-bg: #f8f8f8 !default;
+$color-white:              #fafafa !default;
+$color-black-transp-light: rgba(0,0,0,.2) !default;
+$color-darker:             #222 !default;
+$color-grey:               #ccc !default;
+$color-grey-light:         #f4f4f4 !default;
+
+$color-code-bg:            #f8f8f8 !default;
+$color-code:               inherit !default;
+
 $border-radius: 3px !default;
-$color-code: inherit !default;
-$color-grey: #ccc !default;
 
 $font-monospace: "Courier New", Courier, monospace, sans-serif !default;
 
@@ -10,7 +16,7 @@ code, samp, kbd, tt, var {
     padding: .125em .25em;
     text-align: left;
     font-family: $font-monospace;
-    color: #555;
+    color: $color-code;
     background-color: $color-code-bg;
     @include no-hyphens();
 }
@@ -33,6 +39,7 @@ pre {
     padding: .5em;
     overflow-x: auto;
     font-family: $font-monospace;
+    color: $color-code;
     background-color: $color-code-bg;
     border-radius: $border-radius;
 }
@@ -44,11 +51,11 @@ kbd {
     font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
     font-size: .8em;
     line-height: 1.4em;
-    color: #242729;
-    text-shadow: 0 1px 0 #FFF;
-    background-color: #F7F7F7;
-    border: 1px solid #adb3b9;
+    color: $color-darker;
+    text-shadow: 0 1px 0 $color-white;
+    background-color: $color-grey-light;
+    border: 1px solid $color-grey;
     border-radius: 3px;
-    box-shadow: 0 1px 0 rgba(12,13,14,0.2),0 0 0 2px #FFF inset;
+    box-shadow: 0 1px 0 $color-black-transp-light, 0 0 0 2px $color-white inset;
     white-space: nowrap;
 }
