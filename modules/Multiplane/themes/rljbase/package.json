@@ -14,7 +14,7 @@
     ],
     "scripts": {
         "build": "npm run build:js && npm run build:sass",
-        "watch": "concurrently \"npm:watch:*\" -k -r",
+        "watch": "concurrently \"npm:watch:sass\" \"npm:watch:js\" -k -r",
         "build:sass": "node-sass -r --source-map true --output-style compressed assets/css/style.scss assets/css/style.min.css",
         "watch:sass": "npm run build:sass && npm run build:sass -- -w",
         "build:js": "browserify assets/js/src/mp.js -s MP | uglifyjs --config-file uglify.json > assets/js/mp.min.js",
