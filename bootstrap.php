@@ -39,7 +39,7 @@ if (!defined('COCKPIT_SITE_DIR'))   define('COCKPIT_SITE_DIR',  MP_ENV_ROOT);
 // include cockpit, now `$cockpit` and `cockpit()` are available
 if (file_exists(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php')) {
     require_once(MP_DOCS_ROOT . '/' . MP_ADMINFOLDER . '/bootstrap.php');
-} else { echo 'Cockpit doesn\'t exist.'; die; } // to do: cockpit downloader
+} else { echo '<!DOCTYPE html><html><body><p>You have to install <a href="https://github.com/agentejo/cockpit">Cockpit CMS</a> before you can use CpMultiplane.</p></body></html>'; die; } // to do: cockpit downloader
 
 // load custom config
 $customConfig = [];
