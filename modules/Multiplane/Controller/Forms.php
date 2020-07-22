@@ -126,7 +126,7 @@ class Forms extends \LimeExtra\Controller {
             $referer = parse_url($path);
         }
 
-        $refererUrl = @$referer['scheme'] . '://' .  @$referer['host'] . @$referer['path'];
+        $refererUrl = @$referer['scheme'] . '://' .  @$referer['host'] . (isset($referer['port']) ? ":{$referer['port']}" : '') . @$referer['path'];
 
         if (mb_stripos($refererUrl, $this->app['site_url']) !== 0) {
 
