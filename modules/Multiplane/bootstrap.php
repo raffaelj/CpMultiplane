@@ -45,7 +45,7 @@ $this->module('multiplane')->extend([
     'disableDefaultRoutes'  => false,             // don't use any default routes
     'outputMethod'          => 'dynamic',         // to do: static
     'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
-    'slugName'              => '_id',
+    'slugName'              => '_id',             // field name for url slug
     'navName'               => 'nav',             // field name for navigation
     'nav'                   => null,              // hard coded navigation
 
@@ -673,6 +673,7 @@ $this->module('multiplane')->extend([
             'limit' => $limit,
             'pages' => ceil($count / $limit),
             'slug'  => $slug,
+            'posts_slug' => $slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
             'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
@@ -724,8 +725,8 @@ $this->module('multiplane')->extend([
             'page'  => $page,
             'limit' => $limit,
             'pages' => ceil($count / $limit),
-            // 'slug'  => $slug,
-            'slug'  => '',
+            'slug'  => $slug,
+            'posts_slug' => '',
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
             'hide' => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
@@ -803,6 +804,17 @@ $this->module('multiplane')->extend([
                         $this->app->request->request['page'] = $parts[1];
                     } else {
                         $_REQUEST['page'] = $parts[1];
+                    }
+                }
+
+                if ($parts[1] == 'page' && (int)$parts[2]) {
+                    // pagination for blog module
+                    $slug = $parts[0]; 
+
+                    if (class_exists('Lime\Request')) {
+                        $this->app->request->request['page'] = $parts[2];
+                    } else {
+                        $_REQUEST['page'] = $parts[2];
                     }
                 }
 

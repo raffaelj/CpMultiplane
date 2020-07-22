@@ -14,7 +14,7 @@ extract($posts);
           @foreach($posts as $post)
             <article class="excerpt">
               @if(!empty($post['title']))
-                <h3><a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">{{{ $post['title'] }}}</a></h3>
+                <h3><a href="@base($pagination['posts_slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">{{{ $post['title'] }}}</a></h3>
               @endif
 
                 @render('views:partials/posts-meta.php', compact('post'))
@@ -27,7 +27,7 @@ extract($posts);
                 {{ $post['content'] }}
               @endif
 
-                <p class="read_more"><a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">@lang('read more...')</a></p>
+                <p class="read_more"><a href="@base($pagination['posts_slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">@lang('read more...')</a></p>
 
             </article>
           @endforeach
