@@ -26,6 +26,7 @@ body {
     > main > nav,
     > main > article,
     > main > article > section, // multiple blog posts (no excerpt)
+    > aside,
     > footer
     {
         padding: 1rem 1rem;
@@ -90,6 +91,9 @@ body {
                 .label {
                     color: $color-text;
                 }
+                code, samp, kbd, tt, var, pre {
+                    background-color: $color-black;
+                }
             }
             &.excerpt {
                 &:nth-child(3n+1) > section {
@@ -108,6 +112,7 @@ body {
     > footer {
         text-align: right;
     }
+
 }
 
 [class^="item-"] {
@@ -351,5 +356,15 @@ _:-ms-fullscreen, :root header .search form {
     > section {
         padding-left: 0;
         padding-right: 0;
+    }
+}
+
+.contactform {
+    form {
+        margin: 0;
+        max-width: 50em;
+    }
+    fieldset {
+        border-color: $color-light-grey;
     }
 }
