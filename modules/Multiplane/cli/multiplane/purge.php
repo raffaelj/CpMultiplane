@@ -10,6 +10,8 @@
 
 if (!COCKPIT_CLI) return;
 
+$keepAddons = $app->param('keep-addons', false);
+
 CLI::writeln("Start to purge user data");
 
 $paths = [
@@ -24,15 +26,20 @@ $paths = [
     '#data:cockpit.memory.sqlite',
     '#data:collections.sqlite',
     '#data:cockpitdb.sqlite',
-    '#addons:CpMultiplaneGUI',
-    '#addons:FormValidation',
-    '#addons:ImageResize',
-    '#addons:rljUtils',
-    '#addons:SimpleImageFixBlackBackgrounds',
-    '#addons:UniqueSlugs',
-    '#addons:VideoLinkField',
-    '#addons:EditorFormats',
 ];
+
+if (!$keepAddons) {
+    $paths = array_merge($paths, [
+        '#addons:CpMultiplaneGUI',
+        '#addons:FormValidation',
+        '#addons:ImageResize',
+        '#addons:rljUtils',
+        '#addons:SimpleImageFixBlackBackgrounds',
+        '#addons:UniqueSlugs',
+        '#addons:VideoLinkField',
+        '#addons:EditorFormats',
+    ]);
+}
 
 foreach ($paths as $path) {
     $app->helper('fs')->delete($path);

@@ -6,6 +6,7 @@ return [
     'languages' => [
         'default' => 'English',
         'de'      => 'Deutsch',
+        'fr'      => 'France',
     ],
 
     'multiplane' => [

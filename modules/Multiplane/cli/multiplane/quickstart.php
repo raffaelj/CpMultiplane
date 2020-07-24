@@ -112,15 +112,21 @@ mp()->loadConfig();
 
 // must be called after CpMultiplaneGUI is installed
 $commands = [
-//     [
-//         'cmd' => 'multiplane/create-dummy-data',
-//     ],
     [
         'cmd' => 'multiplane/enable-preview',
     ],
+//     [
+//         'cmd' => 'multiplane/create-dummy-data', // needs app reload
+//     ],
+//     [
+//         'cmd' => 'multiplane/load-i18n', // needs app reload
+//     ],
 ];
 
 run_commands($commands);
 
 CLI::writeln("Quickstart is done. Now login and create content.");
-CLI::writeln("If you want to create some dummy data, use the cli command\n./mp multiplane/create-dummy-data");
+CLI::writeln("To download i18n files automatically run:
+./mp multiplane/load-i18n");
+CLI::writeln("To create some dummy data run:
+./mp multiplane/create-dummy-data");

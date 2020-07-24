@@ -1,13 +1,13 @@
 <?php
 return [
-  'name' => 'basic',
-  'label' => 'Basic',
-  '_id' => 'basic',
+  'name' => 'full',
+  'label' => 'Full',
+  '_id' => 'full',
   '_created' => 1586195272,
   '_modified' => 1593273612,
   'pages' => 'pages',
   'slugName' => 'slug',
-  'theme' => 'rljbase',
+  'theme' => 'rljstripes',
   'use' => [
     'collections' => [
       0 => 'pages',
