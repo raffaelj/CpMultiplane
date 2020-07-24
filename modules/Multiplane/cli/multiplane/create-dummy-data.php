@@ -17,11 +17,14 @@ $pageTypeDetection = $app->module('multiplane')->pageTypeDetection;
 
 if ($pageTypeDetection == 'type') $postsCollection = $pagesCollection;
 
-if (!$app->module('collections')->exists($pagesCollection)) {
+$_pagesCollection = $app->module('collections')->collection($pagesCollection);
+$_postsCollection = $app->module('collections')->collection($postsCollection);
+
+if (!$_pagesCollection) {
     CLI::writeln("$pagesCollection collection doesn't exist.", false);
     $app->stop();
 }
-if (!$app->module('collections')->exists($postsCollection)) {
+if (!$_postsCollection) {
     CLI::writeln("$postsCollection collection doesn't exist.", false);
     $app->stop();
 }
@@ -42,6 +45,36 @@ $app->module('singletons')->saveData($siteSingleton, [
     'logo'        => $logo,
 ]);
 
+foreach ($_pagesCollection['fields'] ?? [] as $field) {
+    if ($field['name'] == 'content') {
+        $pagesContentType = $field['type'];
+        break;
+    }
+}
+foreach ($_postsCollection['fields'] ?? [] as $field) {
+    if ($field['name'] == 'content') {
+        $postsContentType = $field['type'];
+        break;
+    }
+}
+
+function contentStringToRepeater($str) {
+    return [
+        [
+            'field' => [
+                'type' => 'wysiwyg',
+                'label' => 'Wysiwyg',
+                'options' => [
+                    'editor' => [
+                        'format' => 'Advanced',
+                    ],
+                ],
+            ],
+            'value' => $str,
+        ],
+    ];
+}
+
 // create dummy pages
 $pages = [];
 $posts = [];
@@ -49,7 +82,7 @@ $posts = [];
 // create parent page for addons
 $entry = [
     'title' => 'Addons',
-    'content' => 'List of addons',
+    'content' => '<p>List of addons</p>',
     'published' => true,
     'nav' => ['main'],
     'subpagemodule' => [
@@ -64,6 +97,10 @@ if ($pageTypeDetection == 'type') {
     $entry['type'] = 'page';
     unset($entry['subpagemodule']['collection']);
 }
+// check, if content is a repeater
+if ($pagesContentType == 'repeater') {
+    $entry['content'] = contentStringToRepeater($entry['content']);
+}
 
 $addonsPage = $app->module('collections')->save($pagesCollection, $entry);
 
@@ -71,7 +108,7 @@ $addonsPage = $app->module('collections')->save($pagesCollection, $entry);
 if (isset($app['modules']['formvalidation']) && $form = $app->module('forms')->form('contact')) {
     $entry = [
         'title' => 'Contact',
-        'content' => 'Send me a message',
+        'content' => '<p>Send me a message</p>',
         'published' => true,
         'nav' => ['main'],
         '_o' => 2,
@@ -81,12 +118,18 @@ if (isset($app['modules']['formvalidation']) && $form = $app->module('forms')->f
         ],
     ];
 }
+// check, if content is a repeater
+if ($pagesContentType == 'repeater') {
+    $entry['content'] = contentStringToRepeater($entry['content']);
+}
 if ($pageTypeDetection == 'type') $entry['type'] = 'page';
 $pages[] = $entry;
 
 foreach (array_keys((array) $app['modules']) as $module) {
 
     if (in_array($module, ['cockpit', 'collections', 'singletons', 'forms'])) continue;
+
+    $isPost = $module != 'multiplane';
 
     $entry = [
         'published' => true,
@@ -129,16 +172,21 @@ foreach (array_keys((array) $app['modules']) as $module) {
         // select first line as excerpt
         preg_match('/(?<!\h)^(.+)$/m', $entry['content'], $matches);
         $excerpt = $matches[0];
+
+        // check, if content is a repeater
+        if (  (!$isPost && $pagesContentType == 'repeater')
+            || ($isPost && $postsContentType == 'repeater') ) {
+            $entry['content'] = contentStringToRepeater($entry['content']);
+        }
     }
 
     if ($module != 'multiplane') {
         $entry['_pid'] = $addonsPage['_id'];
         $entry['excerpt'] = $excerpt;
-    
-        $posts[] = $entry;
-    } else {
-        $pages[] = $entry;
     }
+
+    if ($isPost) $posts[] = $entry;
+    else         $pages[] = $entry;
 
 }
 
