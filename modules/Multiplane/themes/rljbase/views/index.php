@@ -35,7 +35,7 @@
             @render('views:partials/search.php')
           @endif
         </header>
-        @render('views:partials/nav.php', ['type' => 'main'])
+        @render('views:partials/nav-mobile.php', ['type' => 'main'])
 
         {{ $content_for_layout }}
 

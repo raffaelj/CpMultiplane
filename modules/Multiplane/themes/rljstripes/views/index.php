@@ -41,7 +41,7 @@
             @render('views:partials/language-switch.php', ['page' => $page])
             @endif
 
-            @render('views:partials/nav.php', ['type' => 'main'])
+            @render('views:partials/nav-mobile.php', ['type' => 'main'])
 
             @render('views:partials/search.php')
 
