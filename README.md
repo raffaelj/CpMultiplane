@@ -2,6 +2,8 @@
 
 A small PHP front end for the fast and headless [Cockpit CMS][1].
 
+[Docs][19] (work in progress), [Demo][18] (outdated)
+
 **My main goals:**
 
 1. privacy by design and privacy by default
@@ -18,13 +20,12 @@ CpMultiplane is no classic Cockpit addon. It uses Cockpit as a library, register
 
 It is the refactored version of [Monoplane][8], which is not maintained anymore.
 
-[Demo][18] (outdated), [Docs][19] (work in progress)
-
 ## Requirements
 
 * PHP >= 7.0
 * PDO + SQLite (or MongoDB)
 * GD extension
+* pecl intl extension
 * mod_rewrite, mod_versions enabled (on apache)
 
 Make also sure that `$_SERVER['DOCUMENT_ROOT']` exists and is set correctly.
@@ -40,20 +41,20 @@ You can find the detailed version and a cli install example in [docs - installat
 
 ## Features
 
-* pages and posts
+* pages and sub pages (e. g. posts)
 * multilingual with language prefix, e. g.: `example.com/en/my-page`
 * 2 modes for structured content
   1. one collection per content type, e. g. a collection named `pages` and a collection named `posts`
   2. a single collection named `pages` - each entry has a type `page` or `post` (**experimental**)
 * maintenance mode with option for allowed ips
 * simple content preview while editing pages
-* a basic responsive theme with scss files
+* two basic responsive themes with scss files
 * simple privacy notice banner, that gets enabled when clicking on video link
 * contact forms - fully functional without javascript
-* pre-rendering of fields, e. g. markdown, wysiwyg
+* pre-rendering of markdown fields
 * multiple ways to change everything
-* GUI via [CpMultiplaneGUI addon][2] - may lack some of the latest features
-* full-text search (**experimental**)
+* GUI via [CpMultiplaneGUI addon][2]
+* full-text search
 * ...
 
 ## Recommended Addons
@@ -98,25 +99,58 @@ Install these addons in `cockpit/addons/`.
 
 ## Settings
 
-The fastest way to change some defaults, is to add some values to `/cockpit/config/config.yaml`:
+The fastest way to change some defaults, is to add some values to `/cockpit/config/config.php`:
 
-```yaml
-multiplane:
-    pages: pages
-    posts: posts
-    siteSingleton: site
-    slugName: slug
-    use:
-        collections: ['pages', 'posts', 'products']
-        singletons: ['site']
-        forms: ['contact']
+```php
+<?php
+return [
+    'app.name' => 'CpMultiplane',
+
+    'i18n' => 'en',
+    'languages' => [
+        'default' => 'English',
+        'de' => 'Deutsch',
+    ],
+
+    // define settings here
+    'multiplane' => [
+        'pages' => 'pages',
+        'siteSingleton' => 'site',
+        'slugName' => 'slug',
+        'use' => [
+            'collections' => [
+                'pages',
+                'posts',
+                'products',
+            ],
+            'singletons' => [
+                'site',
+            ],
+            'forms' => [
+                'contact',
+            ],
+        ],
+    ],
+];
 ```
 
 The cleaner and more user friendly way is to use the GUI. Create a profile, name it `my-profile` and set multiplane to the profile name:
 
-```yaml
-multiplane:
-    profile: my-profile
+```php
+return [
+    'app.name' => 'CpMultiplane',
+
+    'i18n' => 'en',
+    'languages' => [
+        'default' => 'English',
+        'de' => 'Deutsch',
+    ],
+
+    // define settings via profile
+    'multiplane' => [
+        'profile' => 'my-profile',
+    ],
+];
 ```
 
 ## Reserved routes
