@@ -3,7 +3,7 @@
   'name' => 'pages',
   'label' => 'Pages',
   '_id' => 'pages',
-  'description' => 'Basic',
+  'description' => 'Full',
   'fields' => 
   array (
     0 => 
@@ -47,16 +47,89 @@
     array (
       'name' => 'content',
       'label' => 'Content',
-      'type' => 'wysiwyg',
+      'type' => 'repeater',
       'default' => '',
       'info' => '',
-      'group' => '',
       'localize' => true,
       'options' => 
       array (
-        'editor' => 
+        'fields' => 
         array (
-          'format' => 'Advanced',
+          0 => 
+          array (
+            'type' => 'wysiwyg',
+            'label' => 'Wysiwyg',
+            'options' => 
+            array (
+              'editor' => 
+              array (
+                'format' => 'Advanced',
+              ),
+            ),
+          ),
+          1 => 
+          array (
+            'type' => 'asset',
+            'label' => 'Asset',
+          ),
+          2 => 
+          array (
+            'type' => 'markdown',
+            'label' => 'Markdown',
+          ),
+          3 => 
+          array (
+            'type' => 'videolink',
+            'label' => 'Video',
+          ),
+          4 => 
+          array (
+            'type' => 'simple-gallery',
+            'label' => 'Gallery',
+          ),
+          5 => 
+          array (
+            'type' => 'repeater',
+            'label' => 'Repeater',
+            'options' => 
+            array (
+              'fields' => 
+              array (
+                0 => 
+                array (
+                  'type' => 'wysiwyg',
+                  'label' => 'Wysiwyg',
+                  'options' => 
+                  array (
+                    'editor' => 
+                    array (
+                      'format' => 'Advanced',
+                    ),
+                  ),
+                ),
+                1 => 
+                array (
+                  'type' => 'asset',
+                  'label' => 'Asset',
+                ),
+                2 => 
+                array (
+                  'type' => 'markdown',
+                  'label' => 'Markdown',
+                ),
+                3 => 
+                array (
+                  'type' => 'videolink',
+                  'label' => 'Video',
+                ),
+                4 => 
+                array (
+                  'type' => 'simple-gallery',
+                  'label' => 'Gallery',
+                ),
+              ),
+            ),
+          ),
         ),
       ),
       'width' => '1-1',
