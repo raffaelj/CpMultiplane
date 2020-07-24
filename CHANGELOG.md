@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0
+
+* changed structure of theme views - **The structure is not backwards compatible to existing child themes.**
+* replaced `displaySearch` key with `search/enabled`
+* improved full-text search
+* added tags pages
+* added quickstart cli commands
+* added quickstart templates to `/modules/Multiplane/themes/rljbase/templates`
+* fixed broken npm watch command in rljbase theme
+* rljbase theme can have a repeater as a content field
+* updated documentation
+* enabled mobile nav in base and stripes theme
+* css/sass cleanup and fixes
+* multiple fixes for type based pages
+
 ## 0.1.7
 
 * fixed minor issues in forms

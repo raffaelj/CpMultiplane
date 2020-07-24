@@ -1,5 +1,7 @@
 {
-  "name": "cpmultiplane",
-  "version": "0.1.7",
-  "license": "MIT"
+    "name": "cpmultiplane",
+    "version": "0.2.0",
+    "license": "MIT",
+    "author": "Raffael Jesche",
+    "homepage": "https://github.com/raffaelj/CpMultiplane"
 }
