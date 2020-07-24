@@ -7,8 +7,9 @@
     "license": "MIT",
     "description": "Basic styling and skeleton for CpMultiplane.",
     "keywords": [
-        "wysiwsg",
-        "markdown",
+        "content:wysiwsg",
+        "content:markdown",
+        "content:repeater",
         "lightbox",
         "privacy friendly"
     ],

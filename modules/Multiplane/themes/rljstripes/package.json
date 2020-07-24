@@ -5,7 +5,7 @@
     "author": "Raffael Jesche",
     "homepage": "https://github.com/raffaelj/CpMultiplane",
     "license": "MIT",
-    "description": "Experimental theme with a repeater as content field.",
+    "description": "Responsive theme, that was designed to have a repeater as content field.",
     "keywords": [],
     "scripts": {
         "build": "npm run build:sass",
