@@ -57,6 +57,21 @@ body {
         h1 {
             margin: 0;
         }
+        > a {
+            display: block;
+            &:hover, &:focus {
+                text-decoration: none;
+            }
+            @include breakpoint(medium) {
+                .logo, h1 {
+                    display: inline-block;
+                    vertical-align: middle;
+                }
+                .logo {
+                    margin-right: 1em;
+                }
+            }
+        }
     }
 
     > main {
