@@ -63,11 +63,10 @@ body {
                 text-decoration: none;
             }
             @include breakpoint(medium) {
+                display: inline-block;
                 .logo, h1 {
                     display: inline-block;
                     vertical-align: middle;
-                }
-                .logo {
                     margin-right: 1em;
                 }
             }
@@ -222,6 +221,7 @@ body {
 }
 
 .language-switch {
+    display: block;
     font-size: 1em;
     @include breakpoint(small) {
         position: absolute;
@@ -303,7 +303,10 @@ article.excerpt {
 }
 
 body > header > nav {
-    @include breakpoint(small) {
+    > ul > li:first-child {
+        margin-left: 0;
+    }
+    @include breakpoint(medium) {
         display: inline-block;
         vertical-align: middle;
     }
