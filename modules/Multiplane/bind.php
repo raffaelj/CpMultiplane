@@ -51,7 +51,7 @@ if (!$isMultilingual) {
     });
 
     // fulltext search
-    if ($this->module('multiplane')->displaySearch) {
+    if ($this->module('multiplane')->get('search/enabled')) {
         $this->bind('/search/*', function($params) {
             return $this->invoke('Multiplane\\Controller\\Base', 'search', ['params' => $params]);
         });
