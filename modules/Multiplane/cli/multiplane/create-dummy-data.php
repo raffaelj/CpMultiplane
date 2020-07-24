@@ -149,6 +149,7 @@ foreach (array_keys((array) $app['modules']) as $module) {
 
     if ($module == 'multiplane') {
         $entry['startpage'] = true;
+        unset($entry['nav']);
         if ($pageTypeDetection == 'type') $entry['type'] = 'page';
         $entry['_o'] = 0;
         $readme = MP_DOCS_ROOT . '/README.md';
