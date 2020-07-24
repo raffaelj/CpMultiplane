@@ -3,21 +3,22 @@
   'name' => 'pages',
   'label' => 'Pages',
   '_id' => 'pages',
+  'description' => 'Single language pages and posts for CpMultiplane with minimal settings',
   'fields' => 
   array (
     0 => 
     array (
       'name' => 'title',
-      'label' => 'Title',
+      'label' => '',
       'type' => 'text',
       'default' => '',
       'info' => '',
       'group' => '',
-      'localize' => true,
+      'localize' => false,
       'options' => 
       array (
       ),
-      'width' => '4-4',
+      'width' => '1-1',
       'lst' => true,
       'acl' => 
       array (
@@ -27,54 +28,56 @@
     1 => 
     array (
       'name' => 'published',
-      'label' => 'Published',
+      'label' => '',
       'type' => 'boolean',
       'default' => '',
       'info' => '',
-      'group' => 'Config',
+      'group' => 'config',
       'localize' => false,
       'options' => 
       array (
       ),
-      'width' => '1-4',
+      'width' => '1-1',
       'lst' => true,
       'acl' => 
       array (
       ),
+      'required' => false,
     ),
     2 => 
     array (
       'name' => 'content',
-      'label' => 'Content',
+      'label' => '',
       'type' => 'wysiwyg',
       'default' => '',
       'info' => '',
       'group' => '',
-      'localize' => true,
+      'localize' => false,
+      'options' => 
+      array (
+      ),
+      'width' => '1-1',
+      'lst' => true,
+      'acl' => 
+      array (
+      ),
+      'required' => false,
+    ),
+    3 => 
+    array (
+      'name' => 'excerpt',
+      'label' => 'Excerpt',
+      'type' => 'wysiwyg',
+      'default' => '',
+      'info' => 'Only needed for posts',
+      'group' => '',
+      'localize' => false,
       'options' => 
       array (
         'editor' => 
         array (
-          'format' => 'Advanced',
+          'height' => 80,
         ),
-      ),
-      'width' => '1-1',
-      'lst' => false,
-      'acl' => 
-      array (
-      ),
-    ),
-    3 => 
-    array (
-      'name' => 'featured_image',
-      'label' => 'Seiten-Bild',
-      'type' => 'asset',
-      'default' => '',
-      'info' => 'Will be displayed above the content',
-      'group' => 'Media',
-      'localize' => false,
-      'options' => 
-      array (
       ),
       'width' => '1-1',
       'lst' => true,
@@ -84,71 +87,49 @@
     ),
     4 => 
     array (
-      'name' => 'gallery',
-      'label' => 'Bildergalerie',
-      'type' => 'simple-gallery',
+      'name' => 'description',
+      'label' => 'Short description',
+      'type' => 'textarea',
       'default' => '',
-      'info' => 'Will be displayed below the content',
-      'group' => 'Media',
+      'info' => 'For search engines - max. 160 characters',
+      'group' => '',
       'localize' => false,
       'options' => 
       array (
+        'rows' => 2,
       ),
-      'width' => '1-1',
+      'width' => '2-3',
       'lst' => false,
       'acl' => 
       array (
       ),
+      'required' => false,
     ),
     5 => 
     array (
       'name' => 'slug',
-      'label' => '',
+      'label' => 'Url slug',
       'type' => 'text',
       'default' => '',
       'info' => '',
-      'group' => 'Config',
-      'localize' => true,
+      'group' => '',
+      'localize' => false,
       'options' => 
       array (
       ),
-      'width' => '1-4',
-      'lst' => false,
+      'width' => '1-3',
+      'lst' => true,
       'acl' => 
       array (
       ),
-    ),
-    6 => 
-    array (
-      'name' => 'seo',
-      'label' => 'SEO',
-      'type' => 'seo',
-      'default' => '',
-      'info' => '',
-      'group' => 'SEO',
-      'localize' => true,
-      'options' => 
-      array (
-        'fallback' => 
-        array (
-          'title' => 'title',
-          'description' => 'content',
-          'image' => 'featured_image',
-        ),
-        'branding' => 'My great website',
-      ),
-      'width' => '1-1',
-      'lst' => false,
-      'acl' => 
-      array (
-      ),
+      'required' => false,
     ),
   ),
   'sortable' => true,
   'in_menu' => false,
-  '_created' => 1586194036,
-  '_modified' => 1593293384,
-  'color' => '#A0D468',
+  '_created' => 1595174861,
+  '_modified' => 1595411777,
+  'color' => '',
   'acl' => 
   array (
   ),
@@ -176,11 +157,10 @@
       'enabled' => false,
     ),
   ),
-  'icon' => 'adressbook.svg',
+  'group' => '',
   'multiplane' => 
   array (
     'sidebar' => true,
     'type' => 'pages',
-    'gui_in_header' => true,
   ),
 );

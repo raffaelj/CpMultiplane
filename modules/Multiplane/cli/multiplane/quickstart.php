@@ -20,6 +20,31 @@
 
 if (!COCKPIT_CLI) return;
 
+$user       = $app->param('user', 'admin');
+$email      = $app->param('email', 'admin@yourdomain.de');
+$password   = $app->param('password', 'admin');
+$theme      = $app->param('theme', 'rljbase');
+$template   = $app->param('template', 'minimal');
+$i18n       = $app->param('i18n', 'en');
+$languages  = $app->param('languages', false);
+
+// copy .htaccess from dist file
+if (!$app->path(MP_DOCS_ROOT . '/.htaccess')) {
+    $app->helper('fs')->copy(MP_DOCS_ROOT . '/.htaccess.dist', MP_DOCS_ROOT . '/.htaccess');
+    CLI::writeln('Created .htaccess from dist file.');
+}
+
+// get template config
+$themePath = $app->path(MP_ENV_ROOT.'/themes/'.$theme);
+if (!$themePath) $themePath = $app->path("multiplane:themes/$theme");
+if ($templateConfigPath = $app->path("$themePath/templates/$template/template.php")) {
+    $config = include($templateConfigPath);
+} else {
+    CLI::writeln("Couldn't find template config file (theme: $theme, template: $template)", false);
+    $app->stop();
+}
+
+// batch execute multiple cli commands
 function run_commands($commands) {
 
     global $app;
@@ -50,36 +75,23 @@ function run_commands($commands) {
     }
 }
 
-if (!$app->path(MP_DOCS_ROOT . '/.htaccess')) {
-    $app->helper('fs')->copy(MP_DOCS_ROOT . '/.htaccess.dist', MP_DOCS_ROOT . '/.htaccess');
-    CLI::writeln('Created .htaccess dist file.');
-}
-
 $commands = [
     [
         'cmd'  => 'account/create',
         'args' => [
-            'user'     => $app->param('user', 'admin'),
-            'email'    => $app->param('email', 'admin@yourdomain.de'),
-            'password' => $app->param('password', 'admin'),
+            'user'     => $user,
+            'email'    => $email,
+            'password' => $password,
         ]
     ],
     [
         'cmd' => 'multiplane/copy-templates',
+        'args' => ['config' => $config]
     ]
 ];
 
-$addons = [
-    'CpMultiplaneGUI' => 'https://github.com/raffaelj/cockpit_CpMultiplaneGUI/archive/master.zip',
-    'FormValidation'  => 'https://github.com/raffaelj/cockpit_FormValidation/archive/master.zip',
-    'ImageResize'     => 'https://github.com/raffaelj/cockpit_ImageResize/archive/master.zip',
-    'rljUtils'        => 'https://github.com/raffaelj/cockpit_rljUtils/archive/master.zip',
-    'SimpleImageFixBlackBackgrounds' => 'https://github.com/raffaelj/cockpit_SimpleImageFixBlackBackgrounds/archive/master.zip',
-    'UniqueSlugs'     => 'https://github.com/raffaelj/cockpit_UniqueSlugs/archive/master.zip',
-    'VideoLinkField'  => 'https://github.com/raffaelj/cockpit_VideoLinkField/archive/master.zip',
-    'EditorFormats'   => 'https://github.com/pauloamgomes/CockpitCms-EditorFormats/archive/master.zip',
-];
-
+// install addons
+$addons = $config['addons'];
 foreach ($addons as $name => $url) {
     $commands[] = [
         'cmd'  => 'install/addon',
@@ -96,12 +108,19 @@ $app->loadModules([$app->path('#addons:')]);
 $config = include($app->path('#config:config.php'));
 $app->set('multiplane', $config['multiplane'] ?? []);
 mp()->loadConfig();
+// $app->trigger('cockpit.bootstrap');
 
 // must be called after CpMultiplaneGUI is installed
 $commands = [
+//     [
+//         'cmd' => 'multiplane/create-dummy-data',
+//     ],
     [
         'cmd' => 'multiplane/enable-preview',
-    ]
+    ],
 ];
 
 run_commands($commands);
+
+CLI::writeln("Quickstart is done. Now login and create content.");
+CLI::writeln("If you want to create some dummy data, use the cli command\n./mp multiplane/create-dummy-data");

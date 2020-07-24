@@ -1,8 +1,8 @@
 <?php
 return [
-  'name' => 'default',
-  'label' => 'Default',
-  '_id' => 'default5e8b6b48d071d',
+  'name' => 'basic',
+  'label' => 'Basic',
+  '_id' => 'basic',
   '_created' => 1586195272,
   '_modified' => 1593273612,
   'pages' => 'pages',
@@ -21,8 +21,9 @@ return [
     ],
   ],
   'isMultilingual' => true,
-  'displayBreadcrumbs' => true,
-  'displaySearch' => true,
+  'search' => [
+    'enabled' => true,
+  ],
   'guiDisplayCustomNav' => true,
   'formSendReferer' => true,
   'color' => '#A0D468',

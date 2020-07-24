@@ -1,7 +1,6 @@
 <?php
 /**
- * If your theme has a templates folder, all files inside it will be copied
- * into your cockpit installation
+ * Copy template files from theme
  * 
  * Usage: `./mp multiplane/copy-templates`
  *
@@ -9,30 +8,47 @@
 
 if (!COCKPIT_CLI) return;
 
-// there might be a wrong theme configuration already
-if (!mp()->themePath) {
-    mp()->set('theme', 'rljbase');
-    mp()->loadThemeConfig();
+
+$theme      = $app->param('theme', 'rljbase');
+$template   = $app->param('template', 'minimal');
+$config     = $app->param('config', false);
+
+$fs = $app->helper('fs');
+
+if (!$config) {
+    // get template config
+    $themePath = $app->path(MP_ENV_ROOT.'/themes/'.$theme);
+    if (!$themePath) $themePath = $app->path("multiplane:themes/$theme");
+    if ($templateConfigPath = $app->path("$themePath/templates/$template/template.php")) {
+        $config = include($templateConfigPath);
+    } else {
+        CLI::writeln("Couldn't find template config file (theme: $theme, template: $template)", false);
+        $app->stop();
+    }
 }
 
-if ($templatesPath = $app->path(mp()->themePath . '/templates')) {
+foreach ($config['copy'] as $copy) {
 
-    if (\is_dir($templatesPath.'/config')) {
+    if ($source = $app->path($copy['source'])) {
 
-        CLI::writeln("Copy config folder");
+        $name = \basename($source);
+        $dest = $copy['destination'];
 
-        // create config folder if it doesn't exist
-        if (!$app->path('#config:')) $app->helper('fs')->mkdir($app->paths('#config')[0]);
+        // create folder if it doesn't exist, e. g.: '#config:', otherwise the copy command could fail
+        if (\is_dir($source)) {
+            $path = $dest;
+            if (\strpos($path, ':') !== false && !$app->path($dest)) {
+                list($namespace, $additional) = \explode(":", $path, 2);
+                if (isset($app->paths[$namespace])) {
+                    if ($fs->mkdir($app->paths($namespace)[0])) CLI::writeln("Created folder $namespace", true);
+                    else CLI::writeln("Could not create folder $namespace", false);
+                }
+                $dest = $app->path("{$namespace}:").$additional;
+            }
+        }
 
-        $app->helper('fs')->copy($templatesPath.'/config', '#config:', true);
+        if ($fs->copy($source, $dest)) CLI::writeln("Copied $name", true);
+        else CLI::writeln("Could not copy $name", false);
+
     }
-
-    if (\is_dir($templatesPath.'/storage')) {
-
-        CLI::writeln("Copy storage folder");
-        $app->helper('fs')->copy($templatesPath.'/storage', '#storage:', true);
-    }
-
-} else {
-    CLI::writeln("Your theme {$mp()->theme} has no templates folder", false);
 }

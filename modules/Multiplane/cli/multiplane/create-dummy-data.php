@@ -1,0 +1,149 @@
+<?php
+/**
+ * Create dummy pages and posts from installed addons
+ * 
+ * Usage: `./mp multiplane/create-dummy-data`
+ *
+ */
+
+if (!COCKPIT_CLI) return;
+
+$pagesCollection = $app->param('pages', 'pages');   // name of pages collection
+$postsCollection = $app->param('posts', 'posts');   // name of posts collection
+$siteSingleton   = $app->param('site', 'site');     // name of site singleton
+$logo            = $app->param('logo', false);      // path to logo
+
+$pageTypeDetection = $app->module('multiplane')->pageTypeDetection;
+
+if ($pageTypeDetection == 'type') $postsCollection = $pagesCollection;
+
+if (!$app->module('collections')->exists($pagesCollection)) {
+    CLI::writeln("$pagesCollection collection doesn't exist.", false);
+    $app->stop();
+}
+if (!$app->module('collections')->exists($postsCollection)) {
+    CLI::writeln("$postsCollection collection doesn't exist.", false);
+    $app->stop();
+}
+if (!$app->module('singletons')->exists($siteSingleton)) {
+    CLI::writeln("$siteSingleton singleton doesn't exist.", false);
+    $app->stop();
+}
+
+// add MP logo as asset
+$file = $logo ? $app->path($logo) : $app->path('cpmultiplanegui:icon.svg');
+$meta = ['title' => 'CpMultiplane logo'];
+$logo = $app->module('cockpit')->addAssets([$file], $meta)[0];
+
+// create dummy site config
+$app->module('singletons')->saveData($siteSingleton, [
+    'site_name'   => $app->param('site_name', 'CpMultiplane'),
+    'description' => $app->param('site_name', 'A small php frontend for Cockpit CMS'),
+    'logo'        => $logo,
+]);
+
+// create dummy pages
+$pages = [];
+$posts = [];
+
+// create parent page for addons
+$entry = [
+    'title' => 'Addons',
+    'content' => 'List of addons',
+    'published' => true,
+    'nav' => ['main'],
+    'subpagemodule' => [
+        'active' => true,
+        'collection' => $postsCollection,
+        'pagination' => true,
+    ],
+    '_o' => 1,
+];
+if ($pageTypeDetection == 'type') {
+    $entry['subpagemodule']['type'] = 'post';
+    $entry['type'] = 'page';
+    unset($entry['subpagemodule']['collection']);
+}
+
+$addonsPage = $app->module('collections')->save($pagesCollection, $entry);
+
+// create contact page
+if (isset($app['modules']['formvalidation']) && $form = $app->module('forms')->form('contact')) {
+    $entry = [
+        'title' => 'Contact',
+        'content' => 'Send me a message',
+        'published' => true,
+        'nav' => ['main'],
+        '_o' => 2,
+        'contactform' => [
+            'active' => true,
+            'form' => 'contact',
+        ],
+    ];
+}
+if ($pageTypeDetection == 'type') $entry['type'] = 'page';
+$pages[] = $entry;
+
+foreach (array_keys((array) $app['modules']) as $module) {
+
+    if (in_array($module, ['cockpit', 'collections', 'singletons', 'forms'])) continue;
+
+    $entry = [
+        'published' => true,
+        'nav' => ['main'],
+    ];
+    if ($pageTypeDetection == 'type') $entry['type'] = 'post';
+
+    $dir = $app->module($module)->_dir;
+    $title = basename($dir);
+    $entry['title'] = $title;
+
+    $readme = $app->path("$module:README.md");
+    if (!$readme) $readme = $app->path("$module:README.MD");
+    if (!$readme) $readme = $app->path("$module:readme.md");
+    if (!$readme) $readme = $app->path("$module:README.TXT");
+    if (!$readme) $readme = $app->path("$module:readme.txt");
+
+    if ($module == 'multiplane') {
+        $entry['startpage'] = true;
+        if ($pageTypeDetection == 'type') $entry['type'] = 'page';
+        $entry['_o'] = 0;
+        $readme = MP_DOCS_ROOT . '/README.md';
+    }
+
+    if ($readme) {
+        $content = $app->helper('fs')->read($readme);
+
+        // do some conversion to match the headline structure
+        // md h1 --> title, h{2,3,4,5} --> h{3,4,5,6}, h6 --> <b>...</b>
+        // works only for md headlines starting with '#', but hey, this is just dummy data
+        $parts = explode("\n", $content, 2);
+        if (strpos($parts[0], '# ') === 0) {
+            $entry['title'] = substr($parts[0], 2);
+        }
+        $content = preg_replace('/^(#{6}) (.*)/m', '**$2**', $parts[1]);
+        $content = preg_replace('/^(#{1,6}) (.*)/m', '#$1 $2', $content);
+
+        $entry['content'] = $app->module('cockpit')->markdown($content, true);
+
+        // select first line as excerpt
+        preg_match('/(?<!\h)^(.+)$/m', $entry['content'], $matches);
+        $excerpt = $matches[0];
+    }
+
+    if ($module != 'multiplane') {
+        $entry['_pid'] = $addonsPage['_id'];
+        $entry['excerpt'] = $excerpt;
+    
+        $posts[] = $entry;
+    } else {
+        $pages[] = $entry;
+    }
+
+}
+
+if ($app->module('collections')->save($pagesCollection, $pages)) CLI::writeln("Created dummy pages in $pagesCollection", true);
+else CLI::writeln("Failed to create dummy pages in $pagesCollection", false);
+
+if ($app->module('collections')->save($postsCollection, $posts)) CLI::writeln("Created dummy posts in $postsCollection", true);
+else CLI::writeln("Failed to create dummy posts in $postsCollection", false);
