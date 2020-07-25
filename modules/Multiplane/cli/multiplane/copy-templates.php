@@ -22,8 +22,7 @@ if (!$config) {
     if ($templateConfigPath = $app->path("$themePath/templates/$template/template.php")) {
         $config = include($templateConfigPath);
     } else {
-        CLI::writeln("Couldn't find template config file (theme: $theme, template: $template)", false);
-        $app->stop();
+        return CLI::writeln("Couldn't find template config file (theme: $theme, template: $template)", false);
     }
 }
 

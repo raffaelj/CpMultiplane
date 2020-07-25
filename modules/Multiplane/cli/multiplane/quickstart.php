@@ -12,21 +12,20 @@
  * [x] copy .htaccess
  * [ ] copy .env
  * [x] generate live preview token
- * [ ] tinymce i18n
- * [ ] i18n
- * [ ] 
+ * [x] i18n --> mp multiplane/load-i18n
+ * [x] create dummy data --> mp multiplane/create-dummy-data
  *
  */
 
 if (!COCKPIT_CLI) return;
 
-$user       = $app->param('user', 'admin');
-$email      = $app->param('email', 'admin@yourdomain.de');
-$password   = $app->param('password', 'admin');
-$theme      = $app->param('theme', 'rljbase');
-$template   = $app->param('template', 'minimal');
-$i18n       = $app->param('i18n', 'en');
-$languages  = $app->param('languages', false);
+$user       = $app->param('user',       'admin');
+$email      = $app->param('email',      'admin@yourdomain.de');
+$password   = $app->param('password',   'admin');
+$theme      = $app->param('theme',      'rljbase');
+$template   = $app->param('template',   'minimal');
+$i18n       = $app->param('i18n',       'en');
+$languages  = $app->param('languages',  false);
 
 // copy .htaccess from dist file
 if (!$app->path(MP_DOCS_ROOT . '/.htaccess')) {
@@ -40,8 +39,7 @@ if (!$themePath) $themePath = $app->path("multiplane:themes/$theme");
 if ($templateConfigPath = $app->path("$themePath/templates/$template/template.php")) {
     $config = include($templateConfigPath);
 } else {
-    CLI::writeln("Couldn't find template config file (theme: $theme, template: $template)", false);
-    $app->stop();
+    return CLI::writeln("Couldn't find template config file (theme: $theme, template: $template)", false);
 }
 
 // batch execute multiple cli commands
@@ -107,26 +105,21 @@ CLI::writeln("Reload config...");
 $app->loadModules([$app->path('#addons:')]);
 $config = include($app->path('#config:config.php'));
 $app->set('multiplane', $config['multiplane'] ?? []);
-mp()->loadConfig();
-// $app->trigger('cockpit.bootstrap');
+$app->module('multiplane')->loadConfig();
 
 // must be called after CpMultiplaneGUI is installed
 $commands = [
     [
         'cmd' => 'multiplane/enable-preview',
     ],
-//     [
-//         'cmd' => 'multiplane/create-dummy-data', // needs app reload
-//     ],
-//     [
-//         'cmd' => 'multiplane/load-i18n', // needs app reload
-//     ],
 ];
 
 run_commands($commands);
 
 CLI::writeln("Quickstart is done. Now login and create content.");
+
 CLI::writeln("To download i18n files automatically run:
 ./mp multiplane/load-i18n");
+
 CLI::writeln("To create some dummy data run:
 ./mp multiplane/create-dummy-data");

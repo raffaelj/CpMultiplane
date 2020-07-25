@@ -33,8 +33,8 @@ class Search extends \Lime\Helper {
         $this->_search        = '';
         $this->fieldSearch    = [];
         $this->allowedFields  = ['title', 'content', 'tags', 'category'];
-        $this->pages = $this->app->module('multiplane')->pages;
-        
+        $this->pages          = $this->app->module('multiplane')->pages;
+
         $this->list = new \ArrayObject([]);
 
     } // end of initialize()
@@ -43,7 +43,7 @@ class Search extends \Lime\Helper {
 
         $error = null;
         $count = null;
-        
+
         $query = $this->app->param('search', false);
 
         if ($params) $query = $params;
@@ -74,9 +74,9 @@ class Search extends \Lime\Helper {
         else {
             $error = 'Your search term must be at least '.$this->minLength.' characters long.';
         }
-            
+
         $list = $this->list->getArrayCopy();
-        
+
         return compact('list', 'query', 'error', 'count');
 
     } // end of search()
@@ -163,7 +163,7 @@ class Search extends \Lime\Helper {
     public function config() {
 
         $collections = $this->app->module('multiplane')->use['collections'] ?? [];
-        
+
         $defaultFields = ['title', 'content', 'tags']; // to do: should not be hardcoded
 
         foreach ($collections as $col) {
@@ -186,7 +186,7 @@ class Search extends \Lime\Helper {
                 'route'  => $name == $this->pages ? '' : $this->app->module('multiplane')->getSubPageRoute($name),
                 'weight' => $pageType == 'pages' ? 10 : 5,
             ];
-            
+
             foreach ($defaultFields as $field) {
                 if (isset($types[$field])) {
                     $this->collections[$name]['fields'][] = [
@@ -266,15 +266,15 @@ class Search extends \Lime\Helper {
                     }
 
                 }
-                
+
                 elseif (isset($field['type']) && $field['type'] == 'tags') {
-                    
+
                     foreach ($this->searches as $search) {
-                    
+
                         $options['filter']['$or'][] = [$field['name'].$suffix => ['$in' => [$search]]];
-                    
+
                     }
-                    
+
                 }
 
                 else {

@@ -21,16 +21,13 @@ $_pagesCollection = $app->module('collections')->collection($pagesCollection);
 $_postsCollection = $app->module('collections')->collection($postsCollection);
 
 if (!$_pagesCollection) {
-    CLI::writeln("$pagesCollection collection doesn't exist.", false);
-    $app->stop();
+    return CLI::writeln("$pagesCollection collection doesn't exist.", false);
 }
 if (!$_postsCollection) {
-    CLI::writeln("$postsCollection collection doesn't exist.", false);
-    $app->stop();
+    return CLI::writeln("$postsCollection collection doesn't exist.", false);
 }
 if (!$app->module('singletons')->exists($siteSingleton)) {
-    CLI::writeln("$siteSingleton singleton doesn't exist.", false);
-    $app->stop();
+    return CLI::writeln("$siteSingleton singleton doesn't exist.", false);
 }
 
 // add MP logo as asset
@@ -117,13 +114,15 @@ if (isset($app['modules']['formvalidation']) && $form = $app->module('forms')->f
             'form' => 'contact',
         ],
     ];
+
+    // check, if content is a repeater
+    if ($pagesContentType == 'repeater') {
+        $entry['content'] = contentStringToRepeater($entry['content']);
+    }
+    if ($pageTypeDetection == 'type') $entry['type'] = 'page';
+
+    $pages[] = $entry;
 }
-// check, if content is a repeater
-if ($pagesContentType == 'repeater') {
-    $entry['content'] = contentStringToRepeater($entry['content']);
-}
-if ($pageTypeDetection == 'type') $entry['type'] = 'page';
-$pages[] = $entry;
 
 foreach (array_keys((array) $app['modules']) as $module) {
 
@@ -181,9 +180,10 @@ foreach (array_keys((array) $app['modules']) as $module) {
         }
     }
 
-    if ($module != 'multiplane') {
-        $entry['_pid'] = $addonsPage['_id'];
+    if ($isPost) {
         $entry['excerpt'] = $excerpt;
+        $entry['tags'] = ['addon', 'cockpit', $module];
+        if ($pageTypeDetection == 'type') $entry['_pid'] = $addonsPage['_id'];
     }
 
     if ($isPost) $posts[] = $entry;

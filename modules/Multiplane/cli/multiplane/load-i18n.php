@@ -16,13 +16,13 @@ $reload = $app->param('reload', false);
 
 $languages      = $app->module('multiplane')->getLanguages(true);
 $isMultilingual = $app->module('multiplane')->isMultilingual;
+$lang           = $app->module('multiplane')->lang;
 
 $fs    = $app->helper('fs');
 $error = false;
 
 if ($lang == 'en' && !$isMultilingual) {
-    CLI::writeln("Nothing to do here", true);
-    $app->stop();
+    return CLI::writeln("Nothing to do here", true);
 }
 
 // try to download Cockpit i18n file
