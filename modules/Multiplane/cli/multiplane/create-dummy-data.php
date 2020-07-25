@@ -12,6 +12,8 @@ $pagesCollection = $app->param('pages', 'pages');   // name of pages collection
 $postsCollection = $app->param('posts', 'posts');   // name of posts collection
 $siteSingleton   = $app->param('site', 'site');     // name of site singleton
 $logo            = $app->param('logo', false);      // path to logo
+$site_name       = $app->param('site_name', 'CpMultiplane');
+$description     = $app->param('description', 'A small php frontend for Cockpit CMS');
 
 $pageTypeDetection = $app->module('multiplane')->pageTypeDetection;
 
@@ -37,8 +39,8 @@ $logo = $app->module('cockpit')->addAssets([$file], $meta)[0];
 
 // create dummy site config
 $app->module('singletons')->saveData($siteSingleton, [
-    'site_name'   => $app->param('site_name', 'CpMultiplane'),
-    'description' => $app->param('site_name', 'A small php frontend for Cockpit CMS'),
+    'site_name'   => $site_name,
+    'description' => $description,
     'logo'        => $logo,
 ]);
 

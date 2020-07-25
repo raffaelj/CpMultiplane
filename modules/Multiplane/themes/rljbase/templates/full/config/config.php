@@ -1,6 +1,6 @@
 <?php
 return [
-    'app.name' => 'CpMultiplane',
+    'app.name' => 'mpfull',
 
     'i18n' => 'en',
     'languages' => [

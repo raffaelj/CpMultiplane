@@ -1,7 +1,7 @@
 <?php
 return [
 
-    'app.name' => 'CpMultiplane',
+    'app.name' => 'mpbasic',
 
     'multiplane' => [
         'profile' => 'basic',
