@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1
+
+* fixed tags route bindings if not multilingual
+* added tags fields to templates
+* added CpMultiplane i18n repository
+* added mp auto i18n download in cli command
+
 ## 0.2.0
 
 * changed structure of theme views - **The structure is not backwards compatible to existing child themes.**

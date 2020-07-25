@@ -2,7 +2,7 @@
 
 A small PHP front end for the fast and headless [Cockpit CMS][1].
 
-[Docs][19] (work in progress), [Demo][18] (outdated)
+[Docs][19] (work in progress), [Demo][18] (outdated), [i18n][21]
 
 **My main goals:**
 
@@ -189,3 +189,4 @@ Without Cockpit, CpMultiplane couldn't exist. Thanks to [Artur Heinze][16] and t
 [18]: https://monoplane.rlj.me
 [19]: https://github.com/raffaelj/CpMultiplane-docs
 [20]: https://github.com/raffaelj/CpMultiplane-docs/blob/master/installation.md
+[21]: https://github.com/raffaelj/CpMultiplane-i18n
