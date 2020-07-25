@@ -59,7 +59,7 @@ if (!$isMultilingual) {
 
     // tags page
     $this->bind('/tags', function($params) {
-        $this->reroute("/{$lang}/tags/");
+        $this->reroute("/tags/");
     });
     $this->bind('/tags/*', function($params) {
 
@@ -68,7 +68,7 @@ if (!$isMultilingual) {
         $tags = explode('/', $params[':splat'][0]);
         return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
     });
-    $this->bind('/'.$lang.'/tag/:tag', function($params) {
+    $this->bind('/tag/:tag', function($params) {
         $tag = \urldecode($params['tag']);
         return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
     });
