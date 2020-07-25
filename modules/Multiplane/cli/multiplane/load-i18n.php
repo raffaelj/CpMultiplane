@@ -52,6 +52,37 @@ foreach ($languages as $l) {
 
 }
 
+// try to download mp i18n file
+// https://raw.githubusercontent.com/raffaelj/CpMultiplane-i18n/master/de.php
+if (!$app->path("mp_config:")) {
+    $fs->mkdir($app->paths('mp_config')[0]);
+}
+
+foreach ($languages as $l) {
+
+    $code = $l['code'];
+
+    if ($code == 'en') continue;
+
+    $url  = "https://raw.githubusercontent.com/raffaelj/CpMultiplane-i18n/master/{$code}.php";
+    $dest = $app->path("mp_config:") . "i18n/{$code}.php";
+
+    // skip download if lang file exists
+    if (!$reload && $app->path("mp_config:i18n/{$code}.php")) continue;
+
+    if (!$fs->write("{$dest}", $handle = @fopen($url, 'r'))) {
+        $error = "Couldn't download {$url}!";
+    }
+    @fclose($handle);
+
+    if ($error) {
+        return CLI::writeln($error, false);
+    } else {
+        CLI::writeln("Downloaded language file to 'mp_config:i18n/{$code}.php", true);
+    }
+
+}
+
 // try to download tinyMCE lang file
 // url schema: https://www.tiny.cloud/tinymce-services-azure/1/i18n/download?langs=fr_FR,de
 // docs: https://www.tiny.cloud/docs-4x/configure/localization/#language
