@@ -87,6 +87,24 @@
     ),
     4 => 
     array (
+      'name' => 'tags',
+      'label' => 'Tags',
+      'type' => 'tags',
+      'default' => '',
+      'info' => '',
+      'group' => '',
+      'localize' => false,
+      'options' => 
+      array (
+      ),
+      'width' => '1-1',
+      'lst' => false,
+      'acl' => 
+      array (
+      ),
+    ),
+    5 => 
+    array (
       'name' => 'description',
       'label' => 'Short description',
       'type' => 'textarea',
@@ -105,7 +123,7 @@
       ),
       'required' => false,
     ),
-    5 => 
+    6 => 
     array (
       'name' => 'slug',
       'label' => 'Url slug',

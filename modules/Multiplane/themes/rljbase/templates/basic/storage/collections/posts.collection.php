@@ -88,6 +88,24 @@
     ),
     4 => 
     array (
+      'name' => 'tags',
+      'label' => 'Tags',
+      'type' => 'tags',
+      'default' => '',
+      'info' => '',
+      'group' => '',
+      'localize' => false,
+      'options' => 
+      array (
+      ),
+      'width' => '1-1',
+      'lst' => false,
+      'acl' => 
+      array (
+      ),
+    ),
+    5 => 
+    array (
       'name' => 'featured_image',
       'label' => 'Featured image',
       'type' => 'asset',
@@ -104,7 +122,7 @@
       array (
       ),
     ),
-    5 => 
+    6 => 
     array (
       'name' => 'gallery',
       'label' => 'Image gallery',
@@ -122,7 +140,7 @@
       array (
       ),
     ),
-    6 => 
+    7 => 
     array (
       'name' => 'slug',
       'label' => '',
@@ -140,7 +158,7 @@
       array (
       ),
     ),
-    7 => 
+    8 => 
     array (
       'name' => 'seo',
       'label' => 'SEO',
@@ -169,7 +187,7 @@
   'sortable' => false,
   'in_menu' => false,
   '_created' => 1592640559,
-  '_modified' => 1592728014,
+  '_modified' => 1595694694,
   'color' => '#4FC1E9',
   'acl' => 
   array (
