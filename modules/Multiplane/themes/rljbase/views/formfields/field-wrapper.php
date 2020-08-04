@@ -4,9 +4,6 @@
 @if(!empty($field['error']))
     <p class="message error">@lang($field['error'])</p>
 @endif
-@if(!empty($field['info']))
-    <p class="message info">@lang($field['info'])</p>
-@endif
 @if(!empty($field['link']) && isset($field['link'][mp()->slugName]))
     <p class="message info link">
     @if(!empty($field['link']['text_before']))@lang($field['link']['text_before'])@endif

@@ -8,3 +8,4 @@ $checked = isset($field['value']) && $field['value'] == $value ? ' checked' : ''
 
     <input type="checkbox" value="{{ $value }}"{{ $attributes }}{{ $checked }} />
     @render('views:formfields/field-label.php', compact('field'))
+    @render('views:formfields/field-info.php', compact('field'))
