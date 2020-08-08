@@ -27,10 +27,10 @@ if (!defined('MP_ENV_ROOT'))        define('MP_ENV_ROOT',     MP_DOCS_ROOT);
 if (!defined('MP_ENV_URL'))         define('MP_ENV_URL',      MP_DOCS_ROOT == MP_ENV_ROOT ? MP_BASE_URL : MP_BASE_URL . str_replace(MP_DOCS_ROOT, '', MP_ENV_ROOT));
 
 if (!defined('MP_CONFIG_DIR'))      define('MP_CONFIG_DIR',   MP_ENV_ROOT.'/config');
-if (!defined('MP_CONFIG_PATH'))     define('MP_CONFIG_PATH',  MP_CONFIG_DIR.'/config.php');
 
 if (!defined('MP_CONFIG_PATH'))     define('MP_CONFIG_PATH',  MP_CONFIG_DIR.'/config.php');
 
+// avoid overriding paths and don't bind routes - to do: cleaner implementation
 if (!defined('MP_SELF_EXPORT'))     define('MP_SELF_EXPORT',  false);
 
 // for thumbnails of CpMultiplane assets
@@ -45,7 +45,7 @@ if (file_exists(COCKPIT_DIR . '/bootstrap.php')) {
 
 // load custom config
 $customConfig = [];
-if (file_exists(MP_CONFIG_PATH)) {
+if (\file_exists(MP_CONFIG_PATH)) {
     $customConfig = include(MP_CONFIG_PATH);
 }
 
