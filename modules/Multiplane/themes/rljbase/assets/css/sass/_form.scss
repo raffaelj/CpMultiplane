@@ -60,9 +60,10 @@ fieldset {
         &[class^=width-] {
             float: left; // fix inline white spaces
         }
-        > label{
-            position: absolute;
-            top: 0rem;
+        > label {
+/*             position: absolute; */
+/*             top: 0rem; */
+            display: block;
             font-size: .9rem;
             transition: 0.2s;
         }
@@ -274,7 +275,7 @@ textarea {
 //// label positioning
 
 input, textarea {
-    margin-top: 1.5rem;
+/*     margin-top: 1.5rem; */
 }
 label {
     + input, + textarea {
