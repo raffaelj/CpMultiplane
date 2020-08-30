@@ -621,15 +621,17 @@ $this->module('multiplane')->extend([
         $filter = [
             'published' => true,
         ];
+        
+        $sort = !empty($opts['customsort']) ? $opts['customsort'] : [
+            '_created' => isset($opts['sort']) && $opts['sort'] ? 1 : -1,
+        ];
 
         $options = [
             'filter' => $filter,
-            'lang'  => $lang,
-            'limit' => $limit,
-            'skip'  => $skip,
-            'sort' => [
-                '_created' => isset($opts['sort']) && $opts['sort'] ? 1 : -1,
-            ],
+            'lang'   => $lang,
+            'limit'  => $limit,
+            'skip'   => $skip,
+            'sort'   => $sort,
         ];
 
         $this->app->trigger('multiplane.getposts.before', [$name, &$options]);
