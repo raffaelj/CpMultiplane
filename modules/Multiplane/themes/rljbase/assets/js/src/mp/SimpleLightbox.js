@@ -57,7 +57,7 @@ module.exports = {
                 el.addEventListener('click', function(e) {
 
                     if (e) e.preventDefault();
-                    
+
                     $this.lastFocus = el || d.activeElement;
 
                     $this.active         = true;
@@ -76,6 +76,11 @@ module.exports = {
                     $this.captions[k][i] = (el.getAttribute('title')).replace(/(\r\n|\n\r|\r|\n)/g, '<br>' + '$1');
                 } else if (el.dataset.title) {
                     $this.captions[k][i] = (el.dataset.title).replace(/(\r\n|\n\r|\r|\n)/g, '<br>' + '$1');
+                } else {
+                    node = el.querySelector('img');
+                    if (node) {
+                        $this.captions[k][i] = node.getAttribute('title') || node.dataset.title || '';
+                    }
                 }
 
             });
@@ -141,7 +146,7 @@ module.exports = {
         this.prevButton.setAttribute('href', '#');
         this.nextButton.setAttribute('href', '#');
         this.closeButton.setAttribute('href', '#');
-        
+
         this.prevButton.setAttribute('aria-label', 'previous');
         this.nextButton.setAttribute('aria-label', 'next');
         this.closeButton.setAttribute('aria-label', 'close');
