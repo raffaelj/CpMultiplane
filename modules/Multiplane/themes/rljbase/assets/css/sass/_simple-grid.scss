@@ -1,0 +1,24 @@
+
+.grid {
+    display: block;
+
+    @include breakpoint(medium) {
+
+        white-space: nowrap;
+
+        > div {
+            display: inline-block;
+            vertical-align: top;
+            white-space: normal;
+            padding: 0 1em;
+
+            &:first-child {
+                padding-left: 0;
+            }
+            &:last-child {
+                padding-right: 0;
+            }
+        }
+    }
+
+}
