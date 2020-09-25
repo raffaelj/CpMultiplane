@@ -253,6 +253,13 @@ class Search extends \Lime\Helper {
 
                 }
 
+                elseif (isset($field['type']) && $field['type'] == 'layout') {
+
+                    // to do: cleanup/find cleaner solution
+                    $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'Multiplane\Helper\layoutSearch']];
+
+                }
+
                 elseif (isset($field['type']) && in_array($field['type'], ['wysiwyg', 'markdown'])) {
 
                     foreach ($this->searches as $search) {
@@ -326,7 +333,7 @@ class Search extends \Lime\Helper {
             $increase = !empty($field['weight']) ? (int) $field['weight'] : 1;
             $display  = !isset($field['display']) ? true : $field['display'];
             $content  = !empty($field['type'])
-                            && in_array($field['type'], ['markdown', 'repeater']) // to do: should not be hard coded
+                            && in_array($field['type'], ['markdown', 'repeater', 'layout']) // to do: should not be hard coded
                             && \method_exists($this->app->helper('fields'), $field['type'])
                         ? $this->app->helper('fields')->{$field['type']}($entry[$name])
                         : $entry[$name];
@@ -417,4 +424,55 @@ function repeaterSearch($field) {
         return $r;
     }
     return $r;
+}
+
+function layoutSearch($field) {
+
+    if (!$field || !is_array($field)) return false;
+
+    $searches = cockpit()->helper('search')->searches;
+
+    $r = false;
+
+    foreach ($searches as $b) {
+
+        $regex = "/(?<!&[^\s]){$b}(?![^<>]*(([\/\"']|]]|\b)>))/iu";
+
+        foreach ($field as $block) {
+
+            switch ($block['component']) {
+
+                case 'text':
+                case 'heading':
+                case 'button':
+                    $r = (boolean) @\preg_match($regex, $block['settings']['text'], $match);
+                    break;
+
+                case 'html':
+                    $r = (boolean) @\preg_match($regex, $block['settings']['html'], $match);
+                    break;
+
+                case 'section':
+                    $r = layoutSearch($block['children']);
+                    break;
+
+                case 'grid':
+                    foreach ($block['columns'] as $col) {
+                        $r = layoutSearch($col['children']);
+                        if ($r) break;
+                    }
+                    break;
+
+            }
+
+            if ($r) break;
+
+        }
+
+        return $r;
+
+    }
+
+    return $r;
+
 }

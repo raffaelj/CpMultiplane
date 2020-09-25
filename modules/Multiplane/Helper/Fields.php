@@ -125,6 +125,22 @@ class Fields extends \Lime\Helper {
 
     }
 
+    public function layout($content = null) {
+
+        if (!$content || !is_array($content)) return '';
+
+        if ($fieldTemplate = $this->app->path('views:fields/layout.php')) {
+
+            return $this->render($fieldTemplate, compact('content'));
+
+        }
+
+        $out = '';
+
+        return $out;
+
+    }
+
     public function replaceRelativeLinksInHTML($html) {
 
         $isMultilingual = $this->app->module('multiplane')->isMultilingual;
