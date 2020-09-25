@@ -110,8 +110,16 @@ class Base extends \LimeExtra\Controller {
 
         if (!$src) return false;
 
-        // lazy uploads prefix if src is an assets id (has no dot in filename) or is mp asset
-        if (strpos($src, '/modules/Multiplane') !== 0 && strpos($src, '.') !== false) {
+        // remove `/storage/uploads` from image urls
+        $uploads = \str_replace(COCKPIT_ENV_ROOT, '', $this->app->path('#uploads:'));
+        if (\strpos($src, $uploads) === 0) {
+            $src = \substr($src, strlen($uploads));
+        }
+
+        // lazy uploads prefix if src is a path instead of an assets id (has no dot in filename) or is mp asset
+        if (\strpos($src, '#') !== 0
+            && \strpos($src, '/modules/Multiplane') !== 0
+            && \strpos($src, '.') !== false) {
             $src = '#uploads:'.$src;
         }
 
