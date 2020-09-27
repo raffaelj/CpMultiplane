@@ -2,8 +2,9 @@
 //set version
 if (!$this->retrieve('multiplane/version', false)) {
     $this->set('multiplane/version', $this['debug'] ? time()
-        : json_decode($this('fs')->read(MP_DOCS_ROOT.'/package.json'), true)['version']);
+        : \json_decode($this('fs')->read(MP_DOCS_ROOT.'/package.json'), true)['version']);
 }
+$this->set('cockpit/version', \json_decode($this('fs')->read('#root:package.json'), true)['version']);
 
 if (!MP_SELF_EXPORT) {
     require_once(__DIR__ . '/override.php');

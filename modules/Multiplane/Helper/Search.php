@@ -37,6 +37,8 @@ class Search extends \Lime\Helper {
 
         $this->list = new \ArrayObject([]);
 
+        $this->isWhereFilterAvailable = \version_compare($this->app->retrieve('cockpit/version'), '0.11.2', '>=');
+
     } // end of initialize()
 
     public function search($params = null) {
@@ -113,11 +115,11 @@ class Search extends \Lime\Helper {
 
     public function parseQuery($query) {
 
-        if (is_string($query)) {
+        if (\is_string($query)) {
             $this->splitQuoteQuery($query);
         }
 
-        if (is_array($query)) {
+        if (\is_array($query)) {
             $this->parseArrayQuery($query);
         }
 
@@ -125,18 +127,18 @@ class Search extends \Lime\Helper {
 
     public function splitQuoteQuery($search) {
 
-        $_search = trim($search);
+        $_search = \trim($search);
         $this->_search = $_search;
 
-        if (preg_match('/^(["\']).*\1$/m', $_search)) {
+        if (\preg_match('/^(["\']).*\1$/m', $_search)) {
             // exact match in quotes, still case insensitive
-            $this->searches = [preg_quote(trim($_search, "\"' \t\n\r\0\x0B"), '/')];
+            $this->searches = [\preg_quote(trim($_search, "\"' \t\n\r\0\x0B"), '/')];
         }
         else {
-            $all = array_filter(explode(' ', $_search), 'strlen');
+            $all = \array_filter(\explode(' ', $_search), 'strlen');
             $_search = preg_quote($_search, '/');
             foreach ($all as $s) {
-                if (mb_strlen($s) > $minLength) { // skip single char words ("I", "a"...)
+                if (\mb_strlen($s) > $minLength) { // skip single char words ("I", "a"...)
                     $this->searches[] = preg_quote($s, '/');
                 }
             }
@@ -248,15 +250,25 @@ class Search extends \Lime\Helper {
 
                 if (isset($field['type']) && $field['type'] == 'repeater') {
 
-                    // to do: cleanup/find cleaner solution
-                    $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'Multiplane\Helper\repeaterSearch']];
+                    if ($this->isWhereFilterAvailable) {
+                        $options['filter']['$or'][] = ['$where' => function($doc) use ($field, $suffix) {
+                            return repeaterSearch($doc[$field['name'].$suffix]);
+                        }];
+                    } else {
+                        $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'Multiplane\Helper\repeaterSearch']];
+                    }
 
                 }
 
                 elseif (isset($field['type']) && $field['type'] == 'layout') {
 
-                    // to do: cleanup/find cleaner solution
-                    $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'Multiplane\Helper\layoutSearch']];
+                    if ($this->isWhereFilterAvailable) {
+                        $options['filter']['$or'][] = ['$where' => function($doc) use ($field, $suffix) {
+                            return layoutSearch($doc[$field['name'].$suffix]);
+                        }];
+                    } else {
+                        $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'Multiplane\Helper\layoutSearch']];
+                    }
 
                 }
 
@@ -396,15 +408,7 @@ function repeaterSearch($field) {
 
     if (!$field || !is_array($field)) return false;
 
-    $search = cockpit()->param('search', false);
-
-    if (preg_match('/^(["\']).*\1$/m', $search)) {
-        // exact match in quotes, still case insensitive
-        $searches = [trim($search, '"\' \t\n\r\0\x0B')];
-    }
-    else {
-        $searches = array_filter(explode(' ', $search), 'strlen');
-    }
+    $searches = cockpit()->helper('search')->searches;
 
     $r = false;
 
@@ -421,7 +425,7 @@ function repeaterSearch($field) {
                 if ($r) break;
             }
         }
-        return $r;
+        if ($r) break;
     }
     return $r;
 }
@@ -469,7 +473,7 @@ function layoutSearch($field) {
 
         }
 
-        return $r;
+        if ($r) break;
 
     }
 
