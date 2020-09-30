@@ -14,7 +14,7 @@ $icon-height:  2em !default;
         margin: 1em auto;
         overflow: hidden; // avoid possible flickering when button text appears and mouse hovers over it
     }
-    input {
+    input[type=text] {
         display: inline;
         width: 100%;
         margin: 0;
@@ -63,5 +63,22 @@ $icon-height:  2em !default;
         height: $icon-height;
         color: $color-grey;
         background-color: transparent;
+    }
+}
+
+.search-extended {
+    text-align: center;
+    form {
+        width: auto;
+    }
+    input[type=text] {
+        width: 30em;
+        max-width: 100%;
+    }
+    > form {
+        > div, > button {
+            display: inline-block;
+            max-width: 100%;
+        }
     }
 }

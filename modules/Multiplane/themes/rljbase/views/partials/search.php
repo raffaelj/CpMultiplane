@@ -1,7 +1,6 @@
 <?php
 $search = $app->param('search', '');
-// if (is_array($search)) $search = implode(' ', $search);
-if (is_array($search)) $search = json_encode($search);
+if (is_array($search) || strpos($search, '{') === 0) $search = '';
 ?>
             <div class="search">
                 <form action="@base('/search')">

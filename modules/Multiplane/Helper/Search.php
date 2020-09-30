@@ -116,7 +116,12 @@ class Search extends \Lime\Helper {
     public function parseQuery($query) {
 
         if (\is_string($query)) {
-            $this->splitQuoteQuery($query);
+            if (strpos($query, '{') === 0 && $arr = @\json_decode($query, true)) {
+                $query = $arr;
+            }
+            else {
+                $this->splitQuoteQuery($query);
+            }
         }
 
         if (\is_array($query)) {
@@ -314,6 +319,8 @@ class Search extends \Lime\Helper {
                     $options['filter'][$field['name'].$suffix] = ['$in' => $tags];
 
                 }
+
+                // to do: other fields...
 
             }
 
