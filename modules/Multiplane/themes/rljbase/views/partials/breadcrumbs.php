@@ -1,8 +1,6 @@
 <?php
 $breadcrumbs = mp()->breadcrumbs;
-$last = count($breadcrumbs) -1;
-if ($last == 0) return;
-// to do: display page titles instead of page slugs
+if (count($breadcrumbs) == 1 && mp()->isStartpage) return;
 ?>
 
             <nav class="breadcrumbs horizontal" aria-label="@lang('Breadcrumb')">
@@ -10,13 +8,14 @@ if ($last == 0) return;
                   @foreach($breadcrumbs as $k => $n)
                     <li>
                     @if($k == 0)
-                        <a href="@base('/'.$n)" title="@lang('Home')" class="icon-home"></a>
-                    @elseif($k < $last)
-                        <a href="@base('/'.$n)">{{{ $n }}}</a>
+                        <a href="@base('/')" title="@lang('Home')" class="icon-home"></a>
                     @else
-                        <span>{{{ $n }}}</span>
+                        <a href="@base('/'.$n['slug'])">{{{ $n['title'] }}}</a>
                     @endif
                     </li>
                   @endforeach
+                    <li>
+                        <span>{{{ $page['title'] }}}</span>
+                    </li>
                 </ol>
             </nav>

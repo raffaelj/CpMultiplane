@@ -183,11 +183,15 @@ $this->module('multiplane')->extend([
             ];
 
             $breadcrumbs = $this->breadcrumbs;
+            $breadcrumbs[] = [
+                'title' => $title,
+                'slug'  => ''
+            ];
             $c = count($breadcrumbs);
 
             $p = '';
             foreach ($breadcrumbs as $k => $v) {
-                $p .= $v;
+                $p .= $v['slug'];
                 $schema['itemListElement'][] = [
                     '@type' => 'ListItem',
                     'position' => $k + 1,
@@ -195,8 +199,7 @@ $this->module('multiplane')->extend([
                         '@id' => $k == 0 ? $site_url : ( $k < $c - 1
                                  ? $site_url . $p
                                  : $url ),
-                         // to do: parent page title
-                        'name' => $k == 0 ? $site_name : ( $k < $c - 1 ? $v : $title )
+                        'name' => $k == 0 ? $site_name : ( $k < $c - 1 ? $v['title'] : $title )
                     ]
                 ];
             }

@@ -26,10 +26,6 @@ spl_autoload_register(function($class){
 
 });
 
-spl_autoload_register(function($class){
-    
-});
-
 // add helpers
 $this->helpers['fields'] = 'Multiplane\\Helper\\Fields';
 $this->helpers['search'] = 'Multiplane\\Helper\\Search';
@@ -135,7 +131,7 @@ $this->module('multiplane')->extend([
     // changes dynamically
     'defaultLang'           => $this->retrieve('multiplane/i18n', $this->retrieve('i18n', 'en')),
     'lang'                  => $this('i18n')->locale,
-    'breadcrumbs'           => ['/'],
+    'breadcrumbs'           => [['title' => $this('i18n')->get('Home'), 'slug' => '/']],
     'isStartpage'           => false,
     'collection'            => null,            // current collection
     'clientIpIsAllowed'     => false,           // if maintenance and ip is allowed
@@ -787,12 +783,44 @@ $this->module('multiplane')->extend([
                         $slug = $parts[1];
                     }
 
-                    $breadcrumbs = $this->breadcrumbs;
-                    foreach($parts as $part) {
-                        $breadcrumbs[] = $part;
-                    }
-                    $this->breadcrumbs = $breadcrumbs;
+                    $count = count($parts);
+                    if ($count > 1) {
+                        $breadcrumbs = $this->breadcrumbs;
+                        $lang = $this->lang;
+                        $suffix = $lang != $this->defaultLang ? '_'.$lang : '';
 
+                        foreach($parts as $k => $part) {
+
+                            if ($k >= ($count - 1)) continue; // skip current page
+
+                            if (isset($this->app['modules']['uniqueslugs'])) {
+                                $filter = [
+                                    $this->slugName . $suffix => $part
+                                ];
+                                $projection = [
+                                    'title' => true,
+                                    '_id'   => false,
+                                ];
+
+                                if ($lang != $this->defaultLang) $projection['title'.$suffix] = true;
+
+                                $entry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $lang]);
+
+                                $breadcrumbs[] = [
+                                    'title' => $entry['title'] ?? $part,
+                                    'slug'  => $part,
+                                ];
+                            }
+                            else {
+                                $breadcrumbs[] = [
+                                    'title' => $part,
+                                    'slug'  => $part,
+                                ];
+                            }
+                        }
+                        $this->breadcrumbs = $breadcrumbs;
+
+                    }
                 }
 
             }
@@ -823,11 +851,6 @@ $this->module('multiplane')->extend([
 
             }
 
-        }
-        else {
-            $breadcrumbs = $this->breadcrumbs;
-            $breadcrumbs[] = $slug;
-            $this->breadcrumbs = $breadcrumbs;
         }
 
         $this->currentSlug = $slug;
