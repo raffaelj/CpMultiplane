@@ -2,7 +2,7 @@
 //set version
 if (!$this->retrieve('multiplane/version', false)) {
     $this->set('multiplane/version', $this['debug'] ? time()
-        : \json_decode($this('fs')->read(MP_DOCS_ROOT.'/package.json'), true)['version']);
+        : \json_decode($this('fs')->read(MP_DIR.'/package.json'), true)['version']);
 }
 $this->set('cockpit/version', \json_decode($this('fs')->read('#root:package.json'), true)['version']);
 
@@ -16,7 +16,7 @@ $this->path('mp_config', MP_ENV_ROOT . '/config');
 spl_autoload_register(function($class){
 
     // register autoload classes in namespace Multiplane\Controller from
-    // `MP_DOCS_ROOT/Controller`, e. g.: `/Controller/Products.php`
+    // `MP_DIR/Controller`, e. g.: `/Controller/Products.php`
     $class_path = MP_ENV_ROOT.'/Controller'.str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
     if (\file_exists($class_path)) include_once($class_path);
 
@@ -1057,7 +1057,7 @@ $this->module('multiplane')->extend([
         }
 
         else {
-            if (!COCKPIT_CLI) {
+            if (!COCKPIT_CLI && !MP_SELF_EXPORT) {
                 echo 'The theme "'.$this->theme.'" doesn\'t exist.';
                 $this->app->stop();
             }
@@ -1122,7 +1122,7 @@ $this->module('multiplane')->extend([
         ];
 
         $themes    = [];
-        $themedirs = [MP_DOCS_ROOT.'/modules/Multiplane/themes', MP_ENV_ROOT.'/themes'];
+        $themedirs = [MP_DIR.'/modules/Multiplane/themes', MP_ENV_ROOT.'/themes'];
 
         foreach ($themedirs as $themedir) {
             foreach($this('fs')->ls($themedir) as $dir) {
