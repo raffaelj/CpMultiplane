@@ -1041,6 +1041,7 @@ $this->module('multiplane')->extend([
                    || ($this->parentThemePath = $this->app->path(__DIR__.'/themes/'.$this->parentTheme)) ) {
 
                     // parent theme path must be set before theme path
+                    $this->app->path('theme', $this->parentThemePath);
                     $this->app->path('views', $this->parentThemePath . '/views');
 
                     if (\file_exists($this->parentThemePath . '/config/config.php')) {
@@ -1049,6 +1050,7 @@ $this->module('multiplane')->extend([
                 }
             }
 
+            $this->app->path('theme', $this->themePath);
             $this->app->path('views', $this->themePath . '/views');
 
             // return theme config
@@ -1194,7 +1196,7 @@ $this->module('multiplane')->extend([
             }
 
             $ispath = \strpos($src, ':') !== false && !\preg_match('#^(|http\:|https\:)//#', $src);
-            $list[] = '<script src="'.($ispath ? $this->pathToUrl($src):$src).($version ? "?ver={$version}":"").'"></script>';
+            $list[] = '<script src="'.($ispath ? $this->app->pathToUrl($src):$src).($version ? "?ver={$version}":"").'"></script>';
         }
 
         return \implode("\n", $list);
