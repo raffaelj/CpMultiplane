@@ -386,3 +386,8 @@ _:-ms-fullscreen, :root header .search form {
         border-color: $color-light-grey;
     }
 }
+
+img.logo {
+    max-width: 150px;
+    max-height: 150px;
+}
