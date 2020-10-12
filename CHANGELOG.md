@@ -1,5 +1,18 @@
 # Changelog
 
+## upcoming
+
+* fixed empty route if `$S_SERVER['PATH_INFO']` is incorrect
+* fixed breadcrumbs to display titles instead of slugs
+* fixed wrong image urls in `/getImage` route when passing paths instead of asset ids
+* added support for `layout` as content field
+* added custom sort option for sub pages
+* improved path guessing and handling
+* improved form templates and css
+* started to implement extended search
+* started to implement composer usage `raffaelj/cpmultiplane`
+* minor code and css fixes
+
 ## 0.2.1
 
 * fixed tags route bindings if not multilingual
