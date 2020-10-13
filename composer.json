@@ -17,8 +17,9 @@
         "ext-pdo": "*",
         "oomphinc/composer-installers-extender": "^1.1",
         "aheinze/cockpit": "^0.11.2",
-        "raffaelj/cockpit-cpmultiplanegui": "^0.2.1",
-        "raffaelj/cockpit-uniqueslugs": "^0.5.4"
+        "raffaelj/cockpit-cpmultiplanegui": "^0.2.2",
+        "raffaelj/cockpit-uniqueslugs": "^0.5.4",
+        "raffaelj/cockpit-formvalidation": "^0.2.11"
     },
     "replace": {
         "phpmailer/phpmailer": "*",
