@@ -1,6 +1,6 @@
 # Changelog
 
-## upcoming
+## 0.2.2
 
 * fixed empty route if `$S_SERVER['PATH_INFO']` is incorrect
 * fixed breadcrumbs to display titles instead of slugs
