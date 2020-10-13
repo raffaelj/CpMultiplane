@@ -25,19 +25,42 @@ It is the refactored version of [Monoplane][8], which is not maintained anymore.
 * PHP >= 7.0
 * PDO + SQLite (or MongoDB)
 * GD extension
-* pecl intl extension
+* pecl intl extension (optional)
 * mod_rewrite, mod_versions enabled (on apache)
 
 Make also sure that `$_SERVER['DOCUMENT_ROOT']` exists and is set correctly.
 
+You can find the detailed version and a cli install example in [docs - installation.md][20].
+
 ## Installation
 
+### manual
+
 * copy all files of this repository into your web root
-* rename `.htaccess.dist` to `.htaccess`
+* copy `.htaccess.dist` to `.htaccess`
 * copy Cockpit in a subfolder of your web root and name it `cockpit`
 * copy additional addons, create your collections, adjust some settings
 
-You can find the detailed version and a cli install example in [docs - installation.md][20].
+### via git
+
+```bash
+cd ~/html
+git clone https://github.com/raffaelj/CpMultiplane.git .
+cp .htaccess.dist .htaccess
+git clone https://github.com/agentejo/cockpit.git cockpit
+git clone https://github.com/raffaelj/cockpit_CpMultiplaneGUI.git cockpit/addons/CpMultiplaneGUI
+git clone https://github.com/raffaelj/cockpit_FormValidation.git cockpit/addons/FormValidation
+git clone https://github.com/raffaelj/cockpit_UniqueSlugs.git cockpit/addons/UniqueSlugs
+```
+
+### via composer
+
+```bash
+cd ~/html
+composer create-project --ignore-platform-reqs raffaelj/cpmultiplane .
+```
+
+If you use composer, Cockpit and the addons CpMultiplaneGUI, FormValidation and UniqueSlugs are installed automatically.
 
 ## Features
 
