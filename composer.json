@@ -21,7 +21,6 @@
         "raffaelj/cockpit-uniqueslugs": "^0.5.4"
     },
     "replace": {
-        "ext-mbstring": "*",
         "phpmailer/phpmailer": "*",
         "claviska/simpleimage": "*",
         "ksubileau/color-thief-php": "*",
@@ -53,5 +52,10 @@
                 "type:cockpit-module"
             ]
         }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "php -r \"copy('.htaccess.dist', '.htaccess');\""
+        ]
     }
 }
