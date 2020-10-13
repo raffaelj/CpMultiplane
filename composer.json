@@ -1,5 +1,6 @@
 {
     "name": "raffaelj/cpmultiplane",
+    "description": "A small PHP frontend for Cockpit CMS",
     "type": "project",
     "license": "MIT",
     "homepage": "https://github.com/raffaelj/CpMultiplane",
@@ -9,5 +10,53 @@
             "name": "Raffael Jesche",
             "homepage": "https://www.rlj.me"
         }
-    ]
+    ],
+    "require": {
+        "php": ">= 7.1",
+        "ext-json": "*",
+        "ext-pdo": "*",
+        "oomphinc/composer-installers-extender": "^1.1",
+        "aheinze/cockpit": "^0.11.2",
+        "raffaelj/cockpit-cpmultiplanegui": "^0.2.2",
+        "raffaelj/cockpit-uniqueslugs": "^0.5.4",
+        "raffaelj/cockpit-formvalidation": "^0.2.11"
+    },
+    "replace": {
+        "phpmailer/phpmailer": "*",
+        "claviska/simpleimage": "*",
+        "ksubileau/color-thief-php": "*",
+        "league/flysystem": "*",
+        "firebase/php-jwt": "*",
+        "mongodb/mongodb": "*",
+        "erusev/parsedown": "*",
+        "erusev/parsedown-extra": "*",
+        "maennchen/zipstream-php": "*",
+        "colinodell/json5": "*"
+    },
+    "config": {
+        "vendor-dir": "lib/vendor",
+        "preferred-install": {
+            "*": "dist"
+        }
+    },
+    "extra": {
+        "installer-name": "CpMultiplane",
+        "installer-types": [
+            "project",
+            "library"
+        ],
+        "installer-paths": {
+            "cockpit": [
+                "aheinze/cockpit"
+            ],
+            "cockpit/addons/{$name}": [
+                "type:cockpit-module"
+            ]
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "php -r \"copy('.htaccess.dist', '.htaccess');\""
+        ]
+    }
 }

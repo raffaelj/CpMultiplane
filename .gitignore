@@ -24,6 +24,8 @@ favicon.ico
 .sass-cache
 node_modules
 package-lock.json
+/lib/vendor
+composer.lock
 
 # editor/os files
 *.kate-swp
