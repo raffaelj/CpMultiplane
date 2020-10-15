@@ -34,7 +34,7 @@ You can find the detailed version and a cli install example in [docs - installat
 
 ## Installation
 
-### manual
+### manually
 
 * copy all files of this repository into your web root
 * copy `.htaccess.dist` to `.htaccess`
@@ -61,6 +61,19 @@ composer create-project --ignore-platform-reqs raffaelj/cpmultiplane .
 ```
 
 If you use composer, Cockpit and the addons CpMultiplaneGUI, FormValidation and UniqueSlugs are installed automatically.
+
+### via docker
+
+The [docker image][22] comes preinstalled with the quickstart routine of the "basic" template, with a default admin user (password: admin) and with dummy data from installed addons.
+
+This is not meant for production use, but for local development.
+
+```bash
+docker pull raffaelj/cpmultiplane
+docker run --rm -d --name cpmultiplane -p 8080:80 raffaelj/cpmultiplane
+```
+
+Now open your browser on `localhost:8080` and see it in action.
 
 ## Features
 
@@ -213,3 +226,4 @@ Without Cockpit, CpMultiplane couldn't exist. Thanks to [Artur Heinze][16] and t
 [19]: https://github.com/raffaelj/CpMultiplane-docs
 [20]: https://github.com/raffaelj/CpMultiplane-docs/blob/master/installation.md
 [21]: https://github.com/raffaelj/CpMultiplane-i18n
+[22]: https://hub.docker.com/repository/docker/raffaelj/cpmultiplane
