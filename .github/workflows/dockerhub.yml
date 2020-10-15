@@ -1,0 +1,42 @@
+
+name: Publish Docker image
+
+# My current workflow doesn't involve Github releases - I only use `git tag` to manage releases.
+# So I trigger this workflow on push events and check for changed tags later.
+# If I switch to automated releases on new tags, I have to adjust this job.
+
+on:
+  push:
+    branches: 
+      - master
+    tags:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # run only if the push event has a new tag
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Build image and push to Docker Hub
+
+        # The version management in v2 is a bit complicated, so I stay with v1 for now
+        # https://github.com/marketplace/actions/build-and-push-docker-images?version=v1.1.1
+        uses: docker/build-push-action@v1
+
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: raffaelj/cpmultiplane
+
+          # create tag :0.2.2
+          tag_with_ref: true
+
+          # also create tag :latest
+          tags: latest
