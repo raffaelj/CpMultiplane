@@ -1,0 +1,30 @@
+
+name: Publish Docker image manually
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Build image and push to Docker Hub
+
+        # The version management in v2 is a bit complicated, so I stay with v1 for now
+        # https://github.com/marketplace/actions/build-and-push-docker-images?version=v1.1.1
+        uses: docker/build-push-action@v1
+
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: raffaelj/cpmultiplane
+
+          # create tag :0.2.2
+          tag_with_ref: true
+
+          # also create tag :latest
+          tags: latest
