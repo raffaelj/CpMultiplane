@@ -226,4 +226,4 @@ Without Cockpit, CpMultiplane couldn't exist. Thanks to [Artur Heinze][16] and t
 [19]: https://github.com/raffaelj/CpMultiplane-docs
 [20]: https://github.com/raffaelj/CpMultiplane-docs/blob/master/installation.md
 [21]: https://github.com/raffaelj/CpMultiplane-i18n
-[22]: https://hub.docker.com/repository/docker/raffaelj/cpmultiplane
+[22]: https://hub.docker.com/r/raffaelj/cpmultiplane

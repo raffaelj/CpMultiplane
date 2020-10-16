@@ -23,8 +23,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: raffaelj/cpmultiplane
 
-          # create tag :0.2.2
-          tag_with_ref: true
+          # create tag :0.2.2 --> doesn't seem to work with the manual workflow
+          #tag_with_ref: true
 
           # also create tag :latest
           tags: latest

@@ -1,5 +1,7 @@
 # docker build -t raffaelj/cpmultiplane:latest .
 
+# This image should be available at https://hub.docker.com/r/raffaelj/cpmultiplane
+
 # https://hub.docker.com/repository/docker/raffaelj/php7-apache-base
 # https://github.com/raffaelj/dockerfiles/tree/master/php7-apache-base
 FROM raffaelj/php7-apache-base
@@ -9,7 +11,7 @@ FROM raffaelj/php7-apache-base
 ARG COCKPIT_VERSION="master"
 
 # You can rename the cockpit folder to e. g. "admin" while building the image
-# docker build --build-arg COCKPIT_DIR=admin -t raffaelj/cpmultiplane:latest .
+# docker build --build-arg COCKPIT_DIR=admin -t raffaelj/cpmultiplane:custom .
 ARG COCKPIT_DIR="cockpit"
 
 # copy CpMultiplane source files to docs root
@@ -20,12 +22,12 @@ COPY bootstrap.php CHANGELOG.md favicon.png index.php LICENSE mp package.json RE
 COPY modules/ /var/www/html/modules/
 
 # download and unzip cockpit
-RUN mkdir /var/www/html/${COCKPIT_DIR}
 RUN wget -q https://github.com/agentejo/cockpit/archive/${COCKPIT_VERSION}.zip -O /tmp/cockpit.zip \
     && unzip -q /tmp/cockpit.zip -d /tmp/ \
     && rm /tmp/cockpit.zip
 
 # copy everything except dot files, than copy .htaccess, than remove tmp folder
+RUN mkdir /var/www/html/${COCKPIT_DIR}
 RUN mv /tmp/cockpit-${COCKPIT_VERSION}/* /var/www/html/${COCKPIT_DIR}/ \
     && mv /tmp/cockpit-${COCKPIT_VERSION}/.htaccess /var/www/html/${COCKPIT_DIR}/.htaccess \
     && rm -R /tmp/cockpit-${COCKPIT_VERSION}/
