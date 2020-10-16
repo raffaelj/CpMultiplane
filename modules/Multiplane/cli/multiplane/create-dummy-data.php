@@ -88,6 +88,7 @@ $entry = [
         'active' => true,
         'collection' => $postsCollection,
         'pagination' => true,
+        'route' => 'addons',
     ],
     '_o' => 1,
 ];
