@@ -2,7 +2,7 @@
 
 # This image should be available at https://hub.docker.com/r/raffaelj/cpmultiplane
 
-# https://hub.docker.com/repository/docker/raffaelj/php7-apache-base
+# https://hub.docker.com/r/raffaelj/php7-apache-base
 # https://github.com/raffaelj/dockerfiles/tree/master/php7-apache-base
 FROM raffaelj/php7-apache-base
 
@@ -28,7 +28,7 @@ RUN wget -q https://github.com/agentejo/cockpit/archive/${COCKPIT_VERSION}.zip -
 
 # copy everything except dot files, than copy .htaccess, than remove tmp folder
 RUN mkdir /var/www/html/${COCKPIT_DIR}
-RUN mv /tmp/cockpit-${COCKPIT_VERSION}/* /var/www/html/${COCKPIT_DIR}/ \
+    && mv /tmp/cockpit-${COCKPIT_VERSION}/* /var/www/html/${COCKPIT_DIR}/ \
     && mv /tmp/cockpit-${COCKPIT_VERSION}/.htaccess /var/www/html/${COCKPIT_DIR}/.htaccess \
     && rm -R /tmp/cockpit-${COCKPIT_VERSION}/
 
