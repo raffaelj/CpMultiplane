@@ -1,7 +1,19 @@
-### Start CpMultiplane - don't change anything below ###
+# BEGIN CpMultiplane
+# Don't change anything below
 
-# This .htaccess content is copied and pasted from Cockpit CMS
-# author: Artur Heinze, agentejo.com, MIT License
+# Deny access to `mp` and dev files
+<FilesMatch "^(mp|Dockerfile|package.json)$|(^composer\.*)">
+    <IfVersion >= 2.4>
+       Require all denied
+    </IfVersion>
+    <IfVersion < 2.4>
+       Deny from all
+    </IfVersion>
+</FilesMatch>
+
+# The following code is from the core Cockpit CMS
+# author: Artur Heinze, www.agentejo.com, MIT License
+# see: https://github.com/agentejo/cockpit/blob/next/.htaccess
 
 # Deny access to database + config files
 <Files ~ "\.(sqlite|sdb|s3db|db|yaml|yml)$">
@@ -13,8 +25,16 @@
     </IfVersion>
 </Files>
 
-# Deny access to hidden files (e.g. .gitignore ...)
 <Files ".*">
+    <IfVersion >= 2.4>
+       Require all denied
+    </IfVersion>
+    <IfVersion < 2.4>
+       Deny from all
+    </IfVersion>
+</Files>
+
+<Files "cp">
     <IfVersion >= 2.4>
        Require all denied
     </IfVersion>
@@ -26,13 +46,21 @@
 # Don't show directory listings
 Options -Indexes
 
+# URL rewrites
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  
-  # rules for Cockpit
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(.*)$ index.php/$1 [QSA,L]
+
+    Options -MultiViews
+
+    RewriteEngine On
+    # RewriteBase /
+
+    # Protect some contents
+    RewriteRule ^.*/?\.git+ - [F,L]
+
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule .* index.php [L]
+
 </IfModule>
 
 AddDefaultCharset utf-8
@@ -155,4 +183,5 @@ AddType application/x-shockwave-flash   swf
 # Remove ETags
 FileETag None
 
-### End CpMultiplane - don't change anything above ###
+# Don't change anything above
+# END CpMultiplane
