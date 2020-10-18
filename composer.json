@@ -56,7 +56,7 @@
     },
     "scripts": {
         "post-autoload-dump": [
-            "php -r \"copy('.htaccess.dist', '.htaccess');\""
+            "php ./mp multiplane/update-htaccess"
         ]
     }
 }
