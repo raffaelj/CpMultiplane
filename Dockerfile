@@ -27,7 +27,7 @@ RUN wget -q https://github.com/agentejo/cockpit/archive/${COCKPIT_VERSION}.zip -
     && rm /tmp/cockpit.zip
 
 # copy everything except dot files, than copy .htaccess, than remove tmp folder
-RUN mkdir /var/www/html/${COCKPIT_DIR}
+RUN mkdir /var/www/html/${COCKPIT_DIR} \
     && mv /tmp/cockpit-${COCKPIT_VERSION}/* /var/www/html/${COCKPIT_DIR}/ \
     && mv /tmp/cockpit-${COCKPIT_VERSION}/.htaccess /var/www/html/${COCKPIT_DIR}/.htaccess \
     && rm -R /tmp/cockpit-${COCKPIT_VERSION}/
