@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+* fixed docker image build automation (a typo in `Dockerfile` after cleanup)
+
 ## 0.2.3
 
 * fixed overwriting modified `.htaccess` with `composer update`
