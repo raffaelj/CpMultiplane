@@ -20,7 +20,7 @@ return [
     'mailer' => [
         'from'       => getenv('MAILER_FROM'),
         'from_name'  => getenv('MAILER_FROM_NAME')  ?? 'Web form',
-        'transport'  => getenv('MAILER_SMTP')       ?? 'smtp',
+        'transport'  => getenv('MAILER_TRANSPORT')  ?? 'smtp',
         'host'       => getenv('MAILER_HOST'),
         'user'       => getenv('MAILER_USER'),
         'password'   => getenv('MAILER_PASSWORD'),
