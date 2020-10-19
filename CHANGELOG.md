@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3
+
+* fixed overwriting modified `.htaccess` with `composer update`
+* added new cli command `./mp multiplane/update-htaccess`
+* added Dockerfile and published docker images, available at: https://hub.docker.com/r/raffaelj/cpmultiplane
+* improved `.htaccess` - more restrictive
+
 ## 0.2.2
 
 * fixed empty route if `$S_SERVER['PATH_INFO']` is incorrect
