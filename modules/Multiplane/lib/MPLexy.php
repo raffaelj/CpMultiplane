@@ -8,6 +8,8 @@
 
 class MPLexy extends \Lexy {
 
+    public $debug = false;
+
     protected $extensionsAfter = [];
 
     // construct with existing extensions from core Lexy
@@ -37,6 +39,50 @@ class MPLexy extends \Lexy {
         }
 
         return $value;
+    }
+
+    /**
+     * [file description]
+     * @param  [type]  $file [description]
+     * @param  array   $params  [description]
+     * @param  boolean $sandbox [description]
+     * @return [type]           [description]
+     */
+    public function file($file, $params = array(), $sandbox=false) {
+
+        if ($this->cachePath) {
+
+            $cachedfile = $this->get_cached_file($file, $sandbox);
+
+            if ($cachedfile) {
+
+                ob_start();
+
+                lexy_include_with_params($cachedfile, $params, $file);
+
+                $output = ob_get_clean();
+
+                // add html comment with current template if in debug mode
+                if ($this->debug) {
+
+                    $template = \str_replace(cockpit()->path('multiplane:'), '', $file);
+
+                    // don't add html comment before doctype
+                    if (!\preg_match('/^<!doctype/i', $output)) {
+                        return "<!-- START $template -->\r\n$output\r\n<!-- END $template -->\r\n";
+                    }
+                    else {
+                        $lines = \preg_split('/\r\n|\r|\n/', $output, 2);
+                        return $lines[0] . "\r\n<!-- START $template -->\r\n" . $lines[1] . "\r\n<!-- END $template -->";
+                    }
+                }
+
+                return $output;
+            }
+        }
+
+
+        return $this->execute(file_get_contents($file), $params, $sandbox, $file);
     }
 
 }
