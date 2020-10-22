@@ -1139,7 +1139,7 @@ $this->module('multiplane')->extend([
                     'path'   => $path,
                     'image'  => '',
                     'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
-                    'info'   => json_decode($this('fs')->read("{$path}/package.json")) ?? [],
+                    'info'   => \file_exists("{$path}/package.json") ? json_decode($this('fs')->read("{$path}/package.json")) : [],
                 ];
 
                 if ( ($image = $this->app->pathToUrl("{$path}/screenshot.png"))
