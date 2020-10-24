@@ -998,7 +998,7 @@ $this->module('multiplane')->extend([
           && isset($config['profile'])
           && $profile = $this->app->module('cpmultiplanegui')->profile($config['profile'])
           ) {
-            $config = array_replace_recursive($config, $profile);
+            $config = \array_replace_recursive($config, $profile);
         }
 
         // load theme config file(s), if available
@@ -1008,8 +1008,8 @@ $this->module('multiplane')->extend([
 
         $themeConfig = $this->loadThemeConfig();
 
-        if (is_array($themeConfig)) {
-            $config = array_replace_recursive($themeConfig, $config);
+        if (\is_array($themeConfig)) {
+            $config = \array_replace_recursive($themeConfig, $config);
         }
 
         foreach($config as $key => $val) {
@@ -1255,16 +1255,16 @@ $this->module('multiplane')->loadConfig();
 
 // load theme bootstrap file(s)
 if ($this->module('multiplane')->parentTheme && $this->module('multiplane')->parentThemeBootstrap
-    && file_exists($this->module('multiplane')->parentThemePath . '/bootstrap.php')) {
+    && \file_exists($this->module('multiplane')->parentThemePath . '/bootstrap.php')) {
 
     include_once($this->module('multiplane')->parentThemePath . '/bootstrap.php');
 }
-if (file_exists($this->module('multiplane')->themePath . '/bootstrap.php')) {
+if (\file_exists($this->module('multiplane')->themePath . '/bootstrap.php')) {
     include_once($this->module('multiplane')->themePath . '/bootstrap.php');
 }
 
 // load custom bootstrap file
-if (file_exists(MP_CONFIG_DIR.'/bootstrap.php')) {
+if (\file_exists(MP_CONFIG_DIR.'/bootstrap.php')) {
     include_once(MP_CONFIG_DIR.'/bootstrap.php');
 }
 
@@ -1276,7 +1276,7 @@ $this->module('multiplane')->extendLexyTemplateParser();
 if (!MP_SELF_EXPORT) {
 
     // skip binding routes if in maintenance mode and
-    // dont't bind any routes, if users wants to use only their own routes
+    // don't bind any routes, if users wants to use only their own routes
     if ($this->module('multiplane')->accessAllowed()
       && !$this->module('multiplane')->disableDefaultRoutes) {
         require_once(__DIR__ . '/bind.php');
