@@ -11,7 +11,6 @@ MP.Lightbox = require('./mp/SimpleLightbox.js');
 MP.Video    = require('./mp/SimpleVideo.js');
 MP.Privacy  = require('./mp/Privacy.js');
 MP.Modal    = require('./mp/SimpleModalManager.js');
-MP.Utils    = require('./mp/Utils.js');
 MP.MailProtection = require('./mp/MailProtection.js');
 
 // fire privacy event
