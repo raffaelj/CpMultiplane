@@ -145,7 +145,7 @@ ul, ol {
 
 ul {
     list-style-type: circle;
-    list-style-type: disclosure-closed; // only supported in Firefox (experimental)
+    //list-style-type: disclosure-closed; // only supported in Firefox (experimental)
     ul {
         list-style-type: disc;
         ul {
@@ -170,7 +170,7 @@ dt {
     display: list-item;
     list-style-position: inside;
     list-style-type: square;
-    list-style-type: disclosure-open; // only supported in Firefox (experimental)
+    //list-style-type: disclosure-open; // only supported in Firefox (experimental)
 }
 
 dd {

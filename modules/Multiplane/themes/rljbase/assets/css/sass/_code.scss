@@ -10,7 +10,9 @@ $color-code:               inherit !default;
 
 $border-radius: 3px !default;
 
-$font-monospace: "Courier New", Courier, monospace, sans-serif !default;
+// font stack like Bootstrap v4
+$font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
+
 
 code, samp, kbd, tt, var {
     padding: .125em .25em;
@@ -36,9 +38,11 @@ pre code {
 }
 
 pre {
+    margin: 0 0 .5em;
     padding: .5em;
     overflow-x: auto;
     font-family: $font-monospace;
+    line-height: 1em;
     color: $color-code;
     background-color: $color-code-bg;
     border-radius: $border-radius;
