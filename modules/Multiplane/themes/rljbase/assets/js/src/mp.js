@@ -35,9 +35,10 @@ MP.ready(function() {
 
     var nav         = document.getElementById('nav'),
         navButton   = nav ? nav.querySelector('a.icon-menu') : null,
-        closeButton = nav ? nav.querySelector('a.icon-close') : null;
+        closeButton = nav ? nav.querySelector('a.icon-close') : null,
+        anchorLinks = nav ? nav.querySelectorAll('ul a[href^="#"]') : null;
 
-    if (nav) {
+    if (nav && navButton && closeButton) {
         navButton.addEventListener('click', function(e) {
             if (e) e.preventDefault();
             nav.classList.add('mobile-nav-targeted');
@@ -45,6 +46,15 @@ MP.ready(function() {
         closeButton.addEventListener('click', function(e) {
             if (e) e.preventDefault();
             nav.classList.remove('mobile-nav-targeted');
+        });
+    }
+
+    // close mobile nav if navigating through page via anchor links
+    if (anchorLinks && anchorLinks.length) {
+        Array.prototype.forEach.call(anchorLinks, function(el) {
+            el.addEventListener('click', function(e) {
+                nav.classList.remove('mobile-nav-targeted');
+            });
         });
     }
 
