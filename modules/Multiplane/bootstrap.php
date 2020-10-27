@@ -480,7 +480,9 @@ $this->module('multiplane')->extend([
             $active = false;
             if ($this->hasParentPage && $n[$this->slugName] == $this->parentPage[$this->slugName]) {
                 $active = true;
-            } elseif($this->currentSlug == $n[$this->slugName]) {
+            } elseif($this->currentSlug == $n[$this->slugName]
+                || ($this->currentSlug == '' && !empty($n['startpage']))
+                ) {
                 $active = true;
             }
 
