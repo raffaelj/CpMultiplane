@@ -25,7 +25,7 @@ $this->service('renderer', function() use ($lexy) {
 
     $renderer = new \MPLexy($lexy);
 
-    $renderer->debug = $this->debug;
+    $renderer->debug = $this->retrieve('multiplane/debug/lexy', false);
 
     // remove some white space to prettify the html output
     $renderer->after(function($content) {
