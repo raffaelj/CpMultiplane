@@ -4,6 +4,7 @@ $color-shadow:              #ccc !default;
 $color-white:               #fefefe !default;
 $color-black-transp-dark:   rgba(0,0,0,.95) !default;
 
+$color-nav-bg:              $color-bg !default;
 $color-nav-mini:            $color-white !default;
 $color-nav-mini-hover:      $color-black !default;
 $color-nav-mini-bg:         $color-black-transp-dark !default;
@@ -30,8 +31,20 @@ nav {
                 padding-right: 1em;
             }
         }
+        ul, ol {
+            background-color: $color-nav-bg;
+            padding: 0 .5em .5em;
+        }
         > ul, > ol {
             display: none;
+
+            position: absolute;
+            top: 0;
+            left: 100%;
+            z-index: 12;
+            list-style: none;
+            white-space: nowrap;
+            @include box-sizing(border-box);
         }
         &:hover > ul,
         &:focus > ul,
@@ -43,27 +56,11 @@ nav {
         > a:focus + ol
         {
             display: block;
-            position: absolute;
-            top: 0;
-            left: 100%;
-            z-index: 12;
-            list-style: none;
-            background-color: $color-bg;
-            white-space: nowrap;
-            @include box-sizing(border-box);
         }
         &:focus-within > ul,
         &:focus-within > ol
         {
             display: block;
-            position: absolute;
-            top: 0;
-            left: 100%;
-            z-index: 12;
-            list-style: none;
-            background-color: $color-bg;
-            white-space: nowrap;
-            @include box-sizing(border-box);
         }
         li {
             &:hover > ul,
@@ -78,7 +75,6 @@ nav {
                     top: 0;
                     left: 100%;
                     right: auto;
-                    padding-left: 0;
                 }
             }
             &:focus-within > ul,
@@ -91,7 +87,6 @@ nav {
                     top: 0;
                     left: 100%;
                     right: auto;
-                    padding-left: 0;
                 }
             }
         }
@@ -124,28 +119,18 @@ nav {
                 &:focus > ol
                 {
                     @include breakpoint(small) {
-                        right: 0;
-                        padding-left: .5em;
-                    }
-                    @include breakpoint(medium) {
                         top: 0;
                         left: 100%;
                         right: auto;
-                        padding-left: 0;
                     }
                 }
                 &:focus-within > ul,
                 &:focus-within > ol
                 {
                     @include breakpoint(small) {
-                        right: 0;
-                        padding-left: .5em;
-                    }
-                    @include breakpoint(medium) {
                         top: 0;
                         left: 100%;
                         right: auto;
-                        padding-left: 0;
                     }
                 }
             }
@@ -281,15 +266,16 @@ nav#nav {
             .icon-close {
                 display: block;
             }
+            ul, ol {
+                background-color: transparent;
+                padding: 0;
+            }
             > ul, > ol {
                 display: block;
             }
             input[type=checkbox] {
                 + label {
                     height: 2.2em;
-                    &:before {
-                        
-                    }
                 }
             }
             li {
@@ -318,7 +304,6 @@ nav#nav {
                 > a:focus + ol
                 {
                     position: static;
-                    background-color: transparent;
                     padding-left: 1em;
                     a {
                         border-left: 1px solid $color-nav-mini;
@@ -328,7 +313,6 @@ nav#nav {
                 &:focus-within > ol
                 {
                     position: static;
-                    background-color: transparent;
                     padding-left: 1em;
                     a {
                         border-left: 1px solid $color-nav-mini;
