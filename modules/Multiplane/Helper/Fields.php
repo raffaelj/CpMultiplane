@@ -28,7 +28,7 @@ class Fields extends \Lime\Helper {
         // return call_user_func_array([$this, 'index'], $arguments);
 
     // }
-    
+
     public function render($template, $slots = []) {
 
         $olayout = $this->app->layout;
@@ -74,7 +74,7 @@ class Fields extends \Lime\Helper {
 
         }
 
-        return $this->replaceRelativeLinksInHTML($content);
+        return $content;
 
     }
 
@@ -86,7 +86,7 @@ class Fields extends \Lime\Helper {
 
         }
 
-        return $this->replaceRelativeLinksInHTML($this->app->module('cockpit')->markdown($content, $extra));
+        return $this->app->module('cockpit')->markdown($content, $extra);
 
     }
 /* 
@@ -100,7 +100,7 @@ class Fields extends \Lime\Helper {
     public function repeater($content = null, $options = []) {
 
         if (!$content || !is_array($content)) return '';
-        
+
         if ($fieldTemplate = $this->app->path('views:fields/repeater.php')) {
 
             return $this->render($fieldTemplate, compact('content', 'options'));
@@ -141,6 +141,7 @@ class Fields extends \Lime\Helper {
 
     }
 
+    // deprecated
     public function replaceRelativeLinksInHTML($html) {
 
         $isMultilingual = $this->app->module('multiplane')->isMultilingual;
