@@ -1,0 +1,7 @@
+{
+    "output": {
+        "comments": "some",
+        "beautify": false,
+        "preamble": "/*\r\ncpmultiplane-theme-mpdocs - version: 0.1.0\r\nCopyright © 2020 Raffael Jesche, MIT Licensed, https://github.com/raffaelj/CpMultiplane\r\n*/"
+    }
+}

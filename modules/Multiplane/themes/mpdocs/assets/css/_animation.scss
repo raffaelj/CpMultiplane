@@ -1,0 +1,97 @@
+
+// add pure css header animation
+
+@keyframes shake {
+    20% {transform: rotate(-1deg)}
+    70% {transform: rotate(1deg)}
+}
+
+@keyframes rotation {
+    100% { transform: rotate(360deg) }
+}
+
+@keyframes cloud {
+    0%   { transform: translate(-50px, 10px) rotate(2deg) }
+    20%  { transform: translate(5px, 10px) rotate(2deg) }
+    50%  { transform: translate(150px, 30px) rotate(-1deg) scale(1.5) }
+    100% { transform: translate(350px, 20px) rotate(1deg) scale(1.2) }
+}
+
+.multiplane-animation {
+
+    height: 150px;
+
+    > img {
+        height: 100px;
+    }
+
+    &:before {
+        content: '';
+        opacity: 0;
+        background-position: center;
+        background-repeat: no-repeat;
+        z-index: 1;
+    }
+    &:hover {
+        position: relative;
+        background-image: linear-gradient(#e3f8ff,#dddaac);
+        box-shadow: 0 0px 2px #222 inset;
+        overflow: hidden;
+        > p {
+            //display: none;
+            position: absolute;
+            top: 20px;
+            z-index: 0;
+            width: 20px;
+            height: 20px;
+            font-size: 0;
+            display: block;
+            background-image: linear-gradient(#fff, transparent 80%);
+            border-radius: 50%;
+            animation: cloud 50s infinite linear;
+            &:before, &:after {
+                content: '';
+                display: block;
+                position: absolute;
+                width: 15px;
+                height: 15px;
+                border-radius: 50%;
+                background-image: linear-gradient(#fff, transparent 70%);
+            }
+            &:before {
+                left: -7px;
+                top: 6px;
+            }
+            &:after {
+                right: -7px;
+                top: 3px;
+            }
+        }
+        &:before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-image: url(../img/multiplane.svg);
+            background-position: center;
+            opacity: 1;
+            transition: opacity 4s ease;
+            animation: shake 10s 4 linear;
+        }
+        > img {
+            height: 43%;
+            position: relative;
+            top: 39%;
+            transition: height .2s ease;
+            animation: rotation 1s infinite linear;
+            z-index: 2;
+            filter: drop-shadow(-1px 1px);
+            &:hover {
+                animation: none;
+            }
+        }
+    }
+}

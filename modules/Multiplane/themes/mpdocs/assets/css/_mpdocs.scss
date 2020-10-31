@@ -1,0 +1,288 @@
+
+$sidebar_width: 300px;
+
+html {
+    background-color: #222;
+}
+
+body {
+    > header {
+        background-color: #222;
+        color: #fff;
+        padding: 0 1em;
+        box-sizing: border-box;
+
+        @include breakpoint(medium) {
+            width: $sidebar_width;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        > a {
+            text-align: center;
+            background: #f4f4f4;
+            display: block;
+            padding: 1em;
+            border-bottom-left-radius: .5em;
+            border-bottom-right-radius: .5em;
+            color: #222;
+
+            > p {
+                font-weight: bolder;
+                font-size: 1.5em;
+                margin: .5em .5em 0;
+            }
+        }
+    }
+    > footer {
+        padding: .5em 2em;
+        background-color: #222;
+        color: #fff;
+        text-align: center;
+
+        p {
+            padding: 0;
+        }
+
+        nav.horizontal ul li {
+            margin: 0;
+        }
+
+        @include breakpoint(medium) {
+            text-align: right;
+            margin-left: $sidebar_width;
+            > p {
+                display: inline-block;
+            }
+            > nav.horizontal {
+                display: inline-block;
+                ul {
+                    display: inline-block;
+                    li {
+                        display: inline-block;
+                        &:last-child a {
+                            padding-right: 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+main {
+    padding: 2em;
+    background-color: #fff;
+
+    @include breakpoint(medium) {
+        margin-left: $sidebar_width;
+    }
+    @include breakpoint(xlarge) {
+        padding-right: 10em;
+    }
+
+    img {
+        box-shadow: 0 1px 2px $color-shadow;
+        background-color: #fff;
+        padding: 2px;
+        border: 5px solid #eee;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+}
+
+nav {
+    font-size: 1em;
+    line-height: 1em;
+    a {
+        color: #fff;
+    }
+    li {
+        ol, ul {
+            background-color: #222;
+        }
+    }
+
+    ul ul {
+        padding-bottom: 0;
+    }
+
+    &.language-switch {
+        display: block;
+        text-align: center;
+        li {
+            display: inline-block;
+        }
+    }
+
+    &.horizontal {
+        @include breakpoint(medium) {
+            ul {
+                li {
+                    display: block;
+                    position: relative;
+                    margin: 0;
+                }
+            }
+            li {
+                > ul, > ol {
+                    display: block;
+                    position: static;
+                    margin-left: .5em;
+                }
+            }
+        }
+    }
+    &.breadcrumbs {
+        margin-left: .5em;
+    }
+
+    @include breakpoint(medium) {
+        display: block;
+
+        input[type="checkbox"] {
+            + label {
+                width: .7em;
+                height: .7em;
+                left: -0.8em;
+                border: 1px solid #444;
+                border-radius: 2px;
+                top: .3em;
+                background: #222;
+                cursor: se-resize;
+                &:before {
+                    left: .05em;
+                    border-color: transparent transparent #444 transparent;
+                    margin: 0;
+                    top: -20%;
+                    border-radius: 0;
+                }
+
+            }
+            &:hover, &:focus {
+                + label:before {
+                    border-color: transparent transparent #444 transparent;
+                }
+            }
+            &:checked + label {
+                cursor: nw-resize;
+                &:before {
+                    border-color: #444 transparent transparent transparent;
+                    top: 20%;
+                }
+                + a + ul {
+                    display: none;
+                }
+            }
+        }
+
+        li.toc {
+
+            border-left: 1px solid #444;
+            margin-bottom: .5em;
+            padding-left: .5em;
+            padding-bottom: .5em;
+            border-bottom: 1px solid #444;
+            > a {
+                display: none;
+            }
+            > input[type="checkbox"] {
+                + label {
+                    top: -1em;
+                    right: 0;
+                    left: auto;
+                }
+                &:checked + label + a {
+                    display: block;
+                    padding: 0;
+                }
+            }
+            > ul {
+                margin: 0;
+            }
+        }
+    }
+}
+
+.search {
+    margin: .25em 0;
+    form {
+        margin-top: 0;
+        margin-bottom: 0;
+        @include breakpoint(medium) {
+            width: 100%;
+        }
+    }
+    input[type="text"] {
+        border-radius: 4px;
+    }
+}
+
+h2 {
+    margin: 1em 0;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: .25em;
+}
+
+h3 {
+    margin: .5em 0;
+    border-bottom: 1px dashed #ccc;
+    padding-bottom: .25em;
+}
+
+h4, h5, h6 {
+    margin-bottom: .5em;
+}
+
+.parsedown-task-list {
+    list-style: none;
+    input[type="checkbox"] {
+        display: inline-block;
+        opacity: 1;
+        position: static;
+        margin: 0;
+        vertical-align: middle;
+        width: auto;
+        height: auto;
+    }
+}
+
+pre {
+    padding: 1em;
+    code {
+        &.hljs {
+            padding: 0; // pre has a padding already
+        }
+    }
+}
+
+.posts-meta {
+    font-size: .9em;
+    > span + span:before {
+        content: ' • ';
+    }
+    @include breakpoint(large) {
+        float: right;
+    }
+    + h1 {
+        margin-top: 0;
+    }
+}
+
+.search-entries {
+    box-shadow: -2px 2px 4px $color-shadow;
+    padding: 1em;
+    margin: 1em 0;
+}
+
+// quick fix - add separators between footer nav, copyright and login link
+.copyright {
+    @include breakpoint(medium) {
+        &:after, &:before {
+            content: ' • ';
+        }
+    }
+}

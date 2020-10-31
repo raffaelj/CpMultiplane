@@ -1,0 +1,36 @@
+/**
+ * npm run build:sass
+ * npm run watch:sass
+ */
+
+@import 'sass/copyright-preamble';
+
+// fonts
+$font: system-ui, system-ui-fallback, Helvetica, sans-serif;
+$font_extra: $font; // webfont for headlines
+
+// other
+$border-radius: 0px;
+$width:         1000px;
+
+$color-white:      #fdfdfd;
+$color-bg:         #fdfdfd;
+
+$color-light-grey: #eaeaea;
+$color-light-gray: $color-light-grey; // avoid typos
+
+$color-link-invert:        #bed5eb; // links on dark background
+$color-link-invert-hover:  #f6dfb7;
+
+$color-black-transp-light: rgba(0,0,0,.7);
+
+// imports
+@import '../../../rljbase/assets/css/sass/import-all';
+
+@import 'mpdocs';
+@import 'animation';
+
+// styles for highlight.js
+@import '../lib/highlight/styles/default';
+@import '../lib/highlight/styles/github';
+//@import '../lib/highlight/styles/atom-one-dark';
