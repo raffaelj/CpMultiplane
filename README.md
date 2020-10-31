@@ -22,7 +22,7 @@ It is the refactored version of [Monoplane][8], which is not maintained anymore.
 
 ## Requirements
 
-* PHP >= 7.0
+* PHP >= 7.1
 * PDO + SQLite (or MongoDB)
 * GD extension
 * pecl intl extension (optional)
