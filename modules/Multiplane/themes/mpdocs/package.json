@@ -5,8 +5,8 @@
     "author": "Raffael Jesche",
     "homepage": "https://github.com/raffaelj/CpMultiplane",
     "license": "MIT",
-    "description": "Theme for docs",
-    "keywords": [],
+    "description": "Optimized for docs with markdown as content field",
+    "keywords": ["docs","markdown"],
     "scripts": {
         "build": "npm run build:sass",
         "watch": "npm run watch:sass",
