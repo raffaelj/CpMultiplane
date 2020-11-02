@@ -38,6 +38,9 @@ if ($this->module('multiplane')->isPreviewEnabled) {
 }
 
 
+
+
+
 // bind wildcard routes
 $isMultilingual = $this->module('multiplane')->isMultilingual && $this->retrieve('languages', false);
 
@@ -114,27 +117,68 @@ else {
             return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
         });
 
-        $this->bind('/'.$lang.'/*', function($params) use($lang) {
+        if (!$this->module('multiplane')->usePermalinks) {
+            $this->bind('/'.$lang.'/*', function($params) use($lang) {
+
+                $this->module('multiplane')->initI18n($lang);
+                return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => ($params[':splat'][0] ?? '')]);
+
+            });
+        }
+
+    }
+
+    if ($this->module('multiplane')->usePermalinks) {
+
+        $this->bind('/*', function($params) {
+
+            $permalink = $params[':splat'][0] ?? '';
+            $permalink = \rtrim($permalink, '/'); // to do: reroute to avoid duplicated content
+
+            $languages   = $this->module('multiplane')->getLanguages();
+            $defaultLang = $this->module('multiplane')->defaultLang;
+
+            if ($permalink === '') {
+
+                $lang = $this->getClientLang($defaultLang);
+
+                if (!in_array($lang, $languages)) {
+                    $lang = $defaultLang;
+                }
+                $this->reroute('/' . $lang . '/');
+            }
+
+            $parts = explode('/', $permalink);
+            $lang  = $parts[0];
+
+            if (!in_array($lang, $languages)) {
+                $lang = $defaultLang;
+            }
 
             $this->module('multiplane')->initI18n($lang);
-            return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => ($params[':splat'][0] ?? '')]);
+
+            $permalink = '/' . $permalink;
+
+            return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $permalink]);
 
         });
 
     }
+    else {
 
-    // redirect "/" to "/en"
-    $this->bind('/*', function($params) {
+        // redirect "/" to "/en"
+        $this->bind('/*', function($params) {
 
-        $defaultLang = $this->module('multiplane')->defaultLang;
+            $defaultLang = $this->module('multiplane')->defaultLang;
 
-        $lang = $this->getClientLang($defaultLang);
+            $lang = $this->getClientLang($defaultLang);
 
-        if (!in_array($lang, $this->module('multiplane')->getLanguages())) {
-            $lang = $defaultLang;
-        }
-        $this->reroute('/' . $lang . '/' . ($params[':splat'][0] ?? ''));
+            if (!in_array($lang, $this->module('multiplane')->getLanguages())) {
+                $lang = $defaultLang;
+            }
+            $this->reroute('/' . $lang . '/' . ($params[':splat'][0] ?? ''));
 
-    });
+        });
+    }
 
 }

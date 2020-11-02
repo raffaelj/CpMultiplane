@@ -214,7 +214,7 @@ class Search extends \Lime\Helper {
             }
         }
 
-    } // end of getWeightedItem()
+    } // end of config()
 
     public function generateFilterOptions($c) {
 
@@ -346,6 +346,10 @@ class Search extends \Lime\Helper {
             'collection' => $label,
         ];
 
+        if ($this->app->module('multiplane')->usePermalinks) {
+            $item['url'] = $entry[$this->slugName];
+        }
+
         foreach ($c['fields'] as $field) {
 
             $name     = $field['name'];
@@ -377,6 +381,8 @@ class Search extends \Lime\Helper {
                 $weight += count($matches) * $increase;
             }
 
+            if ($name == 'title' && !isset($item['_title']) && isset($entry['title'])) $item['_title'] = $entry['title'];
+
             if ($display) {
 
                 if ($this->app->param('highlight', false) && !empty($this->searches) && is_string($content)) {
@@ -406,7 +412,7 @@ class Search extends \Lime\Helper {
 
         return $item;
 
-    }
+    } // end of getWeightedItem()
 
 }
 

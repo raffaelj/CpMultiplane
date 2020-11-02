@@ -6,7 +6,7 @@
                     <input type="checkbox" id="{{ $_id }}" tabindex="-1" /><label for="{{ $_id }}"></label>
                   @endif
                   @if(isset($n[mp()->slugName]))
-                    <a class="{{ $n['active'] ? 'active' : '' }}{{ $hasChildren ? ' dropdown' : '' }}" href="@base(!empty($n['startpage']) ? '/' : $n[mp()->slugName])">{{{ $n['title'] }}}</a>
+                    <a class="{{ $n['active'] ? 'active' : '' }}{{ $hasChildren ? ' dropdown' : '' }}" href="@base(!empty($n['startpage']) && !mp()->usePermalinks ? '/' : $n[mp()->slugName])">{{{ $n['title'] }}}</a>
                   @elseif(isset($n['url']))
                     <a class="{{ $n['active'] ? 'active' : '' }}{{ $hasChildren ? ' dropdown' : '' }}" href="{{ $n['url'] }}">{{{ $n['title'] }}}</a>
                   @endif

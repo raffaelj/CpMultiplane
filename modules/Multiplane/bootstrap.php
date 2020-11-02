@@ -272,12 +272,16 @@ $this->module('multiplane')->extend([
 
         if (!$page) return false;
 
+        if (isset($page['startpage']) && $page['startpage']) $this->isStartpage = true;
+
         // reroute startpage if called via slug to avoid duplicated content
-        if (strlen($slug) && isset($page['startpage']) && $page['startpage'] === true) {
-            $path = '/' . ($this->isMultilingual ? $this->lang : '');
-            $url = $this->app->routeUrl($path);
-            \header('Location: '.$url, true, 301);
-            $this->app->stop();
+        if (!$this->usePermalinks) {
+            if (strlen($slug) && isset($page['startpage']) && $page['startpage'] === true) {
+                $path = '/' . ($this->isMultilingual ? $this->lang : '');
+                $url = $this->app->routeUrl($path);
+                \header('Location: '.$url, true, 301);
+                $this->app->stop();
+            }
         }
 
         if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
@@ -488,6 +492,11 @@ $this->module('multiplane')->extend([
 
             $n['active'] = $active;
 
+            if ($this->usePermalinks) {
+                $n['url'] = $n[$this->slugName];
+                unset($n[$this->slugName]);
+            }
+
         }
 
         if ($isSortable) {
@@ -535,7 +544,7 @@ $this->module('multiplane')->extend([
 
         $this('i18n')->locale = $this->lang = $lang;
 
-        if ($this->isMultilingual) {
+        if ($this->isMultilingual/* && !$this->usePermalinks*/) {
             $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
         }
 
@@ -576,7 +585,7 @@ $this->module('multiplane')->extend([
                 $slug = $entry[$slugName] ?? '';
             }
 
-            if (!$this->hasParentPage) {
+            if (!$this->hasParentPage && !$this->usePermalinks) {
                 $l['url'] = MP_BASE_URL . '/' . $lang . '/' . $slug;
                 continue;
             }
@@ -590,7 +599,11 @@ $this->module('multiplane')->extend([
                 $route = $this->parentPage[$key] ?? null;
             }
 
-            $l['url'] = MP_BASE_URL . '/' . $lang . '/' . ($route ? trim($route, '/') . '/' : '') . $slug;
+            if (!$this->usePermalinks) {
+                $l['url'] = MP_BASE_URL . '/' . $lang . '/' . ($route ? trim($route, '/') . '/' : '') . $slug;
+            } else {
+                $l['url'] = $slug;
+            }
 
         }
 
@@ -620,7 +633,7 @@ $this->module('multiplane')->extend([
         $filter = [
             'published' => true,
         ];
-        
+
         $sort = !empty($opts['customsort']) ? $opts['customsort'] : [
             '_created' => isset($opts['sort']) && $opts['sort'] ? 1 : -1,
         ];
@@ -682,9 +695,9 @@ $this->module('multiplane')->extend([
         return compact('posts', 'pagination', 'collection');
 
     }, // end of getPosts()
-    
+
     'getPostsByType' => function($type = null, $slug = '', $opts = []) {
-        
+
         if (!$type) $type = 'post';
 
         $lang  = $this->lang;
