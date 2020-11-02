@@ -2,7 +2,7 @@
 {% $dateformat      = $app('i18n')->get('@dateformat', 'Y-m-d'); %}
 
                 <div class="posts-meta">
-                  @if(mp()->displayBreadcrumbs)
+                  @if(mp()->displayBreadcrumbs && (!isset($displayBreadcrumbs) || $displayBreadcrumbs))
                     @render('views:partials/breadcrumbs.php', ['page' => $post])
                   @endif
                   @if(!empty($post['tags']))
