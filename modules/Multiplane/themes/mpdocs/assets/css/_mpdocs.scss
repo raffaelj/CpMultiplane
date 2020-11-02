@@ -81,7 +81,7 @@ main {
         margin-left: $sidebar_width;
     }
     @include breakpoint(xlarge) {
-        padding-right: 10em;
+        padding-right: $sidebar_width;
     }
 
     img {
@@ -209,7 +209,36 @@ nav {
             > ul {
                 margin: 0;
             }
+
+            // move toc to the right
+            @include breakpoint(xlarge) {
+                position: fixed !important;
+                top: 0;
+                right: 0;
+                width: calc(#{$sidebar_width} - 2em);
+                border: none;
+                padding: 1em 0 1em .5em;
+                margin: 0;
+                border-left: 1px dashed #ccc;
+                border-bottom: 1px dashed #ccc;
+                border-bottom-left-radius: .5em;
+                ul {
+                    background: none;
+                }
+                a {
+                    color: #222;
+                }
+                input[type="checkbox"] + label {
+                    background: #fff;
+                }
+                > input[type="checkbox"] + label {
+                    top: .5em;
+                    right: .5em;
+                }
+            }
+
         }
+
     }
 }
 
@@ -299,7 +328,31 @@ pre {
 .search-entries, .excerpt {
     box-shadow: -2px 2px 4px $color-shadow;
     padding: 1em;
-    margin: 1em 0;
+    margin: 0;
+    + .search-entries, + .excerpt {
+        margin-top: 1em;
+    }
+}
+.search-entries {
+    .posts-meta {
+        display: inline-block;
+        text-align: left;
+        border: none;
+    }
+}
+
+.search-extended {
+    @include breakpoint(medium) {
+        text-align: left;
+    }
+}
+
+.search-entries-header {
+    border-bottom: 1px solid $color-shadow;
+    .heading {
+        font-weight: bolder;
+        margin-right: 2em;
+    }
 }
 
 // quick fix - add separators between footer nav, copyright and login link
