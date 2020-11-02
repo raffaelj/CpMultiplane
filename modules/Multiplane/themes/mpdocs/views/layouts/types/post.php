@@ -1,15 +1,11 @@
 
         <main id="main">
-          @if(mp()->displayBreadcrumbs)
-            @render('views:partials/breadcrumbs.php', ['page' => $page])
-          @endif
-
             @render('views:partials/posts-meta.php', ['post' => $page])
 
             @render('views:partials/content.php', ['content' => $page['content']])
 
           @if(!empty($page['gallery']))
-            @render('views:partials/gallery.php', compact('page'))
+            @render('views:partials/gallery.php', ['gallery' => $page['gallery']])
           @endif
 
           @if(!empty($page['video']))
@@ -19,5 +15,6 @@
           @if(!empty($posts))
             @render('views:partials/posts.php', ['posts' => $posts, 'pagination' => $posts['pagination']])
           @endif
+
         </main>
 

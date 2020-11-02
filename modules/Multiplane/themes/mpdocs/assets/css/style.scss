@@ -19,10 +19,12 @@ $color-bg:         #fdfdfd;
 $color-light-grey: #eaeaea;
 $color-light-gray: $color-light-grey; // avoid typos
 
-$color-link-invert:        #bed5eb; // links on dark background
-$color-link-invert-hover:  #f6dfb7;
+//$color-link-invert:        #bed5eb; // links on dark background
+//$color-link-invert-hover:  #f6dfb7;
 
 $color-black-transp-light: rgba(0,0,0,.7);
+
+$color-main: #366a9c;
 
 // imports
 @import '../../../rljbase/assets/css/sass/import-all';

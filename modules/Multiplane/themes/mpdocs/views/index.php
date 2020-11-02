@@ -17,7 +17,7 @@
     </head>
     <body id="top" class="{{ !empty($page['class']) ? $page['class'] : '' }}">
         @trigger('multiplane.layout.contentbefore')
-
+        <input type="checkbox" id="sidebar_toggle" aria-label="@lang('Toggle sidebar')" /><label for="sidebar_toggle" title="@lang('Toggle sidebar')"></label>
         <header>
             <a href="@base('/')"@if(mp()->get('mpdocs_header_animation')) class="multiplane-animation"@endif>
               @if(!empty($site['logo']))

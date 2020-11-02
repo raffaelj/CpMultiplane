@@ -74,7 +74,7 @@ body {
 }
 
 main {
-    padding: 2em;
+    padding: 1em 2em 2em;
     background-color: #fff;
 
     @include breakpoint(medium) {
@@ -260,12 +260,30 @@ pre {
 }
 
 .posts-meta {
+    display: block;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: .25em;
+    margin-bottom: .25em;
     font-size: .9em;
+
+    text-align: center;
+    @include breakpoint(small) {
+        text-align: left;
+    }
+    @include breakpoint(medium) {
+        text-align: right;
+    }
+
+    nav.breadcrumbs {
+        @include breakpoint(medium) {
+            display: inline-block;
+            + span:before {
+                content: ' • ';
+            }
+        }
+    }
     > span + span:before {
         content: ' • ';
-    }
-    @include breakpoint(large) {
-        float: right;
     }
     + h1 {
         margin-top: 0;
@@ -288,6 +306,7 @@ pre {
 }
 
 a.button {
+    display: inline-block;
     width: auto;
     margin: .1rem auto;
     padding: .2rem .5rem;
@@ -297,9 +316,100 @@ a.button {
     border: none;
     border-radius: 2px;
     cursor: pointer;
+    white-space: nowrap;
     //@include box-shadow(0px -2px 0px $color-black-transp-light inset);
     &:hover, &:focus {
         background-color: $color-link-hover;
         color: $color-black;
+    }
+}
+
+[class^="icon-"] {
+    border-radius: 2px;
+}
+
+#sidebar_toggle {
+
+    display: none;
+    + label {
+        display: none;
+    }
+
+    @include breakpoint(medium) {
+        display: block;
+        position: absolute;
+        top: .5em;
+        left: $sidebar_width;
+        margin: 0 0 0 -.5em;
+
+        + label {
+            display: block;
+            position: fixed;
+            top: .5em;
+            z-index: 1;
+            left: $sidebar_width;
+            margin: 0 0 0 -.5em;
+            width: 1em;
+            height: 1em;
+
+            &:before {
+                width: 1em;
+                height: 1em;
+                left: auto;
+                right: 0;
+                margin: 0;
+                top: 0;
+                background-color: $color-white-transp;
+            }
+            &:after {
+                content: '';
+                display: block;
+                border-color: transparent #222 transparent transparent;
+                border-width: .4em;
+                border-style: solid;
+                position: absolute;
+                right: .5em;
+                top: .1em;
+                left: auto;
+            }
+        }
+
+        &:checked {
+            left: 1em;
+            + label {
+                left: 1em;
+                &:after {
+                    content: '';
+                    display: block;
+                    border-color: transparent transparent transparent #222;
+                    border-width: .4em;
+                    border-style: solid;
+                    position: absolute;
+                    right: -.1em;
+                    top: .1em;
+                    left: auto;
+                    width: 0;
+                    height: 0;
+                    margin: 0;
+                    background: transparent;
+                }
+                + header {
+                    width: 1em;
+                    overflow: hidden;
+                    padding: 0;
+
+                    > * {
+                        display: none;
+                    }
+
+                    + main {
+                        margin-left: 1em;
+                        + footer {
+                            margin-left: 1em;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
