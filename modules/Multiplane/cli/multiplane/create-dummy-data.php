@@ -154,7 +154,7 @@ foreach (array_keys((array) $app['modules']) as $module) {
         unset($entry['nav']);
         if ($pageTypeDetection == 'type') $entry['type'] = 'page';
         $entry['_o'] = 0;
-        $readme = MP_DOCS_ROOT . '/README.md';
+        $readme = $app->path(MP_DOCS_ROOT . '/README.md');
     }
 
     if ($readme) {
