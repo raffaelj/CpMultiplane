@@ -223,9 +223,9 @@ $this->module('multiplane')->extend([
         return $this->getPage($slug);
     },
 
-    'getPage' => function($slug = '') {
+    'getPage' => function($_slug = '') {
 
-        $slug = $this->resolveSlug($slug);
+        $slug = $this->resolveSlug($_slug);
         $collection = $this->collection;
 
         // startpage
@@ -749,16 +749,17 @@ $this->module('multiplane')->extend([
 
     },
 
-    'resolveSlug' => function($slug = '') {
+    'resolveSlug' => function($_slug = '') {
 
         // check, if slug type is _id or slug
         // check, if sub page
         // to do...
 
-        if ($slug == '') return $slug;
+        if ($_slug == '') return $_slug;
 
         // fix routes with ending slash
-        $slug = rtrim($slug, '/');
+//         $slug = rtrim($_slug, '/');
+        $slug = trim($_slug, '/');
 
         if (strpos($slug, '/')) {
 
@@ -782,6 +783,7 @@ $this->module('multiplane')->extend([
                     // pagination for blog module
                     if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
                         $slug = $parts[0];
+                        $_slug = '/'.$parts[0];
 
                         if (class_exists('Lime\Request')) {
                             $this->app->request->request['page'] = $parts[2];
@@ -868,9 +870,9 @@ $this->module('multiplane')->extend([
 
         }
 
-        $this->currentSlug = $slug;
+        $this->currentSlug = $this->usePermalinks ? $_slug : $slug;
 
-        return $slug;
+        return $this->currentSlug;
 
     },
 
@@ -890,11 +892,15 @@ $this->module('multiplane')->extend([
 
     },
 
-    'resolveParentPage' => function($route = '') {
+    'resolveParentPage' => function($_route = '') {
 
         $lang = $this->lang;
 
         $slugName = $this->slugName . ($lang == $this->defaultLang ? '' : '_'.$lang);
+
+        $route = trim($_route, '/');
+
+        if ($this->usePermalinks) $route = '/'.$route;
 
         $filter = [
             'published' => true,

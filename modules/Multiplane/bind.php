@@ -77,7 +77,19 @@ if (!$isMultilingual) {
     });
 
     $this->bind('/*', function($params) {
-        return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $params[':splat'][0]]);
+
+        $slug = $params[':splat'][0];
+
+        if ($this->module('multiplane')->usePermalinks) {
+
+            $permalink = $params[':splat'][0] ?? '';
+            $permalink = '/' . \rtrim($permalink, '/'); // to do: reroute to avoid duplicated content
+
+            $slug = $permalink;
+        }
+
+        return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $slug]);
+
     });
 
 }
