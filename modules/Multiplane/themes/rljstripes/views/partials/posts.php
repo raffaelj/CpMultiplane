@@ -27,7 +27,7 @@ extract($posts);
               @if(!empty($post['excerpt']))
                 {{ $post['excerpt'] }}
               @elseif(!empty($post['content']))
-                @render('views:fields/repeater.php', ['content' => $post['content']])
+                @render('views:partials/content.php', ['content' => $post['content']])
               @endif
 
                 <p class="read_more"><a href="{{ $_url }}">@lang('read more...')</a></p>
