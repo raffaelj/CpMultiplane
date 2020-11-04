@@ -252,7 +252,7 @@ $this->module('multiplane')->extend([
                 // filter by localized slug
                 $lang = $this->lang;
 
-                $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$collection, false);
+                $isLocalized = $this->isCollectionLocalized($collection);
 
                 if ($this->slugName != '_id' && $isLocalized && $lang != $this->defaultLang) {
                     $filter[$this->slugName.'_'.$lang] = $slug;
@@ -760,12 +760,24 @@ $this->module('multiplane')->extend([
         // fix routes with ending slash
 //         $slug = rtrim($_slug, '/');
         $slug = trim($_slug, '/');
+        $permalink = '/'.$slug;
 
         if (strpos($slug, '/')) {
 
             $parts = explode('/', $slug);
-
             $count = count($parts);
+
+            if ($this->usePermalinks && $this->isMultilingual) {
+
+                if ($count == 2 && $parts[0] == $this->lang) {
+                    $this->currentSlug = $this->usePermalinks ? $permalink : $slug;
+                    return $this->currentSlug;
+                }
+                else {
+                    $_parts = $parts;
+                    $parts = array_slice($parts, 1);
+                }
+            }
 
             // possible options - to do...:
             // * /page-title
@@ -778,12 +790,19 @@ $this->module('multiplane')->extend([
 
             if ($this->pageTypeDetection == 'collections') {
 
-                if ($collection = $this->resolveCurrentCollection($parts[0])) {
+                $route = $parts[0];
+
+                if ($this->usePermalinks && $this->isMultilingual) {
+                    $route = $_parts[0] . '/' . $parts[0];
+                }
+
+                if ($collection = $this->resolveCurrentCollection($route)) {
 
                     // pagination for blog module
                     if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
                         $slug = $parts[0];
-                        $_slug = '/'.$parts[0];
+                        $permalink = '/'.$parts[0];
+                        if ($this->isMultilingual) $permalink = '/' . $this->lang . $permalink;
 
                         if (class_exists('Lime\Request')) {
                             $this->app->request->request['page'] = $parts[2];
@@ -801,7 +820,10 @@ $this->module('multiplane')->extend([
                     }
 
                     $count = count($parts);
-                    if ($count > 1) {
+
+                    // to do: find cleaner solution for permalinks and enable breadcrumbs again
+                    if ($count > 1 && !$this->usePermalinks) {
+
                         $breadcrumbs = $this->breadcrumbs;
                         $lang = $this->lang;
                         $suffix = $lang != $this->defaultLang ? '_'.$lang : '';
@@ -838,6 +860,7 @@ $this->module('multiplane')->extend([
                         $this->breadcrumbs = $breadcrumbs;
 
                     }
+
                 }
 
             }
@@ -870,11 +893,11 @@ $this->module('multiplane')->extend([
 
         }
 
-        $this->currentSlug = $this->usePermalinks ? $_slug : $slug;
+        $this->currentSlug = $this->usePermalinks ? $permalink : $slug;
 
         return $this->currentSlug;
 
-    },
+    }, // end of resolveSlug()
 
     'resolveCurrentCollection' => function($route = '') {
 
@@ -1258,7 +1281,22 @@ $this->module('multiplane')->extend([
 
         return $route;
 
-    }
+    },
+
+    'isCollectionLocalized' => function($collection) {
+
+        // to do: do proper checks...
+        // UniqueSlugs config check doesn't work, if disabled/not installed/not configured
+
+        // for experimental permalinks, just assume, that everything is configured properly
+        if ($this->usePermalinks) return true;
+
+        // fallback to UniqueSlugs config
+        $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$collection, false);
+
+        return $isLocalized ? true : false;
+
+    },
 
 ]);
 
