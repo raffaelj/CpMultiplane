@@ -144,16 +144,16 @@ $this->module('multiplane')->extend([
 
         $this->$key = $value;
 
-    },
+    }, // end of set()
 
     'add' => function($key, $value, $recursive = false) {
 
-        if (is_array($this->$key)) {
-            if ($recursive) $this->$key = array_merge_recursive($this->$key, $value);
-            else            $this->$key = array_merge($this->$key, $value);
+        if (\is_array($this->$key)) {
+            if ($recursive) $this->$key = \array_merge_recursive($this->$key, $value);
+            else            $this->$key = \array_merge($this->$key, $value);
         }
 
-        elseif (is_string($this->$key) && is_string($value)) {
+        elseif (\is_string($this->$key) && \is_string($value)) {
             $this->$key .= $value;
         }
 
@@ -161,12 +161,12 @@ $this->module('multiplane')->extend([
             // do nothing
         }
 
-    },
+    }, // end of add()
 
     // modified version of Lime\fetch_from_array()
     'get' => function($index, $default = null) {
 
-        if (is_null($index)) {
+        if (\is_null($index)) {
 
             return null;
 
@@ -207,21 +207,18 @@ $this->module('multiplane')->extend([
         }
 
         return \is_callable($default) ? \call_user_func($default) : $default;
-    },
+
+    }, // end of get()
 
     'getSite' => function() {
 
         $site = $this->app->module('singletons')->getData($this->siteSingleton, ['lang' => $this->lang]);
 
-        if ($site && is_array($site)) $this->site = $site;
+        if ($site && \is_array($site)) $this->site = $site;
 
         return $site;
 
-    },
-
-    'findOne' => function($slug = '') {
-        return $this->getPage($slug);
-    },
+    }, // end of getSite()
 
     'getPage' => function($_slug = '') {
 
@@ -276,7 +273,7 @@ $this->module('multiplane')->extend([
 
         // reroute startpage if called via slug to avoid duplicated content
         if (!$this->usePermalinks) {
-            if (strlen($slug) && isset($page['startpage']) && $page['startpage'] === true) {
+            if (\strlen($slug) && isset($page['startpage']) && $page['startpage'] === true) {
                 $path = '/' . ($this->isMultilingual ? $this->lang : '');
                 $url = $this->app->routeUrl($path);
                 \header('Location: '.$url, true, 301);
@@ -294,7 +291,7 @@ $this->module('multiplane')->extend([
 
         return $page;
 
-    },
+    }, // end of getPage()
 
     'userStyles' => function() {
 
@@ -303,18 +300,18 @@ $this->module('multiplane')->extend([
         echo "\r\n<style>\r\n";
 
         foreach ($this->styles as $selector => $style) {
-            if (is_numeric($selector) && is_string($style)) {
+            if (\is_numeric($selector) && is_string($style)) {
                 echo $style . "\r\n";
                 continue;
             }
-            elseif (is_string($style)) {
+            elseif (\is_string($style)) {
                 echo "$selector $style" . "\r\n";
             }
         }
 
         echo "</style>\r\n";
 
-    },
+    }, // end of userStyles()
 
     'userScripts' => function() {
 
@@ -328,7 +325,7 @@ $this->module('multiplane')->extend([
 
         echo "</script>\r\n";
 
-    },
+    }, // end of userScripts()
 
     'addBackgroundImage' => function($page = []) {
 
@@ -359,11 +356,11 @@ $this->module('multiplane')->extend([
 
         }
 
-    },
+    }, // end of addBackgroundImage()
 
     'getPreview' => function() {
 
-        $data = class_exists('\Lime\Request') ? $this->app->request->request : $_REQUEST;
+        $data = \class_exists('\Lime\Request') ? $this->app->request->request : $_REQUEST;
 
         $event      = $data['event'] ?? false;
 
@@ -427,7 +424,7 @@ $this->module('multiplane')->extend([
 
         return false;
 
-    },
+    }, // end of getPreview()
 
     'getNav' => function($collection = null, $type = '') {
 
@@ -512,13 +509,13 @@ $this->module('multiplane')->extend([
 
         return $entries;
 
-    },
+    }, // end of getNav()
 
     'getLanguages' => function($extended = false, $withDefault = true) {
 
         $languages = [];
 
-        if ($this->isMultilingual && is_array($this->app['languages'])) {
+        if ($this->isMultilingual && \is_array($this->app['languages'])) {
 
             foreach ($this->app['languages'] as $l => $label) {
 
@@ -538,7 +535,7 @@ $this->module('multiplane')->extend([
 
         return $languages;
 
-    },
+    }, // end of getLanguages()
 
     'initI18n' => function($lang = 'en') {
 
@@ -553,7 +550,7 @@ $this->module('multiplane')->extend([
             $this('i18n')->load($translationspath, $lang);
         }
 
-    },
+    }, // end of initI18n()
 
     'getLanguageSwitch' => function($id) {
 
@@ -738,7 +735,7 @@ $this->module('multiplane')->extend([
             'count' => $count,
             'page'  => $page,
             'limit' => $limit,
-            'pages' => ceil($count / $limit),
+            'pages' => \ceil($count / $limit),
             'slug'  => $slug,
             'posts_slug' => '',
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
@@ -747,7 +744,7 @@ $this->module('multiplane')->extend([
 
         return compact('posts', 'pagination');
 
-    },
+    }, // end of getPostsByType()
 
     'resolveSlug' => function($_slug = '') {
 
@@ -758,14 +755,14 @@ $this->module('multiplane')->extend([
         if ($_slug == '') return $_slug;
 
         // fix routes with ending slash
-//         $slug = rtrim($_slug, '/');
-        $slug = trim($_slug, '/');
+//         $slug = \rtrim($_slug, '/');
+        $slug = \trim($_slug, '/');
         $permalink = '/'.$slug;
 
-        if (strpos($slug, '/')) {
+        if (\strpos($slug, '/')) {
 
-            $parts = explode('/', $slug);
-            $count = count($parts);
+            $parts = \explode('/', $slug);
+            $count = \count($parts);
 
             if ($this->usePermalinks && $this->isMultilingual) {
 
@@ -775,7 +772,7 @@ $this->module('multiplane')->extend([
                 }
                 else {
                     $_parts = $parts;
-                    $parts = array_slice($parts, 1);
+                    $parts = \array_slice($parts, 1);
                 }
             }
 
@@ -859,7 +856,7 @@ $this->module('multiplane')->extend([
                     // pagination for blog module
                     $slug = ''; 
 
-                    if (class_exists('Lime\Request')) {
+                    if (\class_exists('Lime\Request')) {
                         $this->app->request->request['page'] = $parts[1];
                     } else {
                         $_REQUEST['page'] = $parts[1];
@@ -870,7 +867,7 @@ $this->module('multiplane')->extend([
                     // pagination for blog module
                     $slug = $parts[0]; 
 
-                    if (class_exists('Lime\Request')) {
+                    if (\class_exists('Lime\Request')) {
                         $this->app->request->request['page'] = $parts[2];
                     } else {
                         $_REQUEST['page'] = $parts[2];
@@ -901,7 +898,7 @@ $this->module('multiplane')->extend([
 
         return false;
 
-    },
+    }, // end of resolveCurrentCollection()
 
     'resolveParentPage' => function($_route = '') {
 
@@ -969,7 +966,7 @@ $this->module('multiplane')->extend([
 
         return $page;
 
-    },
+    }, // end of renderFields()
 
     'accessAllowed' => function() {
 
@@ -982,9 +979,9 @@ $this->module('multiplane')->extend([
 
         else {
             // allow array input or string with white space delimiter
-            $ips = is_array($ips) ? $ips : explode(' ', trim($ips));
+            $ips = \is_array($ips) ? $ips : \explode(' ', trim($ips));
 
-            if (in_array($this->app->getClientIp(), $ips)) {
+            if (\in_array($this->app->getClientIp(), $ips)) {
                 $this->clientIpIsAllowed = true;
                 return true;
             }
@@ -992,7 +989,7 @@ $this->module('multiplane')->extend([
 
         return false;
 
-    },
+    }, // end of accessAllowed()
 
     'getRouteToPrivacyPage' => function() {
 
@@ -1017,7 +1014,7 @@ $this->module('multiplane')->extend([
 
         return '/'.$route;
 
-    },
+    }, // end of getRouteToPrivacyPage()
 
     'loadConfig' => function() {
 
@@ -1051,7 +1048,7 @@ $this->module('multiplane')->extend([
         // set current collection to pages
         $this->set('collection', $this->pages);
 
-    },
+    }, // end of loadConfig()
 
     'loadThemeConfig' => function() {
 
@@ -1086,7 +1083,7 @@ $this->module('multiplane')->extend([
             $this->app->path('views', $this->themePath . '/views');
 
             // return theme config
-            return array_replace_recursive($parentThemeConfig, $themeConfig);
+            return \array_replace_recursive($parentThemeConfig, $themeConfig);
 
         }
 
@@ -1097,21 +1094,21 @@ $this->module('multiplane')->extend([
             }
         }
 
-    },
+    }, // end of loadThemeConfig()
 
     'extendLexyTemplateParser' => function() {
 
         // create image url shortcuts
 
-        if (empty($this->lexy) || !is_array($this->lexy)) return;
+        if (empty($this->lexy) || !\is_array($this->lexy)) return;
 
         foreach ($this->lexy as $k => $v) {
 
-            if (is_string($v)) {
+            if (\is_string($v)) {
 
                 if ($v == 'raw') {
                     $this->app->renderer->extend(function($content) use ($k) {
-                        return preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . ltrim($2, "/")); ?>', $content);
+                        return \preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . ltrim($2, "/")); ?>', $content);
                     });
                     continue;
                 }
@@ -1132,12 +1129,12 @@ $this->module('multiplane')->extend([
             $replacement .= '; ?>';
 
             $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
-                return preg_replace($pattern, $replacement, $content);
+                return \preg_replace($pattern, $replacement, $content);
             });
 
         }
 
-    },
+    }, // end of extendLexyTemplateParser()
 
     'self_export' => function() {
 
@@ -1185,7 +1182,7 @@ $this->module('multiplane')->extend([
 
         return compact('constants', 'theme', 'themes');
 
-    },
+    }, // end of self_export()
 
     // same as Lime\App->assets(), but with a switch to different script function
     // temporary fix to avoid nu validator warning
@@ -1211,7 +1208,8 @@ $this->module('multiplane')->extend([
         }
 
         return \implode("\n", $list);
-    },
+
+    }, // end of assets()
 
     // same as Lime\App->script(), but without `type=javascript`
     // temporary fix to avoid nu validator warning
@@ -1224,7 +1222,7 @@ $this->module('multiplane')->extend([
             $src  = $script;
 
             if (\is_array($script)) {
-                extract($script);
+                \extract($script);
             }
 
             $ispath = \strpos($src, ':') !== false && !\preg_match('#^(|http\:|https\:)//#', $src);
@@ -1232,11 +1230,14 @@ $this->module('multiplane')->extend([
         }
 
         return \implode("\n", $list);
-    },
+
+    }, // end of script()
 
     'generateToken' => function() {
+
         return \uniqid(\bin2hex(\random_bytes(16)));
-    },
+
+    }, // end of generateToken()
 
     'getSubPageRoute' => function($collection) {
 
@@ -1269,7 +1270,7 @@ $this->module('multiplane')->extend([
 
         return $route;
 
-    },
+    }, // end of getSubPageRoute()
 
     'isCollectionLocalized' => function($collection) {
 
@@ -1279,7 +1280,7 @@ $this->module('multiplane')->extend([
 
         return true;
 
-    },
+    }, // end of isCollectionLocalized()
 
 ]);
 
