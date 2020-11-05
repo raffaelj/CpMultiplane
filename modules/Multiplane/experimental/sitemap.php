@@ -18,12 +18,15 @@ $this->on('multiplane.sitemap', function(&$xml) {
     $siteUrl        = $this['site_url'];
     $isMultilingual = $this->module('multiplane')->isMultilingual;
     $defaultLang    = $this->module('multiplane')->defaultLang;
-    $slugName       = $this->module('multiplane')->slugName;
     $languages      = $this->module('multiplane')->getLanguages();
     $parentPage     = null;
     $route          = '';
     $pages          = $this->module('multiplane')->pages;
     $collections    = $this->module('multiplane')->sitemap;
+
+    $slugName       = $this->module('multiplane')->fieldNames['slug'];
+    $publishedName  = $this->module('multiplane')->fieldNames['published'];
+    $startpageName  = $this->module('multiplane')->fieldNames['startpage'];
 
     if (empty($collections)) {
         $collections = $this->module('multiplane')->use['collections'];
@@ -31,12 +34,12 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
     $options = [
         'filter' => [
-            'published' => true,
+            $publishedName => true,
         ],
         'fields' => [
             $slugName => true,
             '_modified' => true,
-            'startpage' => true,
+            $startpageName => true,
         ],
     ];
 
@@ -57,12 +60,12 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
         foreach($this->module('collections')->find($collection, $options) as $page) {
 
-            $isStartpage = !empty($page['startpage']);
+            $isStartpage = !empty($page[$startpageName]);
 
             if ($collection != $pages) {
 
                 $filter = [
-                    'published' => true,
+                    $publishedName => true,
                     'subpagemodule.active' => true,
                     'subpagemodule.collection' => $collection,
                 ];
@@ -133,7 +136,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                                       || $slugName == '_id' ? '' : '_' . $l;
 
                             if (empty($page[$slugName . $suffix])) continue;
-                            
+
                             $xml->startElement('xhtml:link');
                             $xml->writeAttribute('rel', 'alternate');
                             $xml->writeAttribute('hreflang', $l);

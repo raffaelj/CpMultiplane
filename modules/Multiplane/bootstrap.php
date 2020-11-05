@@ -39,12 +39,26 @@ $this->module('multiplane')->extend([
     'parentThemeBootstrap'  => true,
 
     'isMultilingual'        => false,
+    'usePermalinks'         => false,
     'disableDefaultRoutes'  => false,             // don't use any default routes
-    'outputMethod'          => 'dynamic',         // to do: static
+    'outputMethod'          => 'dynamic',         // to do: static or pseudo static/cached
     'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
-    'slugName'              => '_id',             // field name for url slug
-    'navName'               => 'nav',             // field name for navigation
     'nav'                   => null,              // hard coded navigation
+
+    'slugName'              => '_id',             // deprecated, field name for url slug
+    'navName'               => 'nav',             // deprecated, field name for navigation
+
+    'fieldNames' => [                             // field mappings to default field names
+        'slug'      => '_id',
+        'nav'       => 'nav',
+        'permalink' => 'permalink',
+        'published' => 'published',
+        'startpage' => 'startpage',
+        'title'     => 'title',
+        'content'   => 'content',
+        'type'      => 'type', // only if pageTypeDetection == 'type'
+        'subpagemodule' => 'subpagemodule',
+    ],
 
     'use' => [
         'collections' => [],                      // list of collection names
@@ -225,14 +239,16 @@ $this->module('multiplane')->extend([
         $slug = $this->resolveSlug($_slug);
         $collection = $this->collection;
 
+        $startpageName = $this->fieldNames['startpage'];
+
         // startpage
         if (empty($slug)) {
 
             $this->isStartpage = true;
 
             $filter = [
-                'published' => true,
-                'startpage' => true,
+                $this->fieldNames['published'] => true,
+                $startpageName => true,
             ];
 
         }
@@ -242,8 +258,10 @@ $this->module('multiplane')->extend([
                 'published' => true,
             ];
 
+            $slugName = $this->fieldNames['slug'];
+
             if (!$this->isMultilingual) {
-                $filter[$this->slugName] = $slug;
+                $filter[$slugName] = $slug;
             }
             else {
                 // filter by localized slug
@@ -251,10 +269,10 @@ $this->module('multiplane')->extend([
 
                 $isLocalized = $this->isCollectionLocalized($collection);
 
-                if ($this->slugName != '_id' && $isLocalized && $lang != $this->defaultLang) {
-                    $filter[$this->slugName.'_'.$lang] = $slug;
+                if ($slugName != '_id' && $isLocalized && $lang != $this->defaultLang) {
+                    $filter[$slugName.'_'.$lang] = $slug;
                 } else {
-                    $filter[$this->slugName] = $slug;
+                    $filter[$slugName] = $slug;
                 }
             }
         }
@@ -269,11 +287,11 @@ $this->module('multiplane')->extend([
 
         if (!$page) return false;
 
-        if (isset($page['startpage']) && $page['startpage']) $this->isStartpage = true;
+        if (isset($page[$startpageName]) && $page[$startpageName]) $this->isStartpage = true;
 
         // reroute startpage if called via slug to avoid duplicated content
         if (!$this->usePermalinks) {
-            if (\strlen($slug) && isset($page['startpage']) && $page['startpage'] === true) {
+            if (\strlen($slug) && isset($page[$startpageName]) && $page[$startpageName] === true) {
                 $path = '/' . ($this->isMultilingual ? $this->lang : '');
                 $url = $this->app->routeUrl($path);
                 \header('Location: '.$url, true, 301);
@@ -373,7 +391,7 @@ $this->module('multiplane')->extend([
 
         $posts = null;
         $site  = $this->site;
-        $slug  = $this->resolveSlug(MP_BASE_URL . '/' . $page[$this->slugName]);
+        $slug  = $this->resolveSlug(MP_BASE_URL . '/' . $page[$this->fieldNames['slug']]);
 
         if ($this->isMultilingual) {
             $this->initI18n($lang);
@@ -437,24 +455,29 @@ $this->module('multiplane')->extend([
 
         $isSortable = $collection['sortable'] ?? false;
 
+        $slugName      = $this->fieldNames['slug'];
+        $navName       = $this->fieldNames['nav'];
+        $titleName     = $this->fieldNames['title'];
+        $startpageName = $this->fieldNames['startpage'];
+
         $options = [
             'filter' => [
                 'published' => true,
             ],
             'fields' => [
-                $this->slugName => true,
-                'title' => true,
-                $this->navName => true,
-                '_pid' => true,
-                '_o' => true,
-                'startpage' => true,
+                $slugName      => true,
+                $titleName     => true,
+                $navName       => true,
+                '_pid'         => true,
+                '_o'           => true,
+                $startpageName => true,
             ],
         ];
 
         if (!empty($type)) {
-            $options['filter'][$this->navName] = ['$has' => $type];
+            $options['filter'][$navName] = ['$has' => $type];
         } else {
-            $options['filter'][$this->navName] = ['$size' => ['$gt' => 0]];
+            $options['filter'][$navName] = ['$size' => ['$gt' => 0]];
         }
 
         if ($this->isMultilingual) {
@@ -464,9 +487,9 @@ $this->module('multiplane')->extend([
             $options['lang'] = $lang;
 
             if ($lang != $this->defaultLang) {
-                $options['fields']['title_'.$lang] = true;
-                if ($this->slugName != '_id') {
-                    $options['fields'][$this->slugName.'_'.$lang] = true;
+                $options['fields']["{$titleName}_{$lang}"] = true;
+                if ($slugName != '_id') {
+                    $options['fields']["{$slugName}_{$lang}"] = true;
                 }
             }
 
@@ -479,10 +502,10 @@ $this->module('multiplane')->extend([
         foreach($entries as &$n) {
 
             $active = false;
-            if ($this->hasParentPage && $n[$this->slugName] == $this->parentPage[$this->slugName]) {
+            if ($this->hasParentPage && $n[$slugName] == $this->parentPage[$slugName]) {
                 $active = true;
-            } elseif($this->currentSlug == $n[$this->slugName]
-                || ($this->currentSlug == '' && !empty($n['startpage']))
+            } elseif($this->currentSlug == $n[$slugName]
+                || ($this->currentSlug == '' && !empty($n[$startpageName]))
                 ) {
                 $active = true;
             }
@@ -490,8 +513,8 @@ $this->module('multiplane')->extend([
             $n['active'] = $active;
 
             if ($this->usePermalinks) {
-                $n['url'] = $n[$this->slugName];
-                unset($n[$this->slugName]);
+                $n['url'] = $n[$slugName];
+                unset($n[$slugName]);
             }
 
         }
@@ -555,7 +578,7 @@ $this->module('multiplane')->extend([
     'getLanguageSwitch' => function($id) {
 
         $languages = $this->getLanguages(true);
-        $slugName  = $this->slugName;
+        $slugName  = $this->fieldNames['slug'];
 
         foreach ($languages as &$l) {
 
@@ -587,12 +610,12 @@ $this->module('multiplane')->extend([
                 continue;
             }
 
-            $key = 'route' . ($this->slugName == '_id' || $l['default'] ? '' : "_{$lang}");
+            $key = 'route' . ($slugName == '_id' || $l['default'] ? '' : "_{$lang}");
             if (!empty($this->parentPage['subpagemodule'][$key])) {
                 $route = $this->parentPage['subpagemodule'][$key];
             }
             else { // fallback to slug of parent page
-                $key   = $this->slugName . ($this->slugName == '_id' || $l['default'] ? '' : "_{$lang}");
+                $key   = $slugName . ($slugName == '_id' || $l['default'] ? '' : "_{$lang}");
                 $route = $this->parentPage[$key] ?? null;
             }
 
@@ -672,7 +695,7 @@ $this->module('multiplane')->extend([
                 $slug = $parentPage['subpagemodule'][$key];
             }
             else {
-                $key = $this->slugName . ($this->slugName == '_id' || $lang == $this->defaultLang ? '' : "_{$lang}");
+                $key = $this->fieldNames['slug'] . ($this->fieldNames['slug'] == '_id' || $lang == $this->defaultLang ? '' : "_{$lang}");
                 $slug = $parentPage[$key];
             }
 
@@ -830,14 +853,14 @@ $this->module('multiplane')->extend([
                             if ($k >= ($count - 1)) continue; // skip current page
 
                             $filter = [
-                                $this->slugName . $suffix => $part
+                                $this->fieldNames['slug'] . $suffix => $part
                             ];
                             $projection = [];
 
                             $entry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $lang]);
 
                             $breadcrumbs[] = [
-                                'title' => $entry['title'] ?? $part,
+                                'title' => $entry[$this->fieldNames['title']] ?? $part,
                                 'slug'  => $part,
                             ];
 
@@ -904,33 +927,35 @@ $this->module('multiplane')->extend([
 
         $lang = $this->lang;
 
-        $slugName = $this->slugName . ($lang == $this->defaultLang ? '' : '_'.$lang);
+        $slugName      = $this->fieldNames['slug'] . ($lang == $this->defaultLang ? '' : '_'.$lang);
+        $publishedName = $this->fieldNames['published'];
+        $startpageName = $this->fieldNames['startpage'];
 
         $route = trim($_route, '/');
 
         if ($this->usePermalinks) $route = '/'.$route;
 
         $filter = [
-            'published' => true,
-            $slugName => $route,
+            $publishedName => true,
+            $slugName      => $route,
             'subpagemodule.active' => true,
         ];
 
         $projection = [
-            $this->slugName => true,
+            $this->fieldNames['slug'] => true,
             'subpagemodule' => true,
         ];
-        if ($this->slugName != '_id') {
+        if ($this->fieldNames['slug'] != '_id') {
             foreach($this->getLanguages() as $l) {
-                $projection[$this->slugName.'_'.$l] = true;
+                $projection[$this->fieldNames['slug'].'_'.$l] = true;
             }
         }
 
         if ($this->isStartpage) {
 
             $filter = [
-                'published' => true,
-                'startpage' => true,
+                $publishedName => true,
+                $startpageName => true,
                 'subpagemodule.active' => true,
             ];
 
@@ -1000,17 +1025,19 @@ $this->module('multiplane')->extend([
 
         $lang = $this->lang;
 
+        $slugName = $this->fieldNames['slug'];
+
         $projection = [
-            $this->slugName => true,
+            $slugName => true,
             '_id' => false,
         ];
         if ($this->isMultilingual && $lang != $this->defaultLang) {
-            $projection[$this->slugName.'_'.$lang] = true;
+            $projection[$slugName.'_'.$lang] = true;
         }
 
         $page = $this->app->module('collections')->findOne($this->pages, $filter, $projection, null, false, ['lang' => $lang]);
 
-        $route = $page[$this->slugName.'_'.$lang] ?? $page[$this->slugName] ?? '';
+        $route = $page[$slugName.'_'.$lang] ?? $page[$slugName] ?? '';
 
         return '/'.$route;
 
@@ -1042,7 +1069,27 @@ $this->module('multiplane')->extend([
         }
 
         foreach($config as $key => $val) {
-            $this->set($key, $val);
+            if ($key == 'fieldNames') {
+                $fieldNames = $this->fieldNames;
+                foreach ($val as $fieldName => $replacement) {
+                    $fieldNames[$fieldName] = $replacement;
+                }
+                $this->fieldNames = $fieldNames;
+            } else {
+                $this->set($key, $val);
+            }
+        }
+
+        // backwards compatibility
+        if (isset($config['slugName']) && !isset($config['fieldNames']['slug'])) {
+            $fieldNames = $this->fieldNames;
+            $fieldNames['slug'] = $config['slugName'];
+            $this->fieldNames = $fieldNames;
+        }
+        if (isset($config['navName']) && !isset($config['fieldNames']['nav'])) {
+            $fieldNames = $this->fieldNames;
+            $fieldNames['nav'] = $config['navName'];
+            $this->fieldNames = $fieldNames;
         }
 
         // set current collection to pages
