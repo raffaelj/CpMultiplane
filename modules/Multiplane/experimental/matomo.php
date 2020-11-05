@@ -72,5 +72,5 @@ $this->on('multiplane.init', function() {
 
 });'
     ]);
-    
+
 }, 100);

@@ -89,7 +89,7 @@ $this->module('multiplane')->extend([
                 $attr[$key] = $val;
             }
         }
-        
+
         $attr['name'] = $form . '[' . $attr['name'] . ']';
 
         return $attr;
