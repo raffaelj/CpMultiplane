@@ -91,7 +91,7 @@ $this->module('multiplane')->extend([
     // experimental full text search
     'search' => [
         'enabled'     => false,
-        'minLength'   => 3,                     // minimum charcter length for search
+        'minLength'   => 3,                     // minimum character length for search
         'collections' => [],                    // full list of collections to search in,
                                                 // defaults to "multiplane/use/collections"
     ],
@@ -832,30 +832,18 @@ $this->module('multiplane')->extend([
 
                             if ($k >= ($count - 1)) continue; // skip current page
 
-                            if (isset($this->app['modules']['uniqueslugs'])) {
-                                $filter = [
-                                    $this->slugName . $suffix => $part
-                                ];
-                                $projection = [
-                                    'title' => true,
-                                    '_id'   => false,
-                                ];
+                            $filter = [
+                                $this->slugName . $suffix => $part
+                            ];
+                            $projection = [];
 
-                                if ($lang != $this->defaultLang) $projection['title'.$suffix] = true;
+                            $entry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $lang]);
 
-                                $entry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $lang]);
+                            $breadcrumbs[] = [
+                                'title' => $entry['title'] ?? $part,
+                                'slug'  => $part,
+                            ];
 
-                                $breadcrumbs[] = [
-                                    'title' => $entry['title'] ?? $part,
-                                    'slug'  => $part,
-                                ];
-                            }
-                            else {
-                                $breadcrumbs[] = [
-                                    'title' => $part,
-                                    'slug'  => $part,
-                                ];
-                            }
                         }
                         $this->breadcrumbs = $breadcrumbs;
 
@@ -1287,14 +1275,9 @@ $this->module('multiplane')->extend([
 
         // to do: do proper checks...
         // UniqueSlugs config check doesn't work, if disabled/not installed/not configured
+        // for now, I just assume, that everything is configured correctly
 
-        // for experimental permalinks, just assume, that everything is configured properly
-        if ($this->usePermalinks) return true;
-
-        // fallback to UniqueSlugs config
-        $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$collection, false);
-
-        return $isLocalized ? true : false;
+        return true;
 
     },
 
