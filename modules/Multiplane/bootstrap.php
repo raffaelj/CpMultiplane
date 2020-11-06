@@ -278,8 +278,8 @@ $this->module('multiplane')->extend([
             }
         }
 
-        $projection = null;
-        $populate = false;
+        $projection   = null;
+        $populate     = false;
         $fieldsFilter = ['lang' => $this->lang];
 
         $this->app->trigger('multiplane.getpage.before', [$collection, &$filter, &$projection, &$populate, &$fieldsFilter]);
@@ -300,7 +300,7 @@ $this->module('multiplane')->extend([
             }
         }
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
         }
 
@@ -526,7 +526,7 @@ $this->module('multiplane')->extend([
             'count' => $count,
             'page'  => $page,
             'limit' => $limit,
-            'pages' => ceil($count / $limit),
+            'pages' => \ceil($count / $limit),
             'slug'  => $slug,
             'posts_slug' => $slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
@@ -669,7 +669,7 @@ $this->module('multiplane')->extend([
                         $lang = $this->lang;
                         $suffix = $lang != $this->defaultLang ? '_'.$lang : '';
 
-                        foreach($parts as $k => $part) {
+                        foreach ($parts as $k => $part) {
 
                             if ($k >= ($count - 1)) continue; // skip current page
 
@@ -802,11 +802,11 @@ $this->module('multiplane')->extend([
 
             if (!isset($page[$field['name']])) continue;
 
-            if (!in_array($field['name'], $this->preRenderFields)) continue;
+            if (!\in_array($field['name'], $this->preRenderFields)) continue;
 
             $cmd  = $field['type'] ?? 'text';
             $opts = $field['options'] ?? [];
-            $page[$field['name']] = $this('fields')->$cmd($page[$field['name']], $opts);
+            $page[$field['name']] = $this->app->helper('fields')->$cmd($page[$field['name']], $opts);
  
         }
 
@@ -862,7 +862,7 @@ $this->module('multiplane')->extend([
             $config = \array_replace_recursive($themeConfig, $config);
         }
 
-        foreach($config as $key => $val) {
+        foreach ($config as $key => $val) {
             if ($key == 'fieldNames') {
                 $fieldNames = $this->fieldNames;
                 foreach ($val as $fieldName => $replacement) {
