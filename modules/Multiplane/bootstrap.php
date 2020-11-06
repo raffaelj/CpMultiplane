@@ -1,4 +1,7 @@
 <?php
+
+if ($this->debug) \error_reporting(E_ALL);
+
 //set version
 if (!$this->retrieve('multiplane/version', false)) {
     $this->set('multiplane/version', $this['debug'] ? time()
@@ -622,9 +625,9 @@ $this->module('multiplane')->extend([
             'limit' => $limit,
             'pages' => \ceil($count / $limit),
             'slug'  => $slug,
-            'posts_slug' => '',
+            'posts_slug'    => '',
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
-            'hide' => (!isset($opts['pagination']) || $opts['pagination'] !== true),
+            'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
 
         return compact('posts', 'pagination');
@@ -641,7 +644,7 @@ $this->module('multiplane')->extend([
 
         if ($page[$startpageName] ?? false) $this->isStartpage = true;
 
-        if ($page[$bgImgName] && isset($page[$bgImgName]['_id'])) $this->hasBackgroundImage = true;
+        if (isset($page[$bgImgName]) && isset($page[$bgImgName]['_id'])) $this->hasBackgroundImage = true;
 
     },
 

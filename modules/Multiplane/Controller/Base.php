@@ -234,7 +234,9 @@ class Base extends \LimeExtra\Controller {
     public function error($status = '') {
 
         $site = $this->module('multiplane')->site;
-        $page = [];
+        $page = [
+            'title' => $this('i18n')->get('Page not found'),
+        ];
 
         if ($this->app->module('multiplane')->hasBackgroundImage) {
             $this->app->module('multiplane')->addBackgroundImage();
