@@ -46,31 +46,32 @@ $this->module('multiplane')->extend([
     'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
     'nav'                   => null,              // hard coded navigation
 
-    'slugName'              => '_id',             // deprecated, field name for url slug
-    'navName'               => 'nav',             // deprecated, field name for navigation
-
-    'fieldNames' => [                             // field mappings to default field names
-        'slug'          => '_id',
-        'nav'           => 'nav',
-        'permalink'     => 'permalink',
-        'published'     => 'published',
-        'startpage'     => 'startpage',
-        'title'         => 'title',
-        'content'       => 'content',
-        'description'   => 'description',
-        'excerpt'       => 'excerpt',
-        'type'          => 'type',                // only if pageTypeDetection == 'type'
-        'subpagemodule' => 'subpagemodule',
-        'privacypage'   => 'privacypage',
-        'seo'           => 'seo',
-        'featured_image' => 'featured_image',
-        'logo'          => 'logo',                // only in site
-    ],
-
     'use' => [
         'collections' => [],                      // list of collection names
         'singletons'  => [],                      // list of singleton names
         'forms'       => [],                      // list of form names
+    ],
+
+    'slugName'              => '_id',             // deprecated, field name for url slug
+    'navName'               => 'nav',             // deprecated, field name for navigation
+
+    'fieldNames' => [                             // field mappings to default field names
+        'slug'              => '_id',
+        'nav'               => 'nav',
+        'permalink'         => 'permalink',
+        'published'         => 'published',
+        'startpage'         => 'startpage',
+        'title'             => 'title',
+        'content'           => 'content',
+        'description'       => 'description',
+        'excerpt'           => 'excerpt',
+        'type'              => 'type',                // only if pageTypeDetection == 'type'
+        'subpagemodule'     => 'subpagemodule',
+        'privacypage'       => 'privacypage',
+        'seo'               => 'seo',
+        'featured_image'    => 'featured_image',
+        'background_image'  => 'background_image',
+        'logo'              => 'logo',                // only in site
     ],
 
     // maintenance mode
@@ -101,6 +102,7 @@ $this->module('multiplane')->extend([
     'previewScripts'        => false,           // restart MP init scripts
 
     // pagination
+    'paginationUriDelimiter' => 'page',
     'displayPostsLimit'     => 5,               // number of posts to display in subpagemodule
     'paginationDropdownLimit' => 5,             // number of pages, when the pagination turns to dropdown menu
 
@@ -243,12 +245,40 @@ $this->module('multiplane')->extend([
 
     'getPage' => function($_slug = '') {
 
-        $slug = $this->resolveSlug($_slug);
-        $collection = $this->collection;
-
         $slugName      = $this->fieldNames['slug'];
         $startpageName = $this->fieldNames['startpage'];
         $publishedName = $this->fieldNames['published'];
+        $permalinkName = $this->fieldNames['permalink'];
+
+        // try to find entry by permalink before starting the whole slug procedure
+        if ($this->usePermalinks) {
+
+            $collection = $this->pages;
+            $filter = [
+                $publishedName => true,
+                $permalinkName => '/' . \trim($_slug, '/'),
+            ];
+
+            $projection   = null;
+            $populate     = false;
+            $fieldsFilter = ['lang' => $this->lang];
+
+            // to do: trigger multiplane.getpage.before
+
+            foreach ($this->use['collections'] as $collection) {
+
+                $page = $this->app->module('collections')->findOne($collection, $filter, $projection, $populate, $fieldsFilter);
+
+                if ($page) {
+                    $this->doChecksWithCurrentPage($page);
+                    return $page;
+                }
+            }
+
+        }
+
+        $slug = $this->resolveSlug($_slug);
+        $collection = $this->collection;
 
         // startpage
         if (empty($slug)
@@ -323,8 +353,10 @@ $this->module('multiplane')->extend([
 
     'addBackgroundImage' => function($page = []) {
 
-        $background = $page['background_image']['_id']
-                   ?? $this->site['background_image']['_id']
+        $bgImgName = $this->fieldNames['background_image'];
+
+        $background = $page[$bgImgName]['_id']
+                   ?? $this->site[$bgImgName]['_id']
                    ?? null;
 
         if ($background) {
@@ -598,6 +630,20 @@ $this->module('multiplane')->extend([
         return compact('posts', 'pagination');
 
     }, // end of getPostsByType()
+
+    'doChecksWithCurrentPage' => function($page) {
+
+//         $slugName      = $this->fieldNames['slug'];
+        $startpageName = $this->fieldNames['startpage'];
+//         $publishedName = $this->fieldNames['published'];
+//         $permalinkName = $this->fieldNames['permalink'];
+        $bgImgName     = $this->fieldNames['background_image'];
+
+        if ($page[$startpageName] ?? false) $this->isStartpage = true;
+
+        if ($page[$bgImgName] && isset($page[$bgImgName]['_id'])) $this->hasBackgroundImage = true;
+
+    },
 
     'resolveSlug' => function($_slug = '') {
 
