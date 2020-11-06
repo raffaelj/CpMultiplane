@@ -16,7 +16,7 @@ if (!MP_SELF_EXPORT) {
 // set config path
 $this->path('mp_config', MP_ENV_ROOT . '/config');
 
-spl_autoload_register(function($class){
+\spl_autoload_register(function($class){
 
     // register autoload classes in namespace Multiplane\Controller from
     // `MP_DIR/Controller`, e. g.: `/Controller/Products.php`
@@ -259,7 +259,7 @@ $this->module('multiplane')->extend([
             $collection = $this->pages;
             $filter = [
                 $publishedName => true,
-                $permalinkName => '/' . \trim($_slug, '/'),
+                $permalinkName => $this->app['route'],
             ];
 
             $projection   = null;
