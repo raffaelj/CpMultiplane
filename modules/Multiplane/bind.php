@@ -80,7 +80,7 @@ if (!$isMultilingual) {
 
         $slug = $params[':splat'][0];
 
-        if ($this->module('multiplane')->usePermalinks) {
+        if ($this->module('multiplane')->usePermalinksAsSlugs) {
 
             $permalink = $params[':splat'][0] ?? '';
             $permalink = '/' . \rtrim($permalink, '/'); // to do: reroute to avoid duplicated content
@@ -129,7 +129,7 @@ else {
             return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
         });
 
-        if (!$this->module('multiplane')->usePermalinks) {
+        if (!$this->module('multiplane')->usePermalinksAsSlugs) {
             $this->bind('/'.$lang.'/*', function($params) use($lang) {
 
                 $this->module('multiplane')->initI18n($lang);
@@ -140,7 +140,7 @@ else {
 
     }
 
-    if ($this->module('multiplane')->usePermalinks) {
+    if ($this->module('multiplane')->usePermalinksAsSlugs) {
 
         $this->bind('/*', function($params) {
 

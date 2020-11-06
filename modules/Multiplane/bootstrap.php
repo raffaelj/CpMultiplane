@@ -40,6 +40,7 @@ $this->module('multiplane')->extend([
 
     'isMultilingual'        => false,
     'usePermalinks'         => false,
+    'usePermalinksAsSlugs'  => false,
     'disableDefaultRoutes'  => false,             // don't use any default routes
     'outputMethod'          => 'dynamic',         // to do: static or pseudo static/cached
     'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
@@ -290,7 +291,7 @@ $this->module('multiplane')->extend([
         if (isset($page[$startpageName]) && $page[$startpageName]) $this->isStartpage = true;
 
         // reroute startpage if called via slug to avoid duplicated content
-        if (!$this->usePermalinks) {
+        if (!$this->usePermalinksAsSlugs) {
             if (\strlen($slug) && isset($page[$startpageName]) && $page[$startpageName] === true) {
                 $path = '/' . ($this->isMultilingual ? $this->lang : '');
                 $url = $this->app->routeUrl($path);
@@ -512,7 +513,7 @@ $this->module('multiplane')->extend([
 
             $n['active'] = $active;
 
-            if ($this->usePermalinks) {
+            if ($this->usePermalinksAsSlugs) {
                 $n['url'] = $n[$slugName];
                 unset($n[$slugName]);
             }
@@ -564,7 +565,7 @@ $this->module('multiplane')->extend([
 
         $this('i18n')->locale = $this->lang = $lang;
 
-        if ($this->isMultilingual/* && !$this->usePermalinks*/) {
+        if ($this->isMultilingual/* && !$this->usePermalinksAsSlugs*/) {
             $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
         }
 
@@ -605,7 +606,7 @@ $this->module('multiplane')->extend([
                 $slug = $entry[$slugName] ?? '';
             }
 
-            if (!$this->hasParentPage && !$this->usePermalinks) {
+            if (!$this->hasParentPage && !$this->usePermalinksAsSlugs) {
                 $l['url'] = MP_BASE_URL . '/' . $lang . '/' . $slug;
                 continue;
             }
@@ -619,7 +620,7 @@ $this->module('multiplane')->extend([
                 $route = $this->parentPage[$key] ?? null;
             }
 
-            if (!$this->usePermalinks) {
+            if (!$this->usePermalinksAsSlugs) {
                 $l['url'] = MP_BASE_URL . '/' . $lang . '/' . ($route ? trim($route, '/') . '/' : '') . $slug;
             } else {
                 $l['url'] = $slug;
@@ -787,10 +788,10 @@ $this->module('multiplane')->extend([
             $parts = \explode('/', $slug);
             $count = \count($parts);
 
-            if ($this->usePermalinks && $this->isMultilingual) {
+            if ($this->usePermalinksAsSlugs && $this->isMultilingual) {
 
                 if ($count == 2 && $parts[0] == $this->lang) {
-                    $this->currentSlug = $this->usePermalinks ? $permalink : $slug;
+                    $this->currentSlug = $this->usePermalinksAsSlugs ? $permalink : $slug;
                     return $this->currentSlug;
                 }
                 else {
@@ -812,7 +813,7 @@ $this->module('multiplane')->extend([
 
                 $route = $parts[0];
 
-                if ($this->usePermalinks && $this->isMultilingual) {
+                if ($this->usePermalinksAsSlugs && $this->isMultilingual) {
                     $route = $_parts[0] . '/' . $parts[0];
                 }
 
@@ -842,7 +843,7 @@ $this->module('multiplane')->extend([
                     $count = count($parts);
 
                     // to do: find cleaner solution for permalinks and enable breadcrumbs again
-                    if ($count > 1 && !$this->usePermalinks) {
+                    if ($count > 1 && !$this->usePermalinksAsSlugs) {
 
                         $breadcrumbs = $this->breadcrumbs;
                         $lang = $this->lang;
@@ -901,7 +902,7 @@ $this->module('multiplane')->extend([
 
         }
 
-        $this->currentSlug = $this->usePermalinks ? $permalink : $slug;
+        $this->currentSlug = $this->usePermalinksAsSlugs ? $permalink : $slug;
 
         return $this->currentSlug;
 
@@ -933,7 +934,7 @@ $this->module('multiplane')->extend([
 
         $route = trim($_route, '/');
 
-        if ($this->usePermalinks) $route = '/'.$route;
+        if ($this->usePermalinksAsSlugs) $route = '/'.$route;
 
         $filter = [
             $publishedName => true,

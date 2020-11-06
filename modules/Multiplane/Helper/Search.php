@@ -346,7 +346,7 @@ class Search extends \Lime\Helper {
             'collection' => $label,
         ];
 
-        if ($this->app->module('multiplane')->usePermalinks) {
+        if ($this->app->module('multiplane')->usePermalinksAsSlugs) {
             $item['url'] = $entry[$this->slugName];
         }
 
