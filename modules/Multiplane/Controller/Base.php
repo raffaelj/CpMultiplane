@@ -238,9 +238,8 @@ class Base extends \LimeExtra\Controller {
             'title' => $this('i18n')->get('Page not found'),
         ];
 
-        if ($this->app->module('multiplane')->hasBackgroundImage) {
-            $this->app->module('multiplane')->addBackgroundImage();
-        }
+        $this->app->module('multiplane')->displayBreadcrumbs = false;
+        $this->app->module('multiplane')->hasBackgroundImage = false;
 
         // To do: 401, 500
 
