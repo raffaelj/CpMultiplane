@@ -251,7 +251,9 @@ $this->module('multiplane')->extend([
         $publishedName = $this->fieldNames['published'];
 
         // startpage
-        if (empty($slug)) {
+        if (empty($slug)
+            || ($this->usePermalinksAsSlugs && '/'.\trim($this->app->baseUrl('/'), '/') == $_slug)
+            ) {
 
             $this->isStartpage = true;
 
