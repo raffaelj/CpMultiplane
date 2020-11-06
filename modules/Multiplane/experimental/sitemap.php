@@ -37,8 +37,8 @@ $this->on('multiplane.sitemap', function(&$xml) {
             $publishedName => true,
         ],
         'fields' => [
-            $slugName => true,
-            '_modified' => true,
+            $slugName      => true,
+            '_modified'    => true,
             $startpageName => true,
         ],
     ];
@@ -65,12 +65,12 @@ $this->on('multiplane.sitemap', function(&$xml) {
             if ($collection != $pages) {
 
                 $filter = [
-                    $publishedName => true,
-                    'subpagemodule.active' => true,
+                    $publishedName             => true,
+                    'subpagemodule.active'     => true,
                     'subpagemodule.collection' => $collection,
                 ];
                 $projection = [
-                    '_id' => false,
+                    '_id'           => false,
                     'subpagemodule' => true,
                 ];
 

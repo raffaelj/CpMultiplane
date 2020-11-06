@@ -19,10 +19,11 @@ $this->module('multiplane')->extend([
         $navName       = $this->fieldNames['nav'];
         $titleName     = $this->fieldNames['title'];
         $startpageName = $this->fieldNames['startpage'];
+        $publishedName = $this->fieldNames['published'];
 
         $options = [
             'filter' => [
-                'published' => true,
+                $publishedName => true,
             ],
             'fields' => [
                 $slugName      => true,
@@ -97,7 +98,9 @@ $this->module('multiplane')->extend([
     'getLanguageSwitch' => function($id) {
 
         $languages = $this->getLanguages(true);
-        $slugName  = $this->fieldNames['slug'];
+
+        $slugName      = $this->fieldNames['slug'];
+        $publishedName = $this->fieldNames['published'];
 
         foreach ($languages as &$l) {
 
@@ -111,8 +114,8 @@ $this->module('multiplane')->extend([
 
             else {
                 $filter = [
-                    'published' => true,
-                    '_id'       => $id ?? '',
+                    $publishedName => true,
+                    '_id'          => $id ?? '',
                 ];
                 $projection = [
                     $slugName   => true,
@@ -153,8 +156,8 @@ $this->module('multiplane')->extend([
     'getRouteToPrivacyPage' => function() {
 
         $filter = [
-            'published' => true,
-            'privacypage' => true
+            $this->fieldNames['published']   => true,
+            $this->fieldNames['privacypage'] => true
         ];
 
         $lang = $this->lang;
@@ -163,7 +166,7 @@ $this->module('multiplane')->extend([
 
         $projection = [
             $slugName => true,
-            '_id' => false,
+            '_id'     => false,
         ];
         if ($this->isMultilingual && $lang != $this->defaultLang) {
             $projection[$slugName.'_'.$lang] = true;
@@ -188,7 +191,7 @@ $this->module('multiplane')->extend([
             $src = $asset;
 
             if (\is_array($asset)) {
-                extract($asset);
+                \extract($asset);
             }
 
             if (@\substr($src, -3) == '.js') {

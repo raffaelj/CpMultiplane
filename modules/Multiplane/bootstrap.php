@@ -50,15 +50,21 @@ $this->module('multiplane')->extend([
     'navName'               => 'nav',             // deprecated, field name for navigation
 
     'fieldNames' => [                             // field mappings to default field names
-        'slug'      => '_id',
-        'nav'       => 'nav',
-        'permalink' => 'permalink',
-        'published' => 'published',
-        'startpage' => 'startpage',
-        'title'     => 'title',
-        'content'   => 'content',
-        'type'      => 'type', // only if pageTypeDetection == 'type'
+        'slug'          => '_id',
+        'nav'           => 'nav',
+        'permalink'     => 'permalink',
+        'published'     => 'published',
+        'startpage'     => 'startpage',
+        'title'         => 'title',
+        'content'       => 'content',
+        'description'   => 'description',
+        'excerpt'       => 'excerpt',
+        'type'          => 'type',                // only if pageTypeDetection == 'type'
         'subpagemodule' => 'subpagemodule',
+        'privacypage'   => 'privacypage',
+        'seo'           => 'seo',
+        'featured_image' => 'featured_image',
+        'logo'          => 'logo',                // only in site
     ],
 
     'use' => [
@@ -240,7 +246,9 @@ $this->module('multiplane')->extend([
         $slug = $this->resolveSlug($_slug);
         $collection = $this->collection;
 
+        $slugName      = $this->fieldNames['slug'];
         $startpageName = $this->fieldNames['startpage'];
+        $publishedName = $this->fieldNames['published'];
 
         // startpage
         if (empty($slug)) {
@@ -248,7 +256,7 @@ $this->module('multiplane')->extend([
             $this->isStartpage = true;
 
             $filter = [
-                $this->fieldNames['published'] => true,
+                $publishedName => true,
                 $startpageName => true,
             ];
 
@@ -256,10 +264,9 @@ $this->module('multiplane')->extend([
         // filter by slug
         else {
             $filter = [
-                'published' => true,
+                $publishedName => true,
             ];
 
-            $slugName = $this->fieldNames['slug'];
 
             if (!$this->isMultilingual) {
                 $filter[$slugName] = $slug;
@@ -472,7 +479,7 @@ $this->module('multiplane')->extend([
         $skip  = ($page - 1) * $limit;
 
         $filter = [
-            'published' => true,
+            $this->fieldNames['published'] => true,
         ];
 
         $sort = !empty($opts['customsort']) ? $opts['customsort'] : [
@@ -548,15 +555,15 @@ $this->module('multiplane')->extend([
         $skip  = ($page - 1) * $limit;
 
         $filter = [
-            'published' => true,
-            'type' => $type,
+            $this->fieldNames['published'] => true,
+            $this->fieldNames['type']      => $type,
         ];
 
         $options = [
             'filter' => $filter,
-            'lang'  => $lang,
-            'limit' => $limit,
-            'skip'  => $skip,
+            'lang'   => $lang,
+            'limit'  => $limit,
+            'skip'   => $skip,
         ];
 
         $posts = $this->app->module('collections')->find($this->pages, $options);
@@ -569,7 +576,7 @@ $this->module('multiplane')->extend([
             return;
         }
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
             foreach($posts as &$post) {
                 $post = $this->renderFields($post);
             }
@@ -1041,7 +1048,7 @@ $this->module('multiplane')->extend([
 
         // to do: hard coded variant for all subpage modules
         $filter = [
-            'published'                => true,
+            $this->fieldNames['published'] => true,
             'subpagemodule.active'     => true,
             'subpagemodule.collection' => $collection
         ];
