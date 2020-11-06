@@ -874,10 +874,10 @@ $this->module('multiplane')->extend([
 
             }
 
-            elseif($this->pageTypeDetection == 'type') {
+            elseif ($this->pageTypeDetection == 'type') {
 
                 if ($parts[0] == 'page' && (int)$parts[1]) {
-                    // pagination for blog module
+                    // pagination for blog module on startpage
                     $slug = ''; 
 
                     if (\class_exists('Lime\Request')) {
@@ -916,7 +916,7 @@ $this->module('multiplane')->extend([
 
         $collection = $parentPage['subpagemodule']['collection'] ?? false;
 
-        if (is_string($collection) && $this->app->module('collections')->exists($collection)) {
+        if (\is_string($collection) && $this->app->module('collections')->exists($collection)) {
             return $collection;
         }
 
@@ -932,7 +932,7 @@ $this->module('multiplane')->extend([
         $publishedName = $this->fieldNames['published'];
         $startpageName = $this->fieldNames['startpage'];
 
-        $route = trim($_route, '/');
+        $route = \trim($_route, '/');
 
         if ($this->usePermalinksAsSlugs) $route = '/'.$route;
 
