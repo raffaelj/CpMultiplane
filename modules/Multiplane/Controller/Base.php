@@ -237,6 +237,7 @@ class Base extends \LimeExtra\Controller {
         $page = [
             'title' => $this('i18n')->get('Page not found'),
         ];
+        $posts = [];
 
         $this->app->module('multiplane')->displayBreadcrumbs = false;
         $this->app->module('multiplane')->hasBackgroundImage = false;
@@ -245,11 +246,11 @@ class Base extends \LimeExtra\Controller {
 
         switch ($status) {
             case '404':
-                return $this->render('views:errors/404.php', compact('site', 'page'));
+                return $this->render('views:errors/404.php', compact('site', 'page', 'posts'));
                 break;
             case '503':
                 $this->app->layout = null;
-                return $this->render('views:errors/503-maintenance.php', compact('site'));
+                return $this->render('views:errors/503-maintenance.php', compact('site', 'page', 'posts'));
                 break;
         }
 
