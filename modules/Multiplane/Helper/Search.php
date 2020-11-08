@@ -143,7 +143,7 @@ class Search extends \Lime\Helper {
             $all = \array_filter(\explode(' ', $_search), 'strlen');
             $_search = \preg_quote($_search, '/');
             foreach ($all as $s) {
-                if (\mb_strlen($s) > $minLength) { // skip single char words ("I", "a"...)
+                if (\mb_strlen($s) > $this->minLength) { // skip single char words ("I", "a"...)
                     $this->searches[] = \preg_quote($s, '/');
                 }
             }
