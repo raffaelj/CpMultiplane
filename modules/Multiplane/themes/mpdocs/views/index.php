@@ -31,7 +31,7 @@
           @if(mp()->get('search/enabled'))
             @render('views:partials/search.php')
           @endif
-            @render('views:partials/nav-mobile.php', ['type' => 'main', 'class' => 'horizontal', 'hash' => $page['content_hash']])
+            @render('views:partials/nav-mobile.php', ['type' => 'main', 'class' => 'horizontal', 'hash' => $page['content_hash'] ?? ''])
         </header>
 
         {{ $content_for_layout }}
@@ -51,5 +51,8 @@
         {{ mp()->assets($app['multiplane.assets.bottom'], mp()->version) }}
         {{ mp()->userScripts() }}
 
+      @if(mp()->get('debug/overlay', false))
+        @render('views:partials/debug-overlay.php', compact('site', 'page', 'posts'))
+      @endif
     </body>
 </html>
