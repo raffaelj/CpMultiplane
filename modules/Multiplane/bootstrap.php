@@ -1,11 +1,11 @@
 <?php
 
-if ($this->debug) \error_reporting(E_ALL);
+if ($this['debug']) \error_reporting(E_ALL);
 
 //set version
 if (!$this->retrieve('multiplane/version', false)) {
     $this->set('multiplane/version', $this['debug'] ? time()
-        : \json_decode($this('fs')->read(MP_DIR.'/package.json'), true)['version']);
+        : \json_decode($this->helper('fs')->read(MP_DIR.'/package.json'), true)['version']);
 }
 $this->set('cockpit/version', \json_decode($this('fs')->read('#root:package.json'), true)['version']);
 
@@ -55,6 +55,8 @@ $this->module('multiplane')->extend([
         'forms'       => [],                      // list of form names
     ],
 
+    'structure'             => [],
+
     'slugName'              => '_id',             // deprecated, field name for url slug
     'navName'               => 'nav',             // deprecated, field name for navigation
 
@@ -68,13 +70,15 @@ $this->module('multiplane')->extend([
         'content'           => 'content',
         'description'       => 'description',
         'excerpt'           => 'excerpt',
-        'type'              => 'type',                // only if pageTypeDetection == 'type'
+        'type'              => 'type',            // only if pageTypeDetection == 'type'
         'subpagemodule'     => 'subpagemodule',
         'privacypage'       => 'privacypage',
         'seo'               => 'seo',
         'featured_image'    => 'featured_image',
         'background_image'  => 'background_image',
-        'logo'              => 'logo',                // only in site
+        'logo'              => 'logo',            // only in site
+        'tags'              => 'tags',
+        'category'          => 'category',        // not used for now, will be like tags
     ],
 
     // maintenance mode
@@ -253,13 +257,30 @@ $this->module('multiplane')->extend([
         $publishedName = $this->fieldNames['published'];
         $permalinkName = $this->fieldNames['permalink'];
 
+        $langSuffix    = $this->lang != $this->defaultLang ? '_'.$this->lang : '';
+
+        $route = $this->app['route'];
+
+        $paginationDelim = $this->paginationUriDelimiter;
+
+        // check for /*/page/{int} requests (paginagion)
+        $pattern = '/\/'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
+
+        if (\preg_match($pattern, $_slug, $matches)) {
+
+            $this->app->request->request['page'] = $matches[1];
+            $route = \preg_replace($pattern, '', $route);
+            $_slug = \preg_replace($pattern, '', $_slug);
+
+        }
+
         // try to find entry by permalink before starting the whole slug procedure
         if ($this->usePermalinks) {
 
             $collection = $this->pages;
             $filter = [
                 $publishedName => true,
-                $permalinkName => $this->app['route'],
+                $permalinkName.$langSuffix => $route,
             ];
 
             $projection   = null;
@@ -273,15 +294,60 @@ $this->module('multiplane')->extend([
                 $page = $this->app->module('collections')->findOne($collection, $filter, $projection, $populate, $fieldsFilter);
 
                 if ($page) {
-                    $this->doChecksWithCurrentPage($page);
+                    $this->collection = $collection;
+                    $this->_doChecksWithCurrentPage($page);
+
+                    if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
+                        $page = $this->renderFields($page);
+                    }
+
                     return $page;
                 }
             }
 
         }
 
-        $slug = $this->resolveSlug($_slug);
+        // extract slug
+        $parts = \explode('/', \trim($_slug, '/'));
+        $count = \count($parts);
+        $slug  = \end($parts);
+
         $collection = $this->collection;
+
+        if ($count > 1) {
+
+            $parentSlug = $parts[0];
+
+            foreach ($this->structure as $v) {
+
+                if (isset($v['slug'.$langSuffix]) && $v['slug'.$langSuffix] == $parentSlug) {
+
+                    $collection = $v['_id'];
+                    $this->collection = $collection;
+
+                    if (isset($v['_pid']) && isset($this->structure[$v['_pid']])) {
+
+                        $parentCollection = $this->structure[$v['_pid']];
+
+                        $filter = [
+                            $publishedName         => true,
+                            $slugName.$langSuffix  => $parentSlug, // to do: use slug from structure
+                            'subpagemodule.active' => true,
+                        ];
+                        $projection = null;
+                        $fieldsFilter = [];
+
+                        if ($parentPage = $this->app->module('collections')->findOne($parentCollection['_id'], $filter, $projection, false, $fieldsFilter)) {
+                            $this->parentPage = $parentPage;
+                            $this->hasParentPage = true;
+                            $this->_addBreadcrumbs($this->parentPage);
+                        }
+                    }
+                    break;
+                }
+            }
+
+        }
 
         // startpage
         if (empty($slug)
@@ -330,7 +396,7 @@ $this->module('multiplane')->extend([
 
         if (!$page) return false;
 
-        if (isset($page[$startpageName]) && $page[$startpageName]) $this->isStartpage = true;
+        $this->_doChecksWithCurrentPage($page);
 
         // reroute startpage if called via slug to avoid duplicated content
         if (!$this->usePermalinksAsSlugs) {
@@ -566,6 +632,8 @@ $this->module('multiplane')->extend([
 
         }
 
+        if ($this->isMultilingual) $slug = $this->lang . '/' . $slug;
+
         $pagination =  [
             'count' => $count,
             'page'  => $page,
@@ -585,6 +653,9 @@ $this->module('multiplane')->extend([
 
         if (!$type) $type = 'post';
 
+        $publishedName = $this->fieldNames['published'];
+        $typeName      = $this->fieldNames['type'];
+
         $lang  = $this->lang;
         $page  = $this->app->param('page', 1);
         $limit = (isset($opts['limit']) && (int)$opts['limit'] ? $opts['limit'] : null)
@@ -592,8 +663,8 @@ $this->module('multiplane')->extend([
         $skip  = ($page - 1) * $limit;
 
         $filter = [
-            $this->fieldNames['published'] => true,
-            $this->fieldNames['type']      => $type,
+            $publishedName => true,
+            $typeName      => $type,
         ];
 
         $options = [
@@ -630,223 +701,288 @@ $this->module('multiplane')->extend([
             'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
 
-        return compact('posts', 'pagination');
+        $collection = $this->app->module('collections')->collection($this->pages);
+
+        return compact('posts', 'pagination', 'collection');
 
     }, // end of getPostsByType()
 
-    'doChecksWithCurrentPage' => function($page) {
+    '_doChecksWithCurrentPage' => function($page) {
 
-//         $slugName      = $this->fieldNames['slug'];
+        $slugName      = $this->fieldNames['slug'];
         $startpageName = $this->fieldNames['startpage'];
-//         $publishedName = $this->fieldNames['published'];
-//         $permalinkName = $this->fieldNames['permalink'];
+        $permalinkName = $this->fieldNames['permalink'];
         $bgImgName     = $this->fieldNames['background_image'];
 
         if ($page[$startpageName] ?? false) $this->isStartpage = true;
 
         if (isset($page[$bgImgName]) && isset($page[$bgImgName]['_id'])) $this->hasBackgroundImage = true;
 
+        $this->currentSlug = $page[$slugName];
+
+        if ($this->pageTypeDetection == 'type') {
+            $this->_checkHasParentPage($page);
+        }
+
     },
 
-    'resolveSlug' => function($_slug = '') {
+    '_checkHasParentPage' => function($page) {
 
-        // check, if slug type is _id or slug
-        // check, if sub page
-        // to do...
-
-        if ($_slug == '') return $_slug;
-
-        // fix routes with ending slash
-//         $slug = \rtrim($_slug, '/');
-        $slug = \trim($_slug, '/');
-        $permalink = '/'.$slug;
-
-        if (\strpos($slug, '/')) {
-
-            $parts = \explode('/', $slug);
-            $count = \count($parts);
-
-            if ($this->usePermalinksAsSlugs && $this->isMultilingual) {
-
-                if ($count == 2 && $parts[0] == $this->lang) {
-                    $this->currentSlug = $this->usePermalinksAsSlugs ? $permalink : $slug;
-                    return $this->currentSlug;
-                }
-                else {
-                    $_parts = $parts;
-                    $parts = \array_slice($parts, 1);
-                }
-            }
-
-            // possible options - to do...:
-            // * /page-title
-            // * /category/page-title
-            // * /collection/page-title
-            // * /blog/post-title
-            // * /blog/page/2
-            // * /blog/2019/06/06/post-title
-            // * ...
-
-            if ($this->pageTypeDetection == 'collections') {
-
-                $route = $parts[0];
-
-                if ($this->usePermalinksAsSlugs && $this->isMultilingual) {
-                    $route = $_parts[0] . '/' . $parts[0];
-                }
-
-                if ($collection = $this->resolveCurrentCollection($route)) {
-
-                    // pagination for blog module
-                    if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
-                        $slug = $parts[0];
-                        $permalink = '/'.$parts[0];
-                        if ($this->isMultilingual) $permalink = '/' . $this->lang . $permalink;
-
-                        if (class_exists('Lime\Request')) {
-                            $this->app->request->request['page'] = $parts[2];
-                        } else {
-                            $_REQUEST['page'] = $parts[2];
-                        }
-
-                        unset($parts[1]); // I don't want "page" in breadcrumbs
-                    }
-
-                    else {
-                        $this->hasParentPage = true;
-                        $this->collection = $collection;
-                        $slug = $parts[1];
-                    }
-
-                    $count = count($parts);
-
-                    // to do: find cleaner solution for permalinks and enable breadcrumbs again
-                    if ($count > 1 && !$this->usePermalinksAsSlugs) {
-
-                        $breadcrumbs = $this->breadcrumbs;
-                        $lang = $this->lang;
-                        $suffix = $lang != $this->defaultLang ? '_'.$lang : '';
-
-                        foreach ($parts as $k => $part) {
-
-                            if ($k >= ($count - 1)) continue; // skip current page
-
-                            $filter = [
-                                $this->fieldNames['slug'] . $suffix => $part
-                            ];
-                            $projection = [];
-
-                            $entry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $lang]);
-
-                            $breadcrumbs[] = [
-                                'title' => $entry[$this->fieldNames['title']] ?? $part,
-                                'slug'  => $part,
-                            ];
-
-                        }
-                        $this->breadcrumbs = $breadcrumbs;
-
-                    }
-
-                }
-
-            }
-
-            elseif ($this->pageTypeDetection == 'type') {
-
-                if ($parts[0] == 'page' && (int)$parts[1]) {
-                    // pagination for blog module on startpage
-                    $slug = ''; 
-
-                    if (\class_exists('Lime\Request')) {
-                        $this->app->request->request['page'] = $parts[1];
-                    } else {
-                        $_REQUEST['page'] = $parts[1];
-                    }
-                }
-
-                if ($parts[1] == 'page' && (int)$parts[2]) {
-                    // pagination for blog module
-                    $slug = $parts[0]; 
-
-                    if (\class_exists('Lime\Request')) {
-                        $this->app->request->request['page'] = $parts[2];
-                    } else {
-                        $_REQUEST['page'] = $parts[2];
-                    }
-                }
-
-            }
-
-        }
-
-        $this->currentSlug = $this->usePermalinksAsSlugs ? $permalink : $slug;
-
-        return $this->currentSlug;
-
-    }, // end of resolveSlug()
-
-    'resolveCurrentCollection' => function($route = '') {
-
-        $parentPage = $this->resolveParentPage($route);
-
-        $this->parentPage = $parentPage;
-
-        $collection = $parentPage['subpagemodule']['collection'] ?? false;
-
-        if (\is_string($collection) && $this->app->module('collections')->exists($collection)) {
-            return $collection;
-        }
-
-        return false;
-
-    }, // end of resolveCurrentCollection()
-
-    'resolveParentPage' => function($_route = '') {
-
-        $lang = $this->lang;
-
-        $slugName      = $this->fieldNames['slug'] . ($lang == $this->defaultLang ? '' : '_'.$lang);
-        $publishedName = $this->fieldNames['published'];
+        $slugName      = $this->fieldNames['slug'];
         $startpageName = $this->fieldNames['startpage'];
+        $publishedName = $this->fieldNames['published'];
+        $permalinkName = $this->fieldNames['permalink'];
+        $typeName      = $this->fieldNames['type'];
 
-        $route = \trim($_route, '/');
-
-        if ($this->usePermalinksAsSlugs) $route = '/'.$route;
-
-        $filter = [
-            $publishedName => true,
-            $slugName      => $route,
-            'subpagemodule.active' => true,
-        ];
-
-        $projection = [
-            $this->fieldNames['slug'] => true,
-            'subpagemodule' => true,
-        ];
-        if ($this->fieldNames['slug'] != '_id') {
-            foreach($this->getLanguages() as $l) {
-                $projection[$this->fieldNames['slug'].'_'.$l] = true;
-            }
-        }
-
-        if ($this->isStartpage) {
+        if ($this->pageTypeDetection == 'type' && !empty($page[$typeName])) {
 
             $filter = [
-                $publishedName => true,
-                $startpageName => true,
+                $publishedName         => true,
                 'subpagemodule.active' => true,
+                'subpagemodule.type'   => $page[$typeName],
             ];
+            $projection   = null;
+            $fieldsFilter = [];
+
+            if ($parentPage = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, $fieldsFilter)) {
+
+                $this->parentPage = $parentPage;
+                $this->hasParentPage = true;
+                $this->_addBreadcrumbs($this->parentPage);
+            }
 
         }
 
-        $fieldsFilter = [];
+    },
 
-        $parentPage = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, $fieldsFilter);
+    '_addBreadcrumbs' => function($page) {
 
-        return $parentPage;
+        $slugName      = $this->fieldNames['slug'];
+        $titleName     = $this->fieldNames['title'];
 
-    }, // end of resolveParentPage()
+        $langSuffix = $this->lang != $this->defaultLang ? '_'.$this->lang : '';
+
+        $breadcrumbs = $this->breadcrumbs;
+
+        $title = $page[$titleName.$langSuffix];
+        $slug  = $page[$slugName.$langSuffix];
+
+        $breadcrumbs[] = [
+            'title' => $title,
+            'slug'  => $slug,
+        ];
+
+        $this->breadcrumbs = $breadcrumbs;
+
+    },
+
+//     'resolveSlug' => function($_slug = '') {
+// 
+//         // check, if slug type is _id or slug
+//         // check, if sub page
+//         // to do...
+// 
+//         if ($_slug == '') return $_slug;
+// 
+//         // fix routes with ending slash
+// //         $slug = \rtrim($_slug, '/');
+//         $slug = \trim($_slug, '/');
+//         $permalink = '/'.$slug;
+// 
+//         if (\strpos($slug, '/')) {
+// 
+//             $parts = \explode('/', $slug);
+//             $count = \count($parts);
+// 
+//             if ($this->usePermalinksAsSlugs && $this->isMultilingual) {
+// 
+//                 if ($count == 2 && $parts[0] == $this->lang) {
+//                     $this->currentSlug = $this->usePermalinksAsSlugs ? $permalink : $slug;
+//                     return $this->currentSlug;
+//                 }
+//                 else {
+//                     $_parts = $parts;
+//                     $parts = \array_slice($parts, 1);
+//                 }
+//             }
+// 
+//             // possible options - to do...:
+//             // * /page-title
+//             // * /category/page-title
+//             // * /collection/page-title
+//             // * /blog/post-title
+//             // * /blog/page/2
+//             // * /blog/2019/06/06/post-title
+//             // * ...
+// 
+//             if ($this->pageTypeDetection == 'collections') {
+// 
+//                 $route = $parts[0];
+// 
+//                 if ($this->usePermalinksAsSlugs && $this->isMultilingual) {
+//                     $route = $_parts[0] . '/' . $parts[0];
+//                 }
+// 
+//                 if ($collection = $this->resolveCurrentCollection($route)) {
+// 
+//                     // pagination for blog module
+//                     if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
+//                         $slug = $parts[0];
+//                         $permalink = '/'.$parts[0];
+//                         if ($this->isMultilingual) $permalink = '/' . $this->lang . $permalink;
+// 
+//                         if (class_exists('Lime\Request')) {
+//                             $this->app->request->request['page'] = $parts[2];
+//                         } else {
+//                             $_REQUEST['page'] = $parts[2];
+//                         }
+// 
+//                         unset($parts[1]); // I don't want "page" in breadcrumbs
+//                     }
+// 
+//                     else {
+//                         $this->hasParentPage = true;
+//                         $this->collection = $collection;
+//                         $slug = $parts[1];
+//                     }
+// 
+//                     $count = count($parts);
+// 
+//                     // to do: find cleaner solution for permalinks and enable breadcrumbs again
+//                     if ($count > 1 && !$this->usePermalinksAsSlugs) {
+// 
+//                         $breadcrumbs = $this->breadcrumbs;
+//                         $lang = $this->lang;
+//                         $suffix = $lang != $this->defaultLang ? '_'.$lang : '';
+// 
+//                         foreach ($parts as $k => $part) {
+// 
+//                             if ($k >= ($count - 1)) continue; // skip current page
+// 
+//                             $filter = [
+//                                 $this->fieldNames['slug'] . $suffix => $part
+//                             ];
+//                             $projection = [];
+// 
+//                             $entry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $lang]);
+// 
+//                             $breadcrumbs[] = [
+//                                 'title' => $entry[$this->fieldNames['title']] ?? $part,
+//                                 'slug'  => $part,
+//                             ];
+// 
+//                         }
+//                         $this->breadcrumbs = $breadcrumbs;
+// 
+//                     }
+// 
+//                 }
+// 
+//             }
+// 
+//             elseif ($this->pageTypeDetection == 'type') {
+// 
+//                 if ($parts[0] == 'page' && (int)$parts[1]) {
+//                     // pagination for blog module on startpage
+//                     $slug = ''; 
+// 
+//                     if (\class_exists('Lime\Request')) {
+//                         $this->app->request->request['page'] = $parts[1];
+//                     } else {
+//                         $_REQUEST['page'] = $parts[1];
+//                     }
+//                 }
+// 
+//                 if ($parts[1] == 'page' && (int)$parts[2]) {
+//                     // pagination for blog module
+//                     $slug = $parts[0]; 
+// 
+//                     if (\class_exists('Lime\Request')) {
+//                         $this->app->request->request['page'] = $parts[2];
+//                     } else {
+//                         $_REQUEST['page'] = $parts[2];
+//                     }
+//                 }
+// 
+//             }
+// 
+//         }
+// 
+//         $this->currentSlug = $this->usePermalinksAsSlugs ? $permalink : $slug;
+// 
+//         return $this->currentSlug;
+// 
+//     }, // end of resolveSlug()
+
+//     'resolveCurrentCollection' => function($route = '') {
+// 
+//         $parentPage = $this->resolveParentPage($route);
+// 
+//         $this->parentPage = $parentPage;
+// 
+//         $collection = $parentPage['subpagemodule']['collection'] ?? false;
+// 
+//         if (\is_string($collection) && $this->app->module('collections')->exists($collection)) {
+//             return $collection;
+//         }
+// 
+//         return false;
+// 
+//     }, // end of resolveCurrentCollection()
+
+//     'resolveParentPage' => function($_route = '') {
+// // echo $_route . "\n";
+//         $lang = $this->lang;
+// 
+//         $slugName      = $this->fieldNames['slug'] . ($lang == $this->defaultLang ? '' : '_'.$lang);
+//         $publishedName = $this->fieldNames['published'];
+//         $startpageName = $this->fieldNames['startpage'];
+//         $permalinkName = $this->fieldNames['permalink'] . ($lang == $this->defaultLang ? '' : '_'.$lang);
+// 
+//         $route = \rtrim($_route, '/');
+// //         $route = \trim($_route, '/');
+// 
+//         if ($this->usePermalinksAsSlugs) $route = '/'.$route;
+// // echo $route . "\n";
+//         $filter = [
+//             $publishedName => true,
+//             $slugName      => $route,
+//             'subpagemodule.active' => true,
+//         ];
+// 
+//         if ($this->usePermalinks) {
+//             $filter[$permalinkName] = $route;
+//             unset($filter[$slugName]);
+//         }
+// 
+//         $projection = null;
+// //         $projection = [
+// //             $this->fieldNames['slug'] => true,
+// //             'subpagemodule' => true,
+// //         ];
+// //         if ($this->fieldNames['slug'] != '_id') {
+// //             foreach($this->getLanguages() as $l) {
+// //                 $projection[$this->fieldNames['slug'].'_'.$l] = true;
+// //             }
+// //         }
+// 
+//         if ($this->isStartpage) {
+// 
+//             $filter = [
+//                 $publishedName => true,
+//                 $startpageName => true,
+//                 'subpagemodule.active' => true,
+//             ];
+// 
+//         }
+// // print_r($filter);
+//         $fieldsFilter = [];
+// 
+//         $parentPage = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, $fieldsFilter);
+// 
+//         return $parentPage;
+// 
+//     }, // end of resolveParentPage()
 
     'renderFields' => function($page) {
 
@@ -932,17 +1068,8 @@ $this->module('multiplane')->extend([
             }
         }
 
-        // backwards compatibility
-        if (isset($config['slugName']) && !isset($config['fieldNames']['slug'])) {
-            $fieldNames = $this->fieldNames;
-            $fieldNames['slug'] = $config['slugName'];
-            $this->fieldNames = $fieldNames;
-        }
-        if (isset($config['navName']) && !isset($config['fieldNames']['nav'])) {
-            $fieldNames = $this->fieldNames;
-            $fieldNames['nav'] = $config['navName'];
-            $this->fieldNames = $fieldNames;
-        }
+        // backwards compatibility checks
+        $this->_keepConfigBackwardsCompatible($config);
 
         // set current collection to pages
         $this->set('collection', $this->pages);
@@ -994,6 +1121,92 @@ $this->module('multiplane')->extend([
         }
 
     }, // end of loadThemeConfig()
+
+    '_keepConfigBackwardsCompatible' => function($config) {
+
+        // fix slugName
+        if (isset($config['slugName']) && !isset($config['fieldNames']['slug'])) {
+            $fieldNames = $this->fieldNames;
+            $fieldNames['slug'] = $config['slugName'];
+            $this->fieldNames = $fieldNames;
+        }
+
+        // fix navName
+        if (isset($config['navName']) && !isset($config['fieldNames']['nav'])) {
+            $fieldNames = $this->fieldNames;
+            $fieldNames['nav'] = $config['navName'];
+            $this->fieldNames = $fieldNames;
+        }
+
+        // fix missing "use"
+        if (empty($this->use['collections'])) {
+            $collections = [];
+            if (!empty($this->pages)) $collections[] = $this->pages;
+            if (!empty($this->posts)) $collections[] = $this->posts;
+            $use = $this->use;
+            $use['collections'] = $collections;
+            $this->use = $use;
+        }
+
+        // fix missing structure
+        if (empty($this->structure)) {
+
+            $structure = [];
+            $languages = $this->getLanguages(false, false);
+
+            $slugName      = $this->fieldNames['slug'];
+            $publishedName = $this->fieldNames['published'];
+
+            foreach ($this->use['collections'] as $col) {
+
+                $_collection = $this->app->module('collections')->collection($col);
+
+                if ($col == $this->pages) {
+                    $structure[$col] = [
+                        '_id'        => $_collection['name'],
+                        'label'      => $_collection['label'] ?? $_collection['name'],
+                        'slug'       => '',
+                    ];
+                    foreach ($languages as $l) {
+                        $structure[$col]['slug_'.$l] = '';
+                    }
+                    continue;
+                }
+
+                $filter = [
+                    $publishedName => true,
+                    'subpagemodule.active'     => true,
+                    'subpagemodule.collection' => $col,
+                ];
+                $tmp = $this->app->module('collections')->findOne($this->pages, $filter, null, false, null);
+
+                if ($slugName == '_id') {
+                    $slug = $tmp['_id'];
+                } else {
+                    $slug = (!empty($tmp['subpagemodule']['route'])) ? $tmp['subpagemodule']['route'] : $tmp[$slugName];
+                }
+
+                $structure[$col] = [
+                    '_id'        => $_collection['name'],
+                    'label'      => $_collection['label'] ?? $_collection['name'],
+                    'slug'       => $slug,
+                    '_pid'       => $this->pages,
+                ];
+                foreach ($languages as $l) {
+                    if ($slugName == '_id') {
+                        $slug = $tmp['_id'];
+                    } else {
+                        $slug = (!empty($tmp['subpagemodule']['route_'.$l])) ? $tmp['subpagemodule']['route_'.$l] : $tmp[$slugName.'_'.$l];
+                    }
+                    $structure[$col]['slug_'.$l] = $slug;
+                }
+
+            }
+
+            $this->structure = $structure;
+        }
+
+    }, // end of _keepConfigBackwardsCompatible()
 
     'extendLexyTemplateParser' => function() {
 
@@ -1095,25 +1308,27 @@ $this->module('multiplane')->extend([
 
         if (isset($routes[$collection])) return $routes[$collection];
 
+        $slugName      = $this->fieldNames['slug'];
+        $publishedName = $this->fieldNames['published'];
+
         $route = '';
 
         // to do: hard coded variant for all subpage modules
         $filter = [
-            $this->fieldNames['published'] => true,
+            $publishedName => true,
             'subpagemodule.active'     => true,
             'subpagemodule.collection' => $collection
         ];
-        $projection = [
-            '_id' => false,
-            'subpagemodule' => true,
-        ];
+        $projection = [];
 
         $postRouteEntry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $this->lang]);
 
         $path = $this->lang == $this->defaultLang ? 'route' : 'route_'.$this->lang;
 
-        if (isset($postRouteEntry['subpagemodule'][$path])) {
+        if (!empty($postRouteEntry['subpagemodule'][$path])) {
             $route = $postRouteEntry['subpagemodule'][$path];
+        } else {
+            $route = $postRouteEntry[$slugName];
         }
 
         $routes[$collection] = $route;

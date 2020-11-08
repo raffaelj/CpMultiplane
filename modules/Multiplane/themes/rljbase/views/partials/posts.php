@@ -1,5 +1,5 @@
 <?php
-if (!isset($posts['collection']) || !isset($posts['posts']) || !isset($posts['pagination'])) return;
+if (/*!isset($posts['collection']) || */!isset($posts['posts']) || !isset($posts['pagination'])) return;
 
 // allow custom partials for different sub page collections
 if ($path = $app->path("views:collections/{$posts['collection']['name']}/posts.php")) {
@@ -8,7 +8,8 @@ if ($path = $app->path("views:collections/{$posts['collection']['name']}/posts.p
 }
 
 $usePermalinks = mp()->usePermalinks;
-$slugName      = mp()->slugName;
+$slugName      = mp()->get('fieldNames/slug');
+$permalinkName = mp()->get('fieldNames/permalink');
 
 // make $posts, $collection and $pagination available
 \extract($posts);
@@ -17,7 +18,7 @@ if (empty($posts)) return;
 
             @render('views:partials/pagination.php', compact('pagination'))
 
-          @foreach($posts as $post){% $_url = $usePermalinks ? $app->routeUrl($post[$slugName]) : $app->baseUrl($pagination['posts_slug'].'/'.$post[$slugName]); %}
+          @foreach($posts as $post){% $_url = $usePermalinks ? $app->routeUrl($post[$permalinkName]) : $app->routeUrl($pagination['posts_slug'].'/'.$post[$slugName]); %}
             <article class="excerpt">
               @if(!empty($post['title']))
                 <h3><a href="{{ $_url }}">{{{ $post['title'] }}}</a></h3>

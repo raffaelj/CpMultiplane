@@ -13,6 +13,8 @@ $this->module('multiplane')->extend([
 
         $collection = $this->app->module('collections')->collection($collection);
 
+        if (!$collection) return [];
+
         $isSortable = $collection['sortable'] ?? false;
 
         $slugName      = $this->fieldNames['slug'];
@@ -20,6 +22,7 @@ $this->module('multiplane')->extend([
         $titleName     = $this->fieldNames['title'];
         $startpageName = $this->fieldNames['startpage'];
         $publishedName = $this->fieldNames['published'];
+        $permalinkName = $this->fieldNames['permalink'];
 
         $options = [
             'filter' => [
@@ -60,7 +63,7 @@ $this->module('multiplane')->extend([
 
         if (!$entries) return false;
 
-        foreach($entries as &$n) {
+        foreach ($entries as &$n) {
 
             $active = false;
             if ($this->hasParentPage && $n[$slugName] == $this->parentPage[$slugName]) {
@@ -73,8 +76,8 @@ $this->module('multiplane')->extend([
 
             $n['active'] = $active;
 
-            if ($this->usePermalinksAsSlugs) {
-                $n['url'] = $n[$slugName];
+            if ($this->usePermalinks) {
+                $n['url'] = $n[$permalinkName];
                 unset($n[$slugName]);
             }
 
@@ -95,56 +98,53 @@ $this->module('multiplane')->extend([
 
     }, // end of getNav()
 
-    'getLanguageSwitch' => function($id) {
+    'getLanguageSwitch' => function($id = '') {
+
+        if (empty($id)) return [];
 
         $languages = $this->getLanguages(true);
 
         $slugName      = $this->fieldNames['slug'];
         $publishedName = $this->fieldNames['published'];
+        $permalinkName = $this->fieldNames['permalink'];
+        $contentName   = $this->fieldNames['content'];
 
         foreach ($languages as &$l) {
 
             $lang = $l['code'];
             $slug = '';
 
+            $langSuffix = $lang != $this->defaultLang && $slugName != '_id' ? '_'.$lang : '';
+
             if ($this->isStartpage) {
-                $l['url'] = MP_BASE_URL . '/' . $lang;
+                $l['url'] = $this->app->routeUrl("/{$lang}");
                 continue;
             }
 
             else {
                 $filter = [
                     $publishedName => true,
-                    '_id'          => $id ?? '',
+                    '_id'          => $id,
                 ];
                 $projection = [
-                    $slugName   => true,
-                    "{$slugName}_{$lang}" => true
+                    $contentName => false,
                 ];
-
                 $entry = $this->app->module('collections')->findOne($this->collection, $filter, $projection, false, ['lang' => $lang]);
 
-                $slug = $entry[$slugName] ?? '';
-            }
+                if ($this->usePermalinks) {
+                    $l['url'] = $this->app->routeUrl($entry[$permalinkName]);
+                } else {
 
-            if (!$this->hasParentPage && !$this->usePermalinksAsSlugs) {
-                $l['url'] = MP_BASE_URL . '/' . $lang . '/' . $slug;
-                continue;
-            }
+                    if (!isset($entry[$slugName])) continue;
 
-            $key = 'route' . ($slugName == '_id' || $l['default'] ? '' : "_{$lang}");
-            if (!empty($this->parentPage['subpagemodule'][$key])) {
-                $route = $this->parentPage['subpagemodule'][$key];
-            }
-            else { // fallback to slug of parent page
-                $key   = $slugName . ($slugName == '_id' || $l['default'] ? '' : "_{$lang}");
-                $route = $this->parentPage[$key] ?? null;
-            }
-
-            if (!$this->usePermalinksAsSlugs) {
-                $l['url'] = MP_BASE_URL . '/' . $lang . '/' . ($route ? trim($route, '/') . '/' : '') . $slug;
-            } else {
-                $l['url'] = $slug;
+                    $slug = $entry[$slugName];
+                    if ($this->parentPage) {
+                        $route = $this->parentPage[$slugName.$langSuffix];
+                        $l['url'] = $this->app->routeUrl('/'.$lang.'/'.$route.'/'.$entry[$slugName]);
+                    } else {
+                        $l['url'] = $this->app->routeUrl('/'.$lang.'/'.$entry[$slugName]);
+                    }
+                }
             }
 
         }
