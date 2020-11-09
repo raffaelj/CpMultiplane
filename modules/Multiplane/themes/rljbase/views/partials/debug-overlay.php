@@ -10,6 +10,7 @@
 .debug pre {
     margin: .5em 0 0 0;
     font-size: 10px;
+    background: transparent;
 }
 #debug_toggle + label {
     position: fixed;

@@ -50,9 +50,5 @@
         @render('views:partials/privacy-notice.php')
         {{ mp()->assets($app['multiplane.assets.bottom'], mp()->version) }}
         {{ mp()->userScripts() }}
-
-      @if(mp()->get('debug/overlay', false))
-        @render('views:partials/debug-overlay.php', compact('site', 'page', 'posts'))
-      @endif
     </body>
 </html>

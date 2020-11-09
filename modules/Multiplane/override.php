@@ -35,6 +35,17 @@ $this->service('renderer', function() use ($lexy) {
     return $renderer;
 });
 
+// add debug overlay
+if ($this->debug) {
+    $this->on('multiplane.init', function() {
+        if ($this->retrieve('multiplane/debug/overlay', false)) {
+            $this->on('multiplane.layout.contentafter', function() {
+                $this->renderView('views:partials/debug-overlay.php');
+            });
+        }
+    });
+}
+
 // error handling
 $this->on('after', function() {
 
