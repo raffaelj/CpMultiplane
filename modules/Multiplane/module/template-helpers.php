@@ -100,8 +100,6 @@ $this->module('multiplane')->extend([
 
     'getLanguageSwitch' => function($id = '') {
 
-        if (empty($id)) return [];
-
         $languages = $this->getLanguages(true);
 
         $slugName      = $this->fieldNames['slug'];
@@ -116,7 +114,7 @@ $this->module('multiplane')->extend([
 
             $langSuffix = $lang != $this->defaultLang && $slugName != '_id' ? '_'.$lang : '';
 
-            if ($this->isStartpage) {
+            if ($this->isStartpage || empty($id)) {
                 $l['url'] = $this->app->routeUrl("/{$lang}");
                 continue;
             }
