@@ -264,7 +264,8 @@ $this->module('multiplane')->extend([
         $paginationDelim = $this->paginationUriDelimiter;
 
         // check for /*/page/{int} requests (paginagion)
-        $pattern = '/\/'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
+//         $pattern = '/\/'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
+        $pattern = '/'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
 
         if (\preg_match($pattern, $_slug, $matches)) {
 
@@ -387,8 +388,12 @@ $this->module('multiplane')->extend([
         $this->_doChecksWithCurrentPage($page);
 
         // reroute startpage if called via slug to avoid duplicated content
+        $shouldRedirect = \strlen($slug)
+            && isset($page[$startpageName]) && $page[$startpageName] === true
+            && !$this->app->param('page', false); // posts might be on startpage without slug
+
         if (!$this->usePermalinksAsSlugs) {
-            if (\strlen($slug) && isset($page[$startpageName]) && $page[$startpageName] === true) {
+            if ($shouldRedirect) {
                 $path = '/' . ($this->isMultilingual ? $this->lang : '');
                 $url = $this->app->routeUrl($path);
                 \header('Location: '.$url, true, 301);
@@ -606,21 +611,10 @@ $this->module('multiplane')->extend([
             }
         }
 
-        // subpage module is on startpage without slug
-        if (empty($slug) && $this->pageTypeDetection == 'collections' && $this->isStartpage) {
+        $posts_slug = $slug;
 
-            $parentPage = $this->resolveParentPage();
-
-            $key = 'route' . ($lang == $this->defaultLang ? '' : '_'.$lang);
-
-            if (!empty($parentPage['subpagemodule'][$key])) {
-                $slug = $parentPage['subpagemodule'][$key];
-            }
-            else {
-                $key = $this->fieldNames['slug'] . ($this->fieldNames['slug'] == '_id' || $lang == $this->defaultLang ? '' : "_{$lang}");
-                $slug = $parentPage[$key];
-            }
-
+        if ($this->isStartpage && $this->pageTypeDetection == 'collections') {
+            $slug = '';
         }
 
         if ($this->isMultilingual) $slug = $this->lang . '/' . $slug;
@@ -631,7 +625,7 @@ $this->module('multiplane')->extend([
             'limit' => $limit,
             'pages' => \ceil($count / $limit),
             'slug'  => $slug,
-            'posts_slug' => $slug,
+            'posts_slug' => $posts_slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
             'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
