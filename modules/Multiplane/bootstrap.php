@@ -605,8 +605,8 @@ $this->module('multiplane')->extend([
             return;
         }
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
-            foreach($posts as &$post) {
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
+            foreach ($posts as &$post) {
                 $post = $this->renderFields($post);
             }
         }
@@ -625,7 +625,7 @@ $this->module('multiplane')->extend([
             'limit' => $limit,
             'pages' => \ceil($count / $limit),
             'slug'  => $slug,
-            'posts_slug' => $posts_slug,
+            'posts_slug'    => $posts_slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
             'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
