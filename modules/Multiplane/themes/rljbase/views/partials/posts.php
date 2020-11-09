@@ -1,5 +1,4 @@
 <?php
-
 // allow custom partials for different sub page collections
 if (isset($_meta['posts_collection']['name'])
     && $path = $app->path("views:collections/{$_meta['posts_collection']['name']}/posts.php")) {
@@ -7,13 +6,11 @@ if (isset($_meta['posts_collection']['name'])
     return;
 }
 
+if (empty($posts)) return;
+
 $usePermalinks = mp()->usePermalinks;
 $slugName      = mp()->get('fieldNames/slug');
 $permalinkName = mp()->get('fieldNames/permalink');
-
-// make $posts, $collection and $pagination available
-// \extract($posts);
-if (empty($posts)) return;
 ?>
 
             @render('views:partials/pagination.php')
