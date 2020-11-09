@@ -43,7 +43,6 @@ $this->module('multiplane')->extend([
 
     'isMultilingual'        => false,
     'usePermalinks'         => false,
-    'usePermalinksAsSlugs'  => false,
     'disableDefaultRoutes'  => false,             // don't use any default routes
     'outputMethod'          => 'dynamic',         // to do: static or pseudo static/cached
     'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
@@ -351,9 +350,7 @@ $this->module('multiplane')->extend([
         }
 
         // startpage
-        if (empty($slug)
-            || ($this->usePermalinksAsSlugs && '/'.\trim($this->app->baseUrl('/'), '/') == $_slug)
-            ) {
+        if (empty($slug)) {
 
             $this->isStartpage = true;
 
@@ -392,13 +389,11 @@ $this->module('multiplane')->extend([
             && isset($page[$startpageName]) && $page[$startpageName] === true
             && !$this->app->param('page', false); // posts might be on startpage without slug
 
-        if (!$this->usePermalinksAsSlugs) {
-            if ($shouldRedirect) {
-                $path = '/' . ($this->isMultilingual ? $this->lang : '');
-                $url = $this->app->routeUrl($path);
-                \header('Location: '.$url, true, 301);
-                $this->app->stop();
-            }
+        if ($shouldRedirect) {
+            $path = '/' . ($this->isMultilingual ? $this->lang : '');
+            $url = $this->app->routeUrl($path);
+            \header('Location: '.$url, true, 301);
+            $this->app->stop();
         }
 
         if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
@@ -547,7 +542,7 @@ $this->module('multiplane')->extend([
 
         $this('i18n')->locale = $this->lang = $lang;
 
-        if ($this->isMultilingual/* && !$this->usePermalinksAsSlugs*/) {
+        if ($this->isMultilingual) {
             $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
         }
 
@@ -613,11 +608,14 @@ $this->module('multiplane')->extend([
 
         $posts_slug = $slug;
 
-        if ($this->isStartpage && $this->pageTypeDetection == 'collections') {
+        if ($this->isStartpage) {
             $slug = '';
         }
 
-        if ($this->isMultilingual) $slug = $this->lang . '/' . $slug;
+        if ($this->isMultilingual && !$this->usePermalinks) {
+            $posts_slug = $this->lang . '/' . $posts_slug;
+            $slug       = $this->lang . '/' . $slug;
+        }
 
         $pagination =  [
             'count' => $count,
@@ -675,13 +673,19 @@ $this->module('multiplane')->extend([
             }
         }
 
+        $posts_slug = '';
+
+        if ($this->isMultilingual && !$this->usePermalinks) {
+            $slug = $this->lang . '/' . $slug;
+        }
+
         $pagination =  [
             'count' => $count,
             'page'  => $page,
             'limit' => $limit,
             'pages' => \ceil($count / $limit),
             'slug'  => $slug,
-            'posts_slug'    => '',
+            'posts_slug'    => $posts_slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
             'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];

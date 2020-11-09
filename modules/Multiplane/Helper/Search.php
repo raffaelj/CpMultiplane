@@ -317,7 +317,7 @@ class Search extends \Lime\Helper {
                 if (isset($field['type']) && $field['type'] == 'tags') {
 
                     $tags = $this->fieldSearch[$field['name']];
-                    if (!is_array($tags)) $tags = [$tags];
+                    if (!\is_array($tags)) $tags = [$tags];
 
                     $options['filter'][$field['name'].$suffix] = ['$in' => $tags];
 
@@ -335,14 +335,16 @@ class Search extends \Lime\Helper {
 
     public function getWeightedItem($entry, $_collection, $c) {
 
-        $slugName = $this->fieldNames['slug'];
+        $slugName      = $this->fieldNames['slug'];
+        $permalinkName = $this->fieldNames['permalink'];
+        $startpageName = $this->fieldNames['startpage'];
 
         $weight = !empty($c['weight']) ? $c['weight'] : 0;
         $label  = !empty($c['label'])  ? $c['label']
                 : (!empty($_collection['label']) ? $_collection['label']
                     : $collection);
 
-        $isStartpage = isset($entry['startpage']) && $entry['startpage'] == true;
+        $isStartpage = isset($entry[$startpageName]) && $entry[$startpageName] == true;
 
         $item = [
             '_id'        => $entry['_id'],
@@ -351,8 +353,8 @@ class Search extends \Lime\Helper {
             'collection' => $label,
         ];
 
-        if ($this->app->module('multiplane')->usePermalinksAsSlugs) {
-            $item['url'] = $entry[$slugName];
+        if ($this->app->module('multiplane')->usePermalinks) {
+            $item['url'] = $entry[$permalinkName];
         }
 
         foreach ($c['fields'] as $field) {
@@ -361,7 +363,7 @@ class Search extends \Lime\Helper {
             $increase = !empty($field['weight']) ? (int) $field['weight'] : 1;
             $display  = !isset($field['display']) ? true : $field['display'];
             $content  = !empty($field['type'])
-                            && in_array($field['type'], ['markdown', 'repeater', 'layout']) // to do: should not be hard coded
+                            && \in_array($field['type'], ['markdown', 'repeater', 'layout']) // to do: should not be hard coded
                             && \method_exists($this->app->helper('fields'), $field['type'])
                         ? $this->app->helper('fields')->{$field['type']}($entry[$name])
                         : $entry[$name];
@@ -373,7 +375,7 @@ class Search extends \Lime\Helper {
 
                 \preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
 
-                if ($count = count($matches)) {
+                if ($count = \count($matches)) {
                     $weight += $count * $increase + 10;
                 }
             }
