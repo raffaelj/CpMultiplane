@@ -456,7 +456,8 @@ $this->module('multiplane')->extend([
 
         $posts = null;
         $site  = $this->site;
-        $slug  = $this->resolveSlug(MP_BASE_URL . '/' . $page[$this->fieldNames['slug']]);
+
+        $slugName = $this->fieldNames['slug'];
 
         if ($this->isMultilingual) {
             $this->initI18n($lang);
@@ -468,6 +469,8 @@ $this->module('multiplane')->extend([
 
         }
 
+        $this->_doChecksWithCurrentPage($page);
+
         if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
         }
@@ -478,7 +481,7 @@ $this->module('multiplane')->extend([
         if ($hasSubpageModule) {
 
             $subCollection = $page['subpagemodule']['collection'];
-            $route = $page['subpagemodule']['route'];
+            $route = $page['subpagemodule']['route'] ?? $page[$slugName];
             $posts = $this->getPosts($subCollection, $this->currentSlug);
 
         }
