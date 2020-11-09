@@ -1,9 +1,9 @@
 <?php
-if (/*!isset($posts['collection']) || */!isset($posts['posts']) || !isset($posts['pagination'])) return;
 
 // allow custom partials for different sub page collections
-if ($path = $app->path("views:collections/{$posts['collection']['name']}/posts.php")) {
-    $app->renderView($path, $posts);
+if (isset($_meta['posts_collection']['name'])
+    && $path = $app->path("views:collections/{$_meta['posts_collection']['name']}/posts.php")) {
+    $app->renderView($path);
     return;
 }
 
@@ -12,11 +12,11 @@ $slugName      = mp()->get('fieldNames/slug');
 $permalinkName = mp()->get('fieldNames/permalink');
 
 // make $posts, $collection and $pagination available
-\extract($posts);
+// \extract($posts);
 if (empty($posts)) return;
 ?>
 
-            @render('views:partials/pagination.php', compact('pagination'))
+            @render('views:partials/pagination.php')
 
           @foreach($posts as $post){% $_url = $usePermalinks ? $app->routeUrl($post[$permalinkName]) : $app->routeUrl($pagination['posts_slug'].'/'.$post[$slugName]); %}
             <article class="excerpt">
@@ -38,4 +38,4 @@ if (empty($posts)) return;
 
             </article>
           @endforeach
-            @render('views:partials/pagination.php', compact('pagination'))
+            @render('views:partials/pagination.php')

@@ -46,6 +46,13 @@ if ($this->debug) {
     });
 }
 
+// set global viewvars for template files - they will be filled later, but they must be available
+$this->viewvars['page']       = [];
+$this->viewvars['site']       = [];
+$this->viewvars['posts']      = [];
+$this->viewvars['pagination'] = [];
+$this->viewvars['_meta']      = [];
+
 // error handling
 $this->on('after', function() {
 
