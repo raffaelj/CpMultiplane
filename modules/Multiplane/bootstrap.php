@@ -471,7 +471,7 @@ $this->module('multiplane')->extend([
 
         $this->_doChecksWithCurrentPage($page);
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
         }
 
