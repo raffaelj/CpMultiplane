@@ -29,7 +29,7 @@ $this->service('renderer', function() use ($lexy) {
 
     // remove some white space to prettify the html output
     $renderer->after(function($content) {
-        return preg_replace('/([\r\n])(\s*)\<\?php(?!\s*(echo|\$app->trigger))/', '$1<?php', $content);
+        return \preg_replace('/([\r\n])(\s*)\<\?php(?!\s*(echo|\$app->trigger))/', '$1<?php', $content);
     });
 
     return $renderer;
