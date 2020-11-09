@@ -4,13 +4,6 @@ namespace Multiplane\Controller;
 
 class Base extends \LimeExtra\Controller {
 
-    public function before() {
-
-        // load site data from site singleton
-        $this->app->module('multiplane')->getSite();
-
-    }
-
     public function index($slug = '') {
 
         $page  = $this->module('multiplane')->getPage($slug);
@@ -18,7 +11,7 @@ class Base extends \LimeExtra\Controller {
         if (!$page) return false;
 
         $_posts = null;
-        $site   = $this->module('multiplane')->site;
+        $site   = $this->app->module('multiplane')->getSite();
 
         $hasSubpageModule = isset($page['subpagemodule']['active'])
                             && $page['subpagemodule']['active'] === true;
@@ -83,7 +76,7 @@ class Base extends \LimeExtra\Controller {
     public function livePreview($params = []) {
 
         $page = [];
-        $site = $this->module('multiplane')->site;
+        $site = $this->app->module('multiplane')->getSite();
         $posts = null;
 
         if ($this->app->module('multiplane')->hasBackgroundImage) {
@@ -187,7 +180,7 @@ class Base extends \LimeExtra\Controller {
 
     public function search($params = null) {
 
-        $site = $this->module('multiplane')->site;
+        $site = $this->app->module('multiplane')->getSite();
 
         $page = [
             'title' => $this('i18n')->get('Search'),
@@ -249,7 +242,7 @@ class Base extends \LimeExtra\Controller {
         $this->app->module('multiplane')->displayBreadcrumbs = false;
         $this->app->module('multiplane')->hasBackgroundImage = false;
 
-        $this->app->viewvars['site'] = $this->module('multiplane')->site;
+        $this->app->viewvars['site'] = $this->app->module('multiplane')->getSite();
         $this->app->viewvars['page'] = [
             'title' => $this('i18n')->get('Page not found'),
         ];
