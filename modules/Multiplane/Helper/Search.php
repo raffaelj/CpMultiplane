@@ -366,38 +366,38 @@ class Search extends \Lime\Helper {
                         ? $this->app->helper('fields')->{$field['type']}($entry[$name])
                         : $entry[$name];
 
-            if (is_string($content) && count($this->searches) > 1) {
+            if (\is_string($content) && \count($this->searches) > 1) {
                 // give it a weight boost, if the full expression of
                 // multiple search terms was found
                 $regex = "/(?<!&[^\s])".$this->_search."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
 
-                preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
+                \preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
 
                 if ($count = count($matches)) {
                     $weight += $count * $increase + 10;
                 }
             }
 
-            $regex = "/(?<!&[^\s])".implode('|', $this->searches)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+            $regex = "/(?<!&[^\s])".\implode('|', $this->searches)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
 
-            if (is_string($content)) {
-                preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
+            if (\is_string($content)) {
+                \preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
 
-                $weight += count($matches) * $increase;
+                $weight += \count($matches) * $increase;
             }
 
             if ($name == 'title' && !isset($item['_title']) && isset($entry['title'])) $item['_title'] = $entry['title'];
 
             if ($display) {
 
-                if ($this->app->param('highlight', false) && !empty($this->searches) && is_string($content)) {
+                if ($this->app->param('highlight', false) && !empty($this->searches) && \is_string($content)) {
 
-                    $all = count($this->searches) > 1
-                        ? array_merge([$this->_search], $this->searches) : $this->searches;
+                    $all = \count($this->searches) > 1
+                        ? \array_merge([$this->_search], $this->searches) : $this->searches;
 
-                    $regex = "/(?<!&[^\s])".implode('|', $all)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+                    $regex = "/(?<!&[^\s])".\implode('|', $all)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
 
-                    $content = preg_replace($regex, '<mark>$0</mark>', $content);
+                    $content = \preg_replace($regex, '<mark>$0</mark>', $content);
 
                 }
 
@@ -424,7 +424,7 @@ class Search extends \Lime\Helper {
 
 function repeaterSearch($field) {
 
-    if (!$field || !is_array($field)) return false;
+    if (!$field || !\is_array($field)) return false;
 
     $searches = cockpit()->helper('search')->searches;
 
@@ -450,7 +450,7 @@ function repeaterSearch($field) {
 
 function layoutSearch($field) {
 
-    if (!$field || !is_array($field)) return false;
+    if (!$field || !\is_array($field)) return false;
 
     $searches = cockpit()->helper('search')->searches;
 
