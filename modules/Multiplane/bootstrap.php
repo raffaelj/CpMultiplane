@@ -364,26 +364,14 @@ $this->module('multiplane')->extend([
         }
         // filter by slug
         else {
+
+            $_slugName = $slugName == '_id' ? '_id' : $slugName.$langSuffix;
+
             $filter = [
                 $publishedName => true,
+                $_slugName     => $slug,
             ];
 
-
-            if (!$this->isMultilingual) {
-                $filter[$slugName] = $slug;
-            }
-            else {
-                // filter by localized slug
-                $lang = $this->lang;
-
-                $isLocalized = $this->isCollectionLocalized($collection);
-
-                if ($slugName != '_id' && $isLocalized && $lang != $this->defaultLang) {
-                    $filter[$slugName.'_'.$lang] = $slug;
-                } else {
-                    $filter[$slugName] = $slug;
-                }
-            }
         }
 
         $projection   = null;
@@ -1336,16 +1324,6 @@ $this->module('multiplane')->extend([
         return $route;
 
     }, // end of getSubPageRoute()
-
-    'isCollectionLocalized' => function($collection) {
-
-        // to do: do proper checks...
-        // UniqueSlugs config check doesn't work, if disabled/not installed/not configured
-        // for now, I just assume, that everything is configured correctly
-
-        return true;
-
-    }, // end of isCollectionLocalized()
 
 ]);
 
