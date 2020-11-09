@@ -1,5 +1,22 @@
 # Changelog
 
+## Upcoming
+
+* new and updated docs: https://cpmultiplane.rlj.me
+* massive code cleanup and rewrite
+* changed `$posts` variable in templates
+* added globally available viewvars to simplify templating
+* added ability to overwrite default field names
+* added mpdocs theme
+* added debug options
+    * add html comments around templates
+    * display debug overlay with useful metadata
+* improved MailProtection in `mp.js`
+* improved nav (markup and css)
+* started to add permalink support
+* improved cli commands
+* a lot of minor code fixes
+
 ## 0.2.4
 
 * fixed docker image build automation (a typo in `Dockerfile` after cleanup)
