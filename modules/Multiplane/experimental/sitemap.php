@@ -83,7 +83,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                 $route = '';
                 if ($collection != $pages
                     && !empty($parentPage['subpagemodule']['route'])) {
-                    $route = '/' . ltrim($parentPage['subpagemodule']['route'], '/');
+                    $route = '/' . \ltrim($parentPage['subpagemodule']['route'], '/');
                 }
 
                 if (empty($page[$slugName])) continue;
@@ -94,7 +94,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                   $xml->endElement();
 
                   $xml->startElement('lastmod');
-                  $xml->text(date('c', ($page['_modified']) ?? $page['_created']));
+                  $xml->text(\date('c', ($page['_modified']) ?? $page['_created']));
                   $xml->endElement();
                 $xml->endElement();
 
@@ -110,7 +110,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
                     $suffix = $lang == $defaultLang ? '' : '_' . $lang;
                     if ($collection != $pages
                         && !empty($parentPage['subpagemodule']['route'.$suffix])) {
-                        $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
+                        $route = '/' . \ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
                     }
 
                     if (!empty($page[$slugName.$slugSuffix]) || $isStartpage) {
@@ -129,7 +129,7 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
                             if ($collection != $pages
                                 && !empty($parentPage['subpagemodule']['route'.$suffix])) {
-                                $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
+                                $route = '/' . \ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
                             }
 
                             $suffix = ($l == $defaultLang) || !$hasLocalizedSlug
