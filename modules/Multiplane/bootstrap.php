@@ -263,12 +263,11 @@ $this->module('multiplane')->extend([
         $paginationDelim = $this->paginationUriDelimiter;
 
         // check for /*/page/{int} requests (paginagion)
-//         $pattern = '/\/'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
-        $pattern = '/'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
+        $pattern = '/(\/|^)'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
 
         if (\preg_match($pattern, $_slug, $matches)) {
 
-            $this->app->request->request['page'] = $matches[1];
+            $this->app->request->request['page'] = $matches[2];
             $route = \preg_replace($pattern, '', $route);
             $_slug = \preg_replace($pattern, '', $_slug);
 
