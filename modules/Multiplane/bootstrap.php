@@ -748,13 +748,21 @@ $this->module('multiplane')->extend([
 
         $slugName      = $this->fieldNames['slug'];
         $titleName     = $this->fieldNames['title'];
+        $permalinkName = $this->fieldNames['permalink'];
 
-        $langSuffix = $this->lang != $this->defaultLang ? '_'.$this->lang : '';
+        $_slugName = $this->usePermalinks ? $permalinkName : $slugName;
+
+        $langSuffix     = $this->lang != $this->defaultLang ? '_'.$this->lang : '';
+        $slugLangSuffix = $this->lang != $this->defaultLang && $_slugName != '_id' ? '_'.$this->lang : '';
 
         $breadcrumbs = $this->breadcrumbs;
 
         $title = $page[$titleName.$langSuffix];
-        $slug  = $page[$slugName.$langSuffix];
+        $slug  = $page[$_slugName.$slugLangSuffix];
+
+        if ($this->isMultilingual && !$this->usePermalinks) {
+            $slug = $this->lang . '/' . $slug;
+        }
 
         $breadcrumbs[] = [
             'title' => $title,
