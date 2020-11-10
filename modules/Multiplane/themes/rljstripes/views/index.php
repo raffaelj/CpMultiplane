@@ -38,7 +38,7 @@
             </a>
 
             @if(mp()->isMultilingual)
-            @render('views:partials/language-switch.php', ['page' => $page])
+            @render('views:partials/language-switch.php')
             @endif
 
             @render('views:partials/nav-mobile.php', ['type' => 'main'])

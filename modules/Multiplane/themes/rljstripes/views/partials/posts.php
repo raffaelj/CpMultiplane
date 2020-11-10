@@ -1,20 +1,21 @@
 <?php
 // allow custom partials for different sub page collections
-if ($path = $app->path("views:collections/{$posts['collection']['name']}/posts.php")) {
-    $app->renderView($path, $posts);
+if (isset($_meta['posts_collection']['name'])
+    && $path = $app->path("views:collections/{$_meta['posts_collection']['name']}/posts.php")) {
+    $app->renderView($path);
     return;
 }
 
-$usePermalinks = mp()->usePermalinks;
-$slugName      = mp()->slugName;
+if (empty($posts)) return;
 
-// make $posts, $collection and $pagination available
-extract($posts);
+$usePermalinks = mp()->usePermalinks;
+$slugName      = mp()->get('fieldNames/slug');
+$permalinkName = mp()->get('fieldNames/permalink');
 ?>
 
-            @render('views:partials/pagination.php', compact('pagination'))
+            @render('views:partials/pagination.php')
 
-          @foreach($posts as $post){% $_url = $usePermalinks ? $app->routeUrl($post[$slugName]) : $app->baseUrl($pagination['posts_slug'].'/'.$post[$slugName]); %}
+          @foreach($posts as $post){% $_url = $usePermalinks ? $app->routeUrl($post[$permalinkName]) : $app->routeUrl($pagination['posts_slug'].'/'.$post[$slugName]); %}
             <article class="excerpt">
               @if(!empty($post['title']))
                 <h3><a href="{{ $_url }}">{{{ $post['title'] }}}</a></h3>
@@ -34,4 +35,4 @@ extract($posts);
 
             </article>
           @endforeach
-            @render('views:partials/pagination.php', compact('pagination'))
+            @render('views:partials/pagination.php')

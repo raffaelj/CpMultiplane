@@ -2,7 +2,7 @@
         <main id="main">
 
             <header>
-                @render('views:partials/featured-media.php', ['page' => $page, 'mode' => 'image'])
+                @render('views:partials/featured-media.php', ['mode' => 'image'])
                 <h2>{{{ $page['title'] }}}</h2>
             </header>
 
@@ -17,7 +17,7 @@
             </div>
 
             @if (!empty($posts))
-                @render('views:partials/posts.php', ['posts' => $posts])
+                @render('views:partials/posts.php')
             @endif
 
         </main>
