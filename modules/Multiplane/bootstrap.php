@@ -42,10 +42,10 @@ $this->module('multiplane')->extend([
     'parentThemeBootstrap'  => true,
 
     'isMultilingual'        => false,
-    'usePermalinks'         => false,
+    'usePermalinks'         => false,             // use permalinks (experimental)
     'disableDefaultRoutes'  => false,             // don't use any default routes
     'outputMethod'          => 'dynamic',         // to do: static or pseudo static/cached
-    'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
+    'pageTypeDetection'     => 'collections',     // 'collections' or 'type'
     'nav'                   => null,              // hard coded navigation
 
     'use' => [
@@ -286,9 +286,9 @@ $this->module('multiplane')->extend([
             $populate     = false;
             $fieldsFilter = ['lang' => $this->lang];
 
-            // to do: trigger multiplane.getpage.before
-
             foreach ($this->use['collections'] as $collection) {
+
+                $this->app->trigger('multiplane.getpage.permalink.before', [$collection, &$filter, &$projection, &$populate, &$fieldsFilter]);
 
                 $page = $this->app->module('collections')->findOne($collection, $filter, $projection, $populate, $fieldsFilter);
 

@@ -10,7 +10,7 @@ class Base extends \LimeExtra\Controller {
 
         if (!$page) return false;
 
-        $_posts = null;
+        $_posts = [];
         $site   = $this->app->module('multiplane')->getSite();
 
         $hasSubpageModule = isset($page['subpagemodule']['active'])
@@ -60,10 +60,8 @@ class Base extends \LimeExtra\Controller {
         $this->app->trigger('multiplane.page', [&$page, &$_posts, &$site]);
 
         // make $page, $posts and $site globally available in all template files
-        $this->app->viewvars['page']   = $page;
-        $this->app->viewvars['site']   = $site;
-        $this->app->viewvars['_posts'] = $_posts; // deprecated
-
+        $this->app->viewvars['page']       = $page;
+        $this->app->viewvars['site']       = $site;
         $this->app->viewvars['posts']      = $_posts['posts']      ?? [];
         $this->app->viewvars['pagination'] = $_posts['pagination'] ?? [];
 
