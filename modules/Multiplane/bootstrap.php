@@ -4,10 +4,10 @@ if ($this['debug']) \error_reporting(E_ALL);
 
 //set version
 if (!$this->retrieve('multiplane/version', false)) {
-    $this->set('multiplane/version', $this['debug'] ? time()
+    $this->set('multiplane/version', $this['debug'] ? \time()
         : \json_decode($this->helper('fs')->read(MP_DIR.'/package.json'), true)['version']);
 }
-$this->set('cockpit/version', \json_decode($this('fs')->read('#root:package.json'), true)['version']);
+$this->set('cockpit/version', \json_decode($this->helper('fs')->read('#root:package.json'), true)['version']);
 
 if (!MP_SELF_EXPORT) {
     require_once(__DIR__ . '/override.php');
@@ -20,7 +20,7 @@ $this->path('mp_config', MP_ENV_ROOT . '/config');
 
     // register autoload classes in namespace Multiplane\Controller from
     // `MP_DIR/Controller`, e. g.: `/Controller/Products.php`
-    $class_path = MP_ENV_ROOT.'/Controller'.str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
+    $class_path = MP_ENV_ROOT.'/Controller'.\str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
     if (\file_exists($class_path)) include_once($class_path);
 
     // autoload from /modules/Multiplane/lib
