@@ -1056,7 +1056,7 @@ $this->module('multiplane')->extend([
         $themedirs = [MP_DIR.'/modules/Multiplane/themes', MP_ENV_ROOT.'/themes'];
 
         foreach ($themedirs as $themedir) {
-            foreach($this('fs')->ls($themedir) as $dir) {
+            foreach ($this('fs')->ls($themedir) as $dir) {
 
                 if (!$dir->isDir()) continue;
 
@@ -1068,7 +1068,7 @@ $this->module('multiplane')->extend([
                     'path'   => $path,
                     'image'  => '',
                     'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
-                    'info'   => \file_exists("{$path}/package.json") ? json_decode($this('fs')->read("{$path}/package.json")) : [],
+                    'info'   => \file_exists("{$path}/package.json") ? \json_decode($this('fs')->read("{$path}/package.json"), true) : [],
                 ];
 
                 if ( ($image = $this->app->pathToUrl("{$path}/screenshot.png"))
