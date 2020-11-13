@@ -29,11 +29,29 @@ $this->service('renderer', function() use ($lexy) {
 
     // remove some white space to prettify the html output
     $renderer->after(function($content) {
-        return preg_replace('/([\r\n])(\s*)\<\?php(?!\s*(echo|\$app->trigger))/', '$1<?php', $content);
+        return \preg_replace('/([\r\n])(\s*)\<\?php(?!\s*(echo|\$app->trigger))/', '$1<?php', $content);
     });
 
     return $renderer;
 });
+
+// add debug overlay
+if ($this->debug) {
+    $this->on('multiplane.init', function() {
+        if ($this->retrieve('multiplane/debug/overlay', false)) {
+            $this->on('multiplane.layout.contentafter', function() {
+                $this->renderView('views:partials/debug-overlay.php');
+            });
+        }
+    });
+}
+
+// set global viewvars for template files - they will be filled later, but they must be available
+$this->viewvars['page']       = [];
+$this->viewvars['site']       = [];
+$this->viewvars['posts']      = [];
+$this->viewvars['pagination'] = [];
+$this->viewvars['_meta']      = [];
 
 // error handling
 $this->on('after', function() {

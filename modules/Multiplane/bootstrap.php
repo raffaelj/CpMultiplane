@@ -1,10 +1,13 @@
 <?php
+
+if ($this['debug']) \error_reporting(E_ALL);
+
 //set version
 if (!$this->retrieve('multiplane/version', false)) {
-    $this->set('multiplane/version', $this['debug'] ? time()
-        : \json_decode($this('fs')->read(MP_DIR.'/package.json'), true)['version']);
+    $this->set('multiplane/version', $this['debug'] ? \time()
+        : \json_decode($this->helper('fs')->read(MP_DIR.'/package.json'), true)['version']);
 }
-$this->set('cockpit/version', \json_decode($this('fs')->read('#root:package.json'), true)['version']);
+$this->set('cockpit/version', \json_decode($this->helper('fs')->read('#root:package.json'), true)['version']);
 
 if (!MP_SELF_EXPORT) {
     require_once(__DIR__ . '/override.php');
@@ -13,11 +16,11 @@ if (!MP_SELF_EXPORT) {
 // set config path
 $this->path('mp_config', MP_ENV_ROOT . '/config');
 
-spl_autoload_register(function($class){
+\spl_autoload_register(function($class){
 
     // register autoload classes in namespace Multiplane\Controller from
     // `MP_DIR/Controller`, e. g.: `/Controller/Products.php`
-    $class_path = MP_ENV_ROOT.'/Controller'.str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
+    $class_path = MP_ENV_ROOT.'/Controller'.\str_replace(['Multiplane\Controller', '\\'], ['', '/'], $class).'.php';
     if (\file_exists($class_path)) include_once($class_path);
 
     // autoload from /modules/Multiplane/lib
@@ -39,17 +42,42 @@ $this->module('multiplane')->extend([
     'parentThemeBootstrap'  => true,
 
     'isMultilingual'        => false,
+    'usePermalinks'         => false,             // use permalinks (experimental)
     'disableDefaultRoutes'  => false,             // don't use any default routes
-    'outputMethod'          => 'dynamic',         // to do: static
-    'pageTypeDetection'     => 'collections',     // 'collections' or 'type' (experimental)
-    'slugName'              => '_id',             // field name for url slug
-    'navName'               => 'nav',             // field name for navigation
+    'outputMethod'          => 'dynamic',         // to do: static or pseudo static/cached
+    'pageTypeDetection'     => 'collections',     // 'collections' or 'type'
     'nav'                   => null,              // hard coded navigation
 
     'use' => [
         'collections' => [],                      // list of collection names
         'singletons'  => [],                      // list of singleton names
         'forms'       => [],                      // list of form names
+    ],
+
+    'structure'             => [],
+
+    'slugName'              => '_id',             // deprecated, field name for url slug
+    'navName'               => 'nav',             // deprecated, field name for navigation
+
+    'fieldNames' => [                             // field mappings to default field names
+        'slug'              => '_id',
+        'nav'               => 'nav',
+        'permalink'         => 'permalink',
+        'published'         => 'published',
+        'startpage'         => 'startpage',
+        'title'             => 'title',
+        'content'           => 'content',
+        'description'       => 'description',
+        'excerpt'           => 'excerpt',
+        'type'              => 'type',            // only if pageTypeDetection == 'type'
+        'subpagemodule'     => 'subpagemodule',
+        'privacypage'       => 'privacypage',
+        'seo'               => 'seo',
+        'featured_image'    => 'featured_image',
+        'background_image'  => 'background_image',
+        'logo'              => 'logo',            // only in site
+        'tags'              => 'tags',
+        'category'          => 'category',        // not used for now, will be like tags
     ],
 
     // maintenance mode
@@ -80,6 +108,7 @@ $this->module('multiplane')->extend([
     'previewScripts'        => false,           // restart MP init scripts
 
     // pagination
+    'paginationUriDelimiter' => 'page',
     'displayPostsLimit'     => 5,               // number of posts to display in subpagemodule
     'paginationDropdownLimit' => 5,             // number of pages, when the pagination turns to dropdown menu
 
@@ -91,7 +120,7 @@ $this->module('multiplane')->extend([
     // experimental full text search
     'search' => [
         'enabled'     => false,
-        'minLength'   => 3,                     // minimum charcter length for search
+        'minLength'   => 3,                     // minimum character length for search
         'collections' => [],                    // full list of collections to search in,
                                                 // defaults to "multiplane/use/collections"
     ],
@@ -144,16 +173,16 @@ $this->module('multiplane')->extend([
 
         $this->$key = $value;
 
-    },
+    }, // end of set()
 
     'add' => function($key, $value, $recursive = false) {
 
-        if (is_array($this->$key)) {
-            if ($recursive) $this->$key = array_merge_recursive($this->$key, $value);
-            else            $this->$key = array_merge($this->$key, $value);
+        if (\is_array($this->$key)) {
+            if ($recursive) $this->$key = \array_merge_recursive($this->$key, $value);
+            else            $this->$key = \array_merge($this->$key, $value);
         }
 
-        elseif (is_string($this->$key) && is_string($value)) {
+        elseif (\is_string($this->$key) && \is_string($value)) {
             $this->$key .= $value;
         }
 
@@ -161,12 +190,12 @@ $this->module('multiplane')->extend([
             // do nothing
         }
 
-    },
+    }, // end of add()
 
     // modified version of Lime\fetch_from_array()
     'get' => function($index, $default = null) {
 
-        if (is_null($index)) {
+        if (\is_null($index)) {
 
             return null;
 
@@ -207,26 +236,117 @@ $this->module('multiplane')->extend([
         }
 
         return \is_callable($default) ? \call_user_func($default) : $default;
-    },
+
+    }, // end of get()
 
     'getSite' => function() {
 
         $site = $this->app->module('singletons')->getData($this->siteSingleton, ['lang' => $this->lang]);
 
-        if ($site && is_array($site)) $this->site = $site;
+        if ($site && \is_array($site)) $this->site = $site;
 
         return $site;
 
-    },
+    }, // end of getSite()
 
-    'findOne' => function($slug = '') {
-        return $this->getPage($slug);
-    },
+    'getPage' => function($_slug = '') {
 
-    'getPage' => function($slug = '') {
+        $slugName      = $this->fieldNames['slug'];
+        $startpageName = $this->fieldNames['startpage'];
+        $publishedName = $this->fieldNames['published'];
+        $permalinkName = $this->fieldNames['permalink'];
 
-        $slug = $this->resolveSlug($slug);
+        $langSuffix    = $this->lang != $this->defaultLang ? '_'.$this->lang : '';
+
+        $route = $this->app['route'];
+
+        $paginationDelim = $this->paginationUriDelimiter;
+
+        // check for /*/page/{int} requests (paginagion)
+        $pattern = '/(\/|^)'.\preg_quote($paginationDelim, '/').'\/([0-9]+)$/';
+
+        if (\preg_match($pattern, $_slug, $matches)) {
+
+            $this->app->request->request['page'] = $matches[2];
+            $route = \preg_replace($pattern, '', $route);
+            $_slug = \preg_replace($pattern, '', $_slug);
+
+        }
+
+        // try to find entry by permalink before starting the whole slug procedure
+        if ($this->usePermalinks) {
+
+            $collection = $this->pages;
+            $filter = [
+                $publishedName => true,
+                $permalinkName.$langSuffix => $route,
+            ];
+
+            $projection   = null;
+            $populate     = false;
+            $fieldsFilter = ['lang' => $this->lang];
+
+            foreach ($this->use['collections'] as $collection) {
+
+                $this->app->trigger('multiplane.getpage.permalink.before', [$collection, &$filter, &$projection, &$populate, &$fieldsFilter]);
+
+                $page = $this->app->module('collections')->findOne($collection, $filter, $projection, $populate, $fieldsFilter);
+
+                if ($page) {
+                    $this->collection = $collection;
+                    $this->_doChecksWithCurrentPage($page);
+
+                    if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
+                        $page = $this->renderFields($page);
+                    }
+
+                    return $page;
+                }
+            }
+
+        }
+
+        // extract slug
+        $parts = \explode('/', \trim($_slug, '/'));
+        $count = \count($parts);
+        $slug  = \end($parts);
+
         $collection = $this->collection;
+
+        if ($count > 1) {
+
+            $parentSlug = $parts[0];
+
+            foreach ($this->structure as $v) {
+
+                if (isset($v['slug'.$langSuffix]) && $v['slug'.$langSuffix] == $parentSlug) {
+
+                    $collection = $v['_id'];
+                    $this->collection = $collection;
+
+                    if (isset($v['_pid']) && isset($this->structure[$v['_pid']])) {
+
+                        $parentCollection = $this->structure[$v['_pid']];
+
+                        $filter = [
+                            $publishedName         => true,
+                            $slugName.$langSuffix  => $parentSlug, // to do: use slug from structure
+                            'subpagemodule.active' => true,
+                        ];
+                        $projection = null;
+                        $fieldsFilter = [];
+
+                        if ($parentPage = $this->app->module('collections')->findOne($parentCollection['_id'], $filter, $projection, false, $fieldsFilter)) {
+                            $this->parentPage = $parentPage;
+                            $this->hasParentPage = true;
+                            $this->_addBreadcrumbs($this->parentPage);
+                        }
+                    }
+                    break;
+                }
+            }
+
+        }
 
         // startpage
         if (empty($slug)) {
@@ -234,36 +354,25 @@ $this->module('multiplane')->extend([
             $this->isStartpage = true;
 
             $filter = [
-                'published' => true,
-                'startpage' => true,
+                $publishedName => true,
+                $startpageName => true,
             ];
 
         }
         // filter by slug
         else {
+
+            $_slugName = $slugName == '_id' ? '_id' : $slugName.$langSuffix;
+
             $filter = [
-                'published' => true,
+                $publishedName => true,
+                $_slugName     => $slug,
             ];
 
-            if (!$this->isMultilingual) {
-                $filter[$this->slugName] = $slug;
-            }
-            else {
-                // filter by localized slug
-                $lang = $this->lang;
-
-                $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$collection, false);
-
-                if ($this->slugName != '_id' && $isLocalized && $lang != $this->defaultLang) {
-                    $filter[$this->slugName.'_'.$lang] = $slug;
-                } else {
-                    $filter[$this->slugName] = $slug;
-                }
-            }
         }
 
-        $projection = null;
-        $populate = false;
+        $projection   = null;
+        $populate     = false;
         $fieldsFilter = ['lang' => $this->lang];
 
         $this->app->trigger('multiplane.getpage.before', [$collection, &$filter, &$projection, &$populate, &$fieldsFilter]);
@@ -272,15 +381,21 @@ $this->module('multiplane')->extend([
 
         if (!$page) return false;
 
+        $this->_doChecksWithCurrentPage($page);
+
         // reroute startpage if called via slug to avoid duplicated content
-        if (strlen($slug) && isset($page['startpage']) && $page['startpage'] === true) {
+        $shouldRedirect = \strlen($slug)
+            && isset($page[$startpageName]) && $page[$startpageName] === true
+            && !$this->app->param('page', false); // posts might be on startpage without slug
+
+        if ($shouldRedirect) {
             $path = '/' . ($this->isMultilingual ? $this->lang : '');
             $url = $this->app->routeUrl($path);
             \header('Location: '.$url, true, 301);
             $this->app->stop();
         }
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
         }
 
@@ -290,46 +405,14 @@ $this->module('multiplane')->extend([
 
         return $page;
 
-    },
-
-    'userStyles' => function() {
-
-        if (empty($this->styles)) return;
-
-        echo "\r\n<style>\r\n";
-
-        foreach ($this->styles as $selector => $style) {
-            if (is_numeric($selector) && is_string($style)) {
-                echo $style . "\r\n";
-                continue;
-            }
-            elseif (is_string($style)) {
-                echo "$selector $style" . "\r\n";
-            }
-        }
-
-        echo "</style>\r\n";
-
-    },
-
-    'userScripts' => function() {
-
-        if (empty($this->scripts)) return;
-
-        echo "\r\n<script>\r\n";
-
-        foreach ($this->scripts as $script) {
-            echo $script . "\r\n";
-        }
-
-        echo "</script>\r\n";
-
-    },
+    }, // end of getPage()
 
     'addBackgroundImage' => function($page = []) {
 
-        $background = $page['background_image']['_id']
-                   ?? $this->site['background_image']['_id']
+        $bgImgName = $this->fieldNames['background_image'];
+
+        $background = $page[$bgImgName]['_id']
+                   ?? $this->site[$bgImgName]['_id']
                    ?? null;
 
         if ($background) {
@@ -355,11 +438,11 @@ $this->module('multiplane')->extend([
 
         }
 
-    },
+    }, // end of addBackgroundImage()
 
     'getPreview' => function() {
 
-        $data = class_exists('\Lime\Request') ? $this->app->request->request : $_REQUEST;
+        $data = \class_exists('\Lime\Request') ? $this->app->request->request : $_REQUEST;
 
         $event      = $data['event'] ?? false;
 
@@ -372,7 +455,8 @@ $this->module('multiplane')->extend([
 
         $posts = null;
         $site  = $this->site;
-        $slug  = $this->resolveSlug(MP_BASE_URL . '/' . $page[$this->slugName]);
+
+        $slugName = $this->fieldNames['slug'];
 
         if ($this->isMultilingual) {
             $this->initI18n($lang);
@@ -384,7 +468,9 @@ $this->module('multiplane')->extend([
 
         }
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
+        $this->_doChecksWithCurrentPage($page);
+
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
             $page = $this->renderFields($page);
         }
 
@@ -394,7 +480,7 @@ $this->module('multiplane')->extend([
         if ($hasSubpageModule) {
 
             $subCollection = $page['subpagemodule']['collection'];
-            $route = $page['subpagemodule']['route'];
+            $route = $page['subpagemodule']['route'] ?? $page[$slugName];
             $posts = $this->getPosts($subCollection, $this->currentSlug);
 
         }
@@ -423,93 +509,13 @@ $this->module('multiplane')->extend([
 
         return false;
 
-    },
-
-    'getNav' => function($collection = null, $type = '') {
-
-        // if hard coded nav is present, return this one
-        if (isset($this->nav[$type])) return $this->nav[$type];
-
-        if (!$collection) $collection = $this->pages;
-
-        $collection = $this->app->module('collections')->collection($collection);
-
-        $isSortable = $collection['sortable'] ?? false;
-
-        $options = [
-            'filter' => [
-                'published' => true,
-            ],
-            'fields' => [
-                $this->slugName => true,
-                'title' => true,
-                $this->navName => true,
-                '_pid' => true,
-                '_o' => true,
-                'startpage' => true,
-            ],
-        ];
-
-        if (!empty($type)) {
-            $options['filter'][$this->navName] = ['$has' => $type];
-        } else {
-            $options['filter'][$this->navName] = ['$size' => ['$gt' => 0]];
-        }
-
-        if ($this->isMultilingual) {
-
-            $lang = $this->lang;
-
-            $options['lang'] = $lang;
-
-            if ($lang != $this->defaultLang) {
-                $options['fields']['title_'.$lang] = true;
-                if ($this->slugName != '_id') {
-                    $options['fields'][$this->slugName.'_'.$lang] = true;
-                }
-            }
-
-        }
-
-        $entries = $this->app->module('collections')->find($collection['name'], $options);
-
-        if (!$entries) return false;
-
-        foreach($entries as &$n) {
-
-            $active = false;
-            if ($this->hasParentPage && $n[$this->slugName] == $this->parentPage[$this->slugName]) {
-                $active = true;
-            } elseif($this->currentSlug == $n[$this->slugName]
-                || ($this->currentSlug == '' && !empty($n['startpage']))
-                ) {
-                $active = true;
-            }
-
-            $n['active'] = $active;
-
-        }
-
-        if ($isSortable) {
-
-            $entries = $this->app->helper('utils')->buildTree($entries, [
-                'parent_id_column_name' => '_pid',
-                'children_key_name'     => 'children',
-                'id_column_name'        => '_id',
-                'sort_column_name'      => '_o'
-            ]);
-
-        }
-
-        return $entries;
-
-    },
+    }, // end of getPreview()
 
     'getLanguages' => function($extended = false, $withDefault = true) {
 
         $languages = [];
 
-        if ($this->isMultilingual && is_array($this->app['languages'])) {
+        if ($this->isMultilingual && \is_array($this->app['languages'])) {
 
             foreach ($this->app['languages'] as $l => $label) {
 
@@ -529,7 +535,7 @@ $this->module('multiplane')->extend([
 
         return $languages;
 
-    },
+    }, // end of getLanguages()
 
     'initI18n' => function($lang = 'en') {
 
@@ -544,59 +550,7 @@ $this->module('multiplane')->extend([
             $this('i18n')->load($translationspath, $lang);
         }
 
-    },
-
-    'getLanguageSwitch' => function($id) {
-
-        $languages = $this->getLanguages(true);
-        $slugName  = $this->slugName;
-
-        foreach ($languages as &$l) {
-
-            $lang = $l['code'];
-            $slug = '';
-
-            if ($this->isStartpage) {
-                $l['url'] = MP_BASE_URL . '/' . $lang;
-                continue;
-            }
-
-            else {
-                $filter = [
-                    'published' => true,
-                    '_id'       => $id ?? '',
-                ];
-                $projection = [
-                    $slugName   => true,
-                    "{$slugName}_{$lang}" => true
-                ];
-
-                $entry = $this->app->module('collections')->findOne($this->collection, $filter, $projection, false, ['lang' => $lang]);
-
-                $slug = $entry[$slugName] ?? '';
-            }
-
-            if (!$this->hasParentPage) {
-                $l['url'] = MP_BASE_URL . '/' . $lang . '/' . $slug;
-                continue;
-            }
-
-            $key = 'route' . ($this->slugName == '_id' || $l['default'] ? '' : "_{$lang}");
-            if (!empty($this->parentPage['subpagemodule'][$key])) {
-                $route = $this->parentPage['subpagemodule'][$key];
-            }
-            else { // fallback to slug of parent page
-                $key   = $this->slugName . ($this->slugName == '_id' || $l['default'] ? '' : "_{$lang}");
-                $route = $this->parentPage[$key] ?? null;
-            }
-
-            $l['url'] = MP_BASE_URL . '/' . $lang . '/' . ($route ? trim($route, '/') . '/' : '') . $slug;
-
-        }
-
-        return $languages;
-
-    }, // end of getLanguageSwitch()
+    }, // end of initI18n()
 
     'getPosts' => function($collection = null, $slug = '', $opts = []) {
 
@@ -618,9 +572,9 @@ $this->module('multiplane')->extend([
         $skip  = ($page - 1) * $limit;
 
         $filter = [
-            'published' => true,
+            $this->fieldNames['published'] => true,
         ];
-        
+
         $sort = !empty($opts['customsort']) ? $opts['customsort'] : [
             '_created' => isset($opts['sort']) && $opts['sort'] ? 1 : -1,
         ];
@@ -645,36 +599,30 @@ $this->module('multiplane')->extend([
             return;
         }
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
-            foreach($posts as &$post) {
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
+            foreach ($posts as &$post) {
                 $post = $this->renderFields($post);
             }
         }
 
-        // subpage module is on startpage without slug
-        if (empty($slug) && $this->pageTypeDetection == 'collections' && $this->isStartpage) {
+        $posts_slug = $slug;
 
-            $parentPage = $this->resolveParentPage();
+        if ($this->isStartpage) {
+            $slug = '';
+        }
 
-            $key = 'route' . ($lang == $this->defaultLang ? '' : '_'.$lang);
-
-            if (!empty($parentPage['subpagemodule'][$key])) {
-                $slug = $parentPage['subpagemodule'][$key];
-            }
-            else {
-                $key = $this->slugName . ($this->slugName == '_id' || $lang == $this->defaultLang ? '' : "_{$lang}");
-                $slug = $parentPage[$key];
-            }
-
+        if ($this->isMultilingual && !$this->usePermalinks) {
+            $posts_slug = $this->lang . '/' . $posts_slug;
+            $slug       = $this->lang . '/' . $slug;
         }
 
         $pagination =  [
             'count' => $count,
             'page'  => $page,
             'limit' => $limit,
-            'pages' => ceil($count / $limit),
+            'pages' => \ceil($count / $limit),
             'slug'  => $slug,
-            'posts_slug' => $slug,
+            'posts_slug'    => $posts_slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
             'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
@@ -682,10 +630,13 @@ $this->module('multiplane')->extend([
         return compact('posts', 'pagination', 'collection');
 
     }, // end of getPosts()
-    
+
     'getPostsByType' => function($type = null, $slug = '', $opts = []) {
-        
+
         if (!$type) $type = 'post';
+
+        $publishedName = $this->fieldNames['published'];
+        $typeName      = $this->fieldNames['type'];
 
         $lang  = $this->lang;
         $page  = $this->app->param('page', 1);
@@ -694,15 +645,15 @@ $this->module('multiplane')->extend([
         $skip  = ($page - 1) * $limit;
 
         $filter = [
-            'published' => true,
-            'type' => $type,
+            $publishedName => true,
+            $typeName      => $type,
         ];
 
         $options = [
             'filter' => $filter,
-            'lang'  => $lang,
-            'limit' => $limit,
-            'skip'  => $skip,
+            'lang'   => $lang,
+            'limit'  => $limit,
+            'skip'   => $skip,
         ];
 
         $posts = $this->app->module('collections')->find($this->pages, $options);
@@ -715,207 +666,111 @@ $this->module('multiplane')->extend([
             return;
         }
 
-        if (!empty($this->preRenderFields) && is_array($this->preRenderFields)) {
+        if (!empty($this->preRenderFields) && \is_array($this->preRenderFields)) {
             foreach($posts as &$post) {
                 $post = $this->renderFields($post);
             }
+        }
+
+        $posts_slug = '';
+
+        if ($this->isMultilingual && !$this->usePermalinks) {
+            $slug = $this->lang . '/' . $slug;
         }
 
         $pagination =  [
             'count' => $count,
             'page'  => $page,
             'limit' => $limit,
-            'pages' => ceil($count / $limit),
+            'pages' => \ceil($count / $limit),
             'slug'  => $slug,
-            'posts_slug' => '',
+            'posts_slug'    => $posts_slug,
             'dropdownLimit' => $opts['dropdownLimit'] ?? $this->paginationDropdownLimit ?? 5,
-            'hide' => (!isset($opts['pagination']) || $opts['pagination'] !== true),
+            'hide'  => (!isset($opts['pagination']) || $opts['pagination'] !== true),
         ];
 
-        return compact('posts', 'pagination');
+        $collection = $this->app->module('collections')->collection($this->pages);
+
+        return compact('posts', 'pagination', 'collection');
+
+    }, // end of getPostsByType()
+
+    '_doChecksWithCurrentPage' => function($page) {
+
+        $slugName      = $this->fieldNames['slug'];
+        $startpageName = $this->fieldNames['startpage'];
+        $permalinkName = $this->fieldNames['permalink'];
+        $bgImgName     = $this->fieldNames['background_image'];
+
+        if ($page[$startpageName] ?? false) $this->isStartpage = true;
+
+        if (isset($page[$bgImgName]) && isset($page[$bgImgName]['_id'])) $this->hasBackgroundImage = true;
+
+        $this->currentSlug = $page[$slugName];
+
+        if ($this->pageTypeDetection == 'type') {
+            $this->_checkHasParentPage($page);
+        }
 
     },
 
-    'resolveSlug' => function($slug = '') {
+    '_checkHasParentPage' => function($page) {
 
-        // check, if slug type is _id or slug
-        // check, if sub page
-        // to do...
+        $slugName      = $this->fieldNames['slug'];
+        $startpageName = $this->fieldNames['startpage'];
+        $publishedName = $this->fieldNames['published'];
+        $permalinkName = $this->fieldNames['permalink'];
+        $typeName      = $this->fieldNames['type'];
 
-        if ($slug == '') return $slug;
-
-        // fix routes with ending slash
-        $slug = rtrim($slug, '/');
-
-        if (strpos($slug, '/')) {
-
-            $parts = explode('/', $slug);
-
-            $count = count($parts);
-
-            // possible options - to do...:
-            // * /page-title
-            // * /category/page-title
-            // * /collection/page-title
-            // * /blog/post-title
-            // * /blog/page/2
-            // * /blog/2019/06/06/post-title
-            // * ...
-
-            if ($this->pageTypeDetection == 'collections') {
-
-                if ($collection = $this->resolveCurrentCollection($parts[0])) {
-
-                    // pagination for blog module
-                    if ($parts[1] == 'page' && $count > 2 && (int)$parts[2]) {
-                        $slug = $parts[0];
-
-                        if (class_exists('Lime\Request')) {
-                            $this->app->request->request['page'] = $parts[2];
-                        } else {
-                            $_REQUEST['page'] = $parts[2];
-                        }
-
-                        unset($parts[1]); // I don't want "page" in breadcrumbs
-                    }
-
-                    else {
-                        $this->hasParentPage = true;
-                        $this->collection = $collection;
-                        $slug = $parts[1];
-                    }
-
-                    $count = count($parts);
-                    if ($count > 1) {
-                        $breadcrumbs = $this->breadcrumbs;
-                        $lang = $this->lang;
-                        $suffix = $lang != $this->defaultLang ? '_'.$lang : '';
-
-                        foreach($parts as $k => $part) {
-
-                            if ($k >= ($count - 1)) continue; // skip current page
-
-                            if (isset($this->app['modules']['uniqueslugs'])) {
-                                $filter = [
-                                    $this->slugName . $suffix => $part
-                                ];
-                                $projection = [
-                                    'title' => true,
-                                    '_id'   => false,
-                                ];
-
-                                if ($lang != $this->defaultLang) $projection['title'.$suffix] = true;
-
-                                $entry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $lang]);
-
-                                $breadcrumbs[] = [
-                                    'title' => $entry['title'] ?? $part,
-                                    'slug'  => $part,
-                                ];
-                            }
-                            else {
-                                $breadcrumbs[] = [
-                                    'title' => $part,
-                                    'slug'  => $part,
-                                ];
-                            }
-                        }
-                        $this->breadcrumbs = $breadcrumbs;
-
-                    }
-                }
-
-            }
-
-            elseif($this->pageTypeDetection == 'type') {
-
-                if ($parts[0] == 'page' && (int)$parts[1]) {
-                    // pagination for blog module
-                    $slug = ''; 
-
-                    if (class_exists('Lime\Request')) {
-                        $this->app->request->request['page'] = $parts[1];
-                    } else {
-                        $_REQUEST['page'] = $parts[1];
-                    }
-                }
-
-                if ($parts[1] == 'page' && (int)$parts[2]) {
-                    // pagination for blog module
-                    $slug = $parts[0]; 
-
-                    if (class_exists('Lime\Request')) {
-                        $this->app->request->request['page'] = $parts[2];
-                    } else {
-                        $_REQUEST['page'] = $parts[2];
-                    }
-                }
-
-            }
-
-        }
-
-        $this->currentSlug = $slug;
-
-        return $slug;
-
-    },
-
-    'resolveCurrentCollection' => function($route = '') {
-
-        $parentPage = $this->resolveParentPage($route);
-
-        $this->parentPage = $parentPage;
-
-        $collection = $parentPage['subpagemodule']['collection'] ?? false;
-
-        if (is_string($collection) && $this->app->module('collections')->exists($collection)) {
-            return $collection;
-        }
-
-        return false;
-
-    },
-
-    'resolveParentPage' => function($route = '') {
-
-        $lang = $this->lang;
-
-        $slugName = $this->slugName . ($lang == $this->defaultLang ? '' : '_'.$lang);
-
-        $filter = [
-            'published' => true,
-            $slugName => $route,
-            'subpagemodule.active' => true,
-        ];
-
-        $projection = [
-            $this->slugName => true,
-            'subpagemodule' => true,
-        ];
-        if ($this->slugName != '_id') {
-            foreach($this->getLanguages() as $l) {
-                $projection[$this->slugName.'_'.$l] = true;
-            }
-        }
-
-        if ($this->isStartpage) {
+        if ($this->pageTypeDetection == 'type' && !empty($page[$typeName])) {
 
             $filter = [
-                'published' => true,
-                'startpage' => true,
+                $publishedName         => true,
                 'subpagemodule.active' => true,
+                'subpagemodule.type'   => $page[$typeName],
             ];
+            $projection   = null;
+            $fieldsFilter = [];
+
+            if ($parentPage = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, $fieldsFilter)) {
+
+                $this->parentPage = $parentPage;
+                $this->hasParentPage = true;
+                $this->_addBreadcrumbs($this->parentPage);
+            }
 
         }
 
-        $fieldsFilter = [];
+    },
 
-        $parentPage = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, $fieldsFilter);
+    '_addBreadcrumbs' => function($page) {
 
-        return $parentPage;
+        $slugName      = $this->fieldNames['slug'];
+        $titleName     = $this->fieldNames['title'];
+        $permalinkName = $this->fieldNames['permalink'];
 
-    }, // end of resolveParentPage()
+        $_slugName = $this->usePermalinks ? $permalinkName : $slugName;
+
+        $langSuffix     = $this->lang != $this->defaultLang ? '_'.$this->lang : '';
+        $slugLangSuffix = $this->lang != $this->defaultLang && $_slugName != '_id' ? '_'.$this->lang : '';
+
+        $breadcrumbs = $this->breadcrumbs;
+
+        $title = $page[$titleName.$langSuffix];
+        $slug  = $page[$_slugName.$slugLangSuffix];
+
+        if ($this->isMultilingual && !$this->usePermalinks) {
+            $slug = $this->lang . '/' . $slug;
+        }
+
+        $breadcrumbs[] = [
+            'title' => $title,
+            'slug'  => $slug,
+        ];
+
+        $this->breadcrumbs = $breadcrumbs;
+
+    },
 
     'renderFields' => function($page) {
 
@@ -929,17 +784,17 @@ $this->module('multiplane')->extend([
 
             if (!isset($page[$field['name']])) continue;
 
-            if (!in_array($field['name'], $this->preRenderFields)) continue;
+            if (!\in_array($field['name'], $this->preRenderFields)) continue;
 
             $cmd  = $field['type'] ?? 'text';
             $opts = $field['options'] ?? [];
-            $page[$field['name']] = $this('fields')->$cmd($page[$field['name']], $opts);
+            $page[$field['name']] = $this->app->helper('fields')->$cmd($page[$field['name']], $opts);
  
         }
 
         return $page;
 
-    },
+    }, // end of renderFields()
 
     'accessAllowed' => function() {
 
@@ -952,9 +807,9 @@ $this->module('multiplane')->extend([
 
         else {
             // allow array input or string with white space delimiter
-            $ips = is_array($ips) ? $ips : explode(' ', trim($ips));
+            $ips = \is_array($ips) ? $ips : \explode(' ', trim($ips));
 
-            if (in_array($this->app->getClientIp(), $ips)) {
+            if (\in_array($this->app->getClientIp(), $ips)) {
                 $this->clientIpIsAllowed = true;
                 return true;
             }
@@ -962,32 +817,7 @@ $this->module('multiplane')->extend([
 
         return false;
 
-    },
-
-    'getRouteToPrivacyPage' => function() {
-
-        $filter = [
-            'published' => true,
-            'privacypage' => true
-        ];
-
-        $lang = $this->lang;
-
-        $projection = [
-            $this->slugName => true,
-            '_id' => false,
-        ];
-        if ($this->isMultilingual && $lang != $this->defaultLang) {
-            $projection[$this->slugName.'_'.$lang] = true;
-        }
-
-        $page = $this->app->module('collections')->findOne($this->pages, $filter, $projection, null, false, ['lang' => $lang]);
-
-        $route = $page[$this->slugName.'_'.$lang] ?? $page[$this->slugName] ?? '';
-
-        return '/'.$route;
-
-    },
+    }, // end of accessAllowed()
 
     'loadConfig' => function() {
 
@@ -1014,14 +844,25 @@ $this->module('multiplane')->extend([
             $config = \array_replace_recursive($themeConfig, $config);
         }
 
-        foreach($config as $key => $val) {
-            $this->set($key, $val);
+        foreach ($config as $key => $val) {
+            if ($key == 'fieldNames') {
+                $fieldNames = $this->fieldNames;
+                foreach ($val as $fieldName => $replacement) {
+                    $fieldNames[$fieldName] = $replacement;
+                }
+                $this->fieldNames = $fieldNames;
+            } else {
+                $this->set($key, $val);
+            }
         }
+
+        // backwards compatibility checks
+        $this->_keepConfigBackwardsCompatible($config);
 
         // set current collection to pages
         $this->set('collection', $this->pages);
 
-    },
+    }, // end of loadConfig()
 
     'loadThemeConfig' => function() {
 
@@ -1056,7 +897,7 @@ $this->module('multiplane')->extend([
             $this->app->path('views', $this->themePath . '/views');
 
             // return theme config
-            return array_replace_recursive($parentThemeConfig, $themeConfig);
+            return \array_replace_recursive($parentThemeConfig, $themeConfig);
 
         }
 
@@ -1067,21 +908,107 @@ $this->module('multiplane')->extend([
             }
         }
 
-    },
+    }, // end of loadThemeConfig()
+
+    '_keepConfigBackwardsCompatible' => function($config) {
+
+        // fix slugName
+        if (isset($config['slugName']) && !isset($config['fieldNames']['slug'])) {
+            $fieldNames = $this->fieldNames;
+            $fieldNames['slug'] = $config['slugName'];
+            $this->fieldNames = $fieldNames;
+        }
+
+        // fix navName
+        if (isset($config['navName']) && !isset($config['fieldNames']['nav'])) {
+            $fieldNames = $this->fieldNames;
+            $fieldNames['nav'] = $config['navName'];
+            $this->fieldNames = $fieldNames;
+        }
+
+        // fix missing "use"
+        if (empty($this->use['collections'])) {
+            $collections = [];
+            if (!empty($this->pages)) $collections[] = $this->pages;
+            if (!empty($this->posts)) $collections[] = $this->posts;
+            $use = $this->use;
+            $use['collections'] = $collections;
+            $this->use = $use;
+        }
+
+        // fix missing structure
+        if (empty($this->structure)) {
+
+            $structure = [];
+            $languages = $this->getLanguages(false, false);
+
+            $slugName      = $this->fieldNames['slug'];
+            $publishedName = $this->fieldNames['published'];
+
+            foreach ($this->use['collections'] as $col) {
+
+                $_collection = $this->app->module('collections')->collection($col);
+
+                if ($col == $this->pages) {
+                    $structure[$col] = [
+                        '_id'        => $_collection['name'],
+                        'label'      => $_collection['label'] ?? $_collection['name'],
+                        'slug'       => '',
+                    ];
+                    foreach ($languages as $l) {
+                        $structure[$col]['slug_'.$l] = '';
+                    }
+                    continue;
+                }
+
+                $filter = [
+                    $publishedName => true,
+                    'subpagemodule.active'     => true,
+                    'subpagemodule.collection' => $col,
+                ];
+                $tmp = $this->app->module('collections')->findOne($this->pages, $filter, null, false, null);
+
+                if ($slugName == '_id') {
+                    $slug = $tmp['_id'];
+                } else {
+                    $slug = (!empty($tmp['subpagemodule']['route'])) ? $tmp['subpagemodule']['route'] : $tmp[$slugName];
+                }
+
+                $structure[$col] = [
+                    '_id'        => $_collection['name'],
+                    'label'      => $_collection['label'] ?? $_collection['name'],
+                    'slug'       => $slug,
+                    '_pid'       => $this->pages,
+                ];
+                foreach ($languages as $l) {
+                    if ($slugName == '_id') {
+                        $slug = $tmp['_id'];
+                    } else {
+                        $slug = (!empty($tmp['subpagemodule']['route_'.$l])) ? $tmp['subpagemodule']['route_'.$l] : $tmp[$slugName.'_'.$l];
+                    }
+                    $structure[$col]['slug_'.$l] = $slug;
+                }
+
+            }
+
+            $this->structure = $structure;
+        }
+
+    }, // end of _keepConfigBackwardsCompatible()
 
     'extendLexyTemplateParser' => function() {
 
         // create image url shortcuts
 
-        if (empty($this->lexy) || !is_array($this->lexy)) return;
+        if (empty($this->lexy) || !\is_array($this->lexy)) return;
 
         foreach ($this->lexy as $k => $v) {
 
-            if (is_string($v)) {
+            if (\is_string($v)) {
 
                 if ($v == 'raw') {
                     $this->app->renderer->extend(function($content) use ($k) {
-                        return preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . ltrim($2, "/")); ?>', $content);
+                        return \preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . ltrim($2, "/")); ?>', $content);
                     });
                     continue;
                 }
@@ -1102,12 +1029,12 @@ $this->module('multiplane')->extend([
             $replacement .= '; ?>';
 
             $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
-                return preg_replace($pattern, $replacement, $content);
+                return \preg_replace($pattern, $replacement, $content);
             });
 
         }
 
-    },
+    }, // end of extendLexyTemplateParser()
 
     'self_export' => function() {
 
@@ -1155,58 +1082,13 @@ $this->module('multiplane')->extend([
 
         return compact('constants', 'theme', 'themes');
 
-    },
-
-    // same as Lime\App->assets(), but with a switch to different script function
-    // temporary fix to avoid nu validator warning
-    'assets' => function($src, $version=false){
-
-        $list = [];
-
-        foreach ((array)$src as $asset) {
-
-            $src = $asset;
-
-            if (\is_array($asset)) {
-                extract($asset);
-            }
-
-            if (@\substr($src, -3) == '.js') {
-                $list[] = $this->script($asset, $version);
-            }
-
-            if (@\substr($src, -4) == '.css') {
-                $list[] = $this->app->style($asset, $version);
-            }
-        }
-
-        return \implode("\n", $list);
-    },
-
-    // same as Lime\App->script(), but without `type=javascript`
-    // temporary fix to avoid nu validator warning
-    'script' => function ($src, $version=false){
-
-        $list = [];
-
-        foreach ((array)$src as $script) {
-
-            $src  = $script;
-
-            if (\is_array($script)) {
-                extract($script);
-            }
-
-            $ispath = \strpos($src, ':') !== false && !\preg_match('#^(|http\:|https\:)//#', $src);
-            $list[] = '<script src="'.($ispath ? $this->app->pathToUrl($src):$src).($version ? "?ver={$version}":"").'"></script>';
-        }
-
-        return \implode("\n", $list);
-    },
+    }, // end of self_export()
 
     'generateToken' => function() {
+
         return \uniqid(\bin2hex(\random_bytes(16)));
-    },
+
+    }, // end of generateToken()
 
     'getSubPageRoute' => function($collection) {
 
@@ -1214,36 +1096,39 @@ $this->module('multiplane')->extend([
 
         if (isset($routes[$collection])) return $routes[$collection];
 
+        $slugName      = $this->fieldNames['slug'];
+        $publishedName = $this->fieldNames['published'];
+
         $route = '';
 
         // to do: hard coded variant for all subpage modules
         $filter = [
-            'published'                => true,
+            $publishedName => true,
             'subpagemodule.active'     => true,
             'subpagemodule.collection' => $collection
         ];
-        $projection = [
-            '_id' => false,
-            'subpagemodule' => true,
-        ];
+        $projection = [];
 
         $postRouteEntry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $this->lang]);
 
         $path = $this->lang == $this->defaultLang ? 'route' : 'route_'.$this->lang;
 
-        if (isset($postRouteEntry['subpagemodule'][$path])) {
+        if (!empty($postRouteEntry['subpagemodule'][$path])) {
             $route = $postRouteEntry['subpagemodule'][$path];
+        } else {
+            $route = $postRouteEntry[$slugName];
         }
 
         $routes[$collection] = $route;
 
         return $route;
 
-    }
+    }, // end of getSubPageRoute()
 
 ]);
 
 // module parts
+include_once(__DIR__ . '/module/template-helpers.php');
 include_once(__DIR__ . '/module/forms.php');
 
 // experimental parts

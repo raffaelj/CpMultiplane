@@ -1,6 +1,6 @@
 
         <main id="main">
-            @render('views:partials/featured-media.php', ['page' => $page, 'mode' => 'image'])
+            @render('views:partials/featured-media.php', ['mode' => 'image'])
 
             <h2>{{{ $page['title'] }}}</h2>
 
@@ -9,7 +9,7 @@
             {{ $page['content'] }}
 
           @if(!empty($page['gallery']))
-            @render('views:partials/gallery.php', compact('page'))
+            @render('views:partials/gallery.php')
           @endif
 
           @if(!empty($page['video']))
@@ -17,7 +17,7 @@
           @endif
 
           @if(!empty($posts))
-            @render('views:partials/posts.php', ['posts' => $posts])
+            @render('views:partials/posts.php')
           @endif
         </main>
 

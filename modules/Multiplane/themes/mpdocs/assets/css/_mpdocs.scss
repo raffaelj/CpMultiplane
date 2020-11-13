@@ -94,6 +94,28 @@ main {
     }
 }
 
+body > aside {
+    padding: 1em 2em 2em;
+    background-color: #fff;
+
+    @include breakpoint(medium) {
+        margin-left: $sidebar_width;
+    }
+    @include breakpoint(xlarge) {
+        padding-right: $sidebar_width;
+    }
+
+}
+
+.contactform {
+    > form {
+        max-width: 40em;
+    }
+    fieldset {
+        border: 1px solid #ccc;
+    }
+}
+
 nav {
     font-size: 1em;
     line-height: 1em;
@@ -121,6 +143,16 @@ nav {
         text-align: center;
         li {
             display: inline-block;
+        }
+    }
+
+    &.pagination {
+        margin-bottom: 1em;
+        &:last-child {
+            margin-bottom: 0;
+        }
+        a {
+            color: #222;
         }
     }
 

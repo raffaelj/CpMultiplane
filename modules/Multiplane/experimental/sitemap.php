@@ -17,13 +17,19 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
     $siteUrl        = $this['site_url'];
     $isMultilingual = $this->module('multiplane')->isMultilingual;
+    $usePermalinks  = $this->module('multiplane')->usePermalinks;
     $defaultLang    = $this->module('multiplane')->defaultLang;
-    $slugName       = $this->module('multiplane')->slugName;
     $languages      = $this->module('multiplane')->getLanguages();
     $parentPage     = null;
     $route          = '';
     $pages          = $this->module('multiplane')->pages;
     $collections    = $this->module('multiplane')->sitemap;
+    $structure      = $this->module('multiplane')->structure;
+
+    $slugName       = $this->module('multiplane')->fieldNames['slug'];
+    $permalinkName  = $this->module('multiplane')->fieldNames['permalink'];
+    $publishedName  = $this->module('multiplane')->fieldNames['published'];
+    $startpageName  = $this->module('multiplane')->fieldNames['startpage'];
 
     if (empty($collections)) {
         $collections = $this->module('multiplane')->use['collections'];
@@ -31,120 +37,111 @@ $this->on('multiplane.sitemap', function(&$xml) {
 
     $options = [
         'filter' => [
-            'published' => true,
+            $publishedName => true,
         ],
-        'fields' => [
-            $slugName => true,
-            '_modified' => true,
-            'startpage' => true,
+        'sort' => [
+            $startpageName => -1, // startpage on top
         ],
     ];
 
-    if ($isMultilingual && $slugName != '_id') {
-        foreach ($languages as $lang) {
-            if ($lang != $defaultLang) {
-                $options['fields']["{$slugName}_{$lang}"] = true;
-            }
-        }
+    // change sort order
+    if (!$usePermalinks && $slugName != '_id') {
+        $options['sort'][$slugName] = 1; // sort slugs alphabetically (by default lang)
+    }
+    if ($usePermalinks) {
+        $options['sort'][$permalinkName] = 1; // sort permalinks alphabetically (by default lang)
     }
 
     foreach ($collections as $collection) {
 
         $_collection = $this->module('collections')->collection($collection);
+
         if (!$_collection) continue;
 
-        $hasLocalizedSlug = isset($this['unique_slugs']['localize'][$collection]);
+        $parentRoute = $structure[$_collection['name']]['slug'] ?? '';
 
-        foreach($this->module('collections')->find($collection, $options) as $page) {
+        $hasLocalizedSlug = true;
 
-            $isStartpage = !empty($page['startpage']);
+        foreach ($this->module('collections')->find($collection, $options) as $page) {
 
-            if ($collection != $pages) {
-
-                $filter = [
-                    'published' => true,
-                    'subpagemodule.active' => true,
-                    'subpagemodule.collection' => $collection,
-                ];
-                $projection = [
-                    '_id' => false,
-                    'subpagemodule' => true,
-                ];
-
-                $parentPage = $this->module('collections')->findOne($pages, $filter, $projection, false, null);
-
-            }
+            $isStartpage = !empty($page[$startpageName]);
 
             if (!$isMultilingual) {
 
-                $route = '';
-                if ($collection != $pages
-                    && !empty($parentPage['subpagemodule']['route'])) {
-                    $route = '/' . ltrim($parentPage['subpagemodule']['route'], '/');
-                }
+                $_slugName = $usePermalinks ? $permalinkName : $slugName;
 
-                if (empty($page[$slugName])) continue;
+                if (empty($page[$_slugName]) && !$isStartpage) continue;
+
+                $url = $siteUrl . $this->baseUrl($isStartpage ? '/' : $parentRoute . '/' . $page[$_slugName]);
+
+                $url = \rtrim($url, '/');
 
                 $xml->startElement('url');
                   $xml->startElement('loc');
-                  $xml->text($siteUrl . $route . ($isStartpage ? '' : '/' . $page[$slugName]));
+                  $xml->text($url);
                   $xml->endElement();
 
                   $xml->startElement('lastmod');
-                  $xml->text(date('c', ($page['_modified']) ?? $page['_created']));
+                  $xml->text(\date('c', ($page['_modified']) ?? $page['_created']));
                   $xml->endElement();
                 $xml->endElement();
 
             }
 
-            else {
+            else { // isMultilingual
+
                 foreach ($languages as $lang) {
 
-                    $route      = '';
-                    $slugSuffix = ($lang == $defaultLang) || !$hasLocalizedSlug
-                                  || $slugName == '_id' ? '' : '_' . $lang;
+                    $_slugName = $usePermalinks ? $permalinkName : $slugName;
 
-                    $suffix = $lang == $defaultLang ? '' : '_' . $lang;
-                    if ($collection != $pages
-                        && !empty($parentPage['subpagemodule']['route'.$suffix])) {
-                        $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
+                    $langSuffix = $slugName != '_id' && $lang != $defaultLang ? '_'.$lang : '';
+
+                    $parentRoute = $structure[$_collection['name']]['slug'.$langSuffix] ?? '';
+
+                    if (empty($page[$_slugName.$langSuffix]) && !$isStartpage) continue;
+
+                    if (!$usePermalinks) {
+                        $url = $siteUrl. "/$lang" . $this->routeUrl($isStartpage ? '/' : $parentRoute . '/' . $page[$_slugName.$langSuffix]);
+                    } else {
+                        $url = $siteUrl.$this->routeUrl($isStartpage ? $lang : $page[$_slugName.$langSuffix]);
                     }
 
-                    if (!empty($page[$slugName.$slugSuffix]) || $isStartpage) {
+                    $url = \rtrim($url, '/');
 
-                      $xml->startElement('url');
+                    $xml->startElement('url');
 
                         $xml->startElement('loc');
-                        $xml->text($siteUrl . "/$lang" . $route . ($isStartpage ? '' : '/' . $page[$slugName.$slugSuffix]));
+                        $xml->text($url);
                         $xml->endElement();
 
                         foreach ($languages as $l) {
 
                             if ($l == $lang) continue;
-                            $suffix = $l == $defaultLang ? '' : '_' . $l;
-                            $route = '';
 
-                            if ($collection != $pages
-                                && !empty($parentPage['subpagemodule']['route'.$suffix])) {
-                                $route = '/' . ltrim($parentPage['subpagemodule']['route'.$suffix], '/');
+                            $lSuffix = $slugName != '_id' && $l != $defaultLang ? '_'.$l : '';
+
+                            $_parentRoute = $structure[$_collection['name']]['slug'.$lSuffix] ?? '';
+
+                            if (empty($page[$_slugName.$lSuffix]) && !$isStartpage) continue;
+
+                            if (!$usePermalinks) {
+                                $url = $siteUrl. "/$l" . $this->routeUrl($isStartpage ? '' : $_parentRoute . '/' . $page[$_slugName.$lSuffix]);
+                            } else {
+                                $url = $siteUrl. $this->routeUrl($isStartpage ? $l : $page[$_slugName.$lSuffix]);
                             }
 
-                            $suffix = ($l == $defaultLang) || !$hasLocalizedSlug
-                                      || $slugName == '_id' ? '' : '_' . $l;
+                            $url = \rtrim($url, '/');
 
-                            if (empty($page[$slugName . $suffix])) continue;
-                            
                             $xml->startElement('xhtml:link');
                             $xml->writeAttribute('rel', 'alternate');
                             $xml->writeAttribute('hreflang', $l);
-                            $xml->writeAttribute('href', $siteUrl . "/$l" . $route . ($isStartpage ? '' : '/' . $page[$slugName . $suffix]));
+                            $xml->writeAttribute('href', $url);
                             $xml->endElement();
 
                         }
 
-                      $xml->endElement();
+                    $xml->endElement();
 
-                    }
                 }
             }
 

@@ -8,19 +8,19 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
                 <span class="pagination_label">@lang('Page')</span>
                 <ol>
                 @if($pagination['pages'] > $dropdownLimit && $pagination['page'] > 1)
-                    <li class="pagination_first"><a href="@base($pagination['slug'])" title="@lang('first')">&laquo;</a></li>
+                    <li class="pagination_first"><a href="@route($pagination['slug'])" title="@lang('first')">&laquo;</a></li>
                 @endif
                 @if($pagination['page'] == 2)
-                    <li class="pagination_previous"><a href="@base($pagination['slug'])" title="@lang('previous')">&lt;</a></li>
+                    <li class="pagination_previous"><a href="@route($pagination['slug'])" title="@lang('previous')">&lt;</a></li>
                 @endif
                 @if($pagination['page'] > 2)
-                    <li class="pagination_previous"><a href="@base($pagination['slug'].'/page/'.($pagination['page']-1))" title="@lang('previous')">&lt;</a></li>
+                    <li class="pagination_previous"><a href="@route($pagination['slug'].'/page/'.($pagination['page']-1))" title="@lang('previous')">&lt;</a></li>
                 @endif
                 @if($pagination['pages'] > $dropdownLimit)
                     @for($i = $pagination['page'] - 3; $i < $pagination['page']; $i++)
                       @if($i > 0)
                         <li class="pagination_item">
-                            <a href="@base($pagination['slug'].'/page/'.$i)" title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</a>
+                            <a href="@route($pagination['slug'].'/page/'.$i)" title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</a>
                         </li>
                       @endif
                     @endfor
@@ -31,7 +31,7 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
                     @if($i == $pagination['page'])
                         <span title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</span>
                     @else
-                        <a href="@base($pagination['slug'].($i == 1 ? '' : '/page/'.$i))" title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</a>
+                        <a href="@route($pagination['slug'].($i == 1 ? '' : '/page/'.$i))" title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</a>
                     @endif
                     </li>
                 @endfor
@@ -39,15 +39,15 @@ $dropdownLimit = $dropdownLimit ?? $pagination['dropdownLimit'] ?? 5;
                     </ol></li>
                     @for($i = $pagination['page'] + 1; $i < $pagination['page'] + 3 && $i <= $pagination['pages']; $i++)
                         <li class="pagination_item">
-                            <a href="@base($pagination['slug'].'/page/'.$i)" title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</a>
+                            <a href="@route($pagination['slug'].'/page/'.$i)" title="@lang('Page') {{ $i }} @lang('of') {{ $pagination['pages'] }}">{{ $i }}</a>
                         </li>
                     @endfor
                 @endif
                 @if($pagination['page'] < $pagination['pages'])
-                    <li class="pagination_next"><a href="@base($pagination['slug'].'/page/'.($pagination['page']+1))" title="@lang('next')">&gt;</a></li>
+                    <li class="pagination_next"><a href="@route($pagination['slug'].'/page/'.($pagination['page']+1))" title="@lang('next')">&gt;</a></li>
                 @endif
                 @if($pagination['pages'] > $dropdownLimit && $pagination['page'] < $pagination['pages'])
-                    <li class="pagination_last"><a href="@base($pagination['slug'].'/page/'.$pagination['pages'])" title="@lang('last')">&raquo;</a></li>
+                    <li class="pagination_last"><a href="@route($pagination['slug'].'/page/'.$pagination['pages'])" title="@lang('last')">&raquo;</a></li>
                 @endif
                 </ol>
             </nav>

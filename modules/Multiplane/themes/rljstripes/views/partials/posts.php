@@ -1,20 +1,24 @@
 <?php
 // allow custom partials for different sub page collections
-if ($path = $app->path("views:collections/{$posts['collection']['name']}/posts.php")) {
-    $app->renderView($path, $posts);
+if (isset($_meta['posts_collection']['name'])
+    && $path = $app->path("views:collections/{$_meta['posts_collection']['name']}/posts.php")) {
+    $app->renderView($path);
     return;
 }
 
-// make $posts, $collection and $pagination available
-extract($posts);
+if (empty($posts)) return;
+
+$usePermalinks = mp()->usePermalinks;
+$slugName      = mp()->get('fieldNames/slug');
+$permalinkName = mp()->get('fieldNames/permalink');
 ?>
 
-            @render('views:partials/pagination.php', compact('pagination'))
+            @render('views:partials/pagination.php')
 
-          @foreach($posts as $post)
+          @foreach($posts as $post){% $_url = $usePermalinks ? $app->routeUrl($post[$permalinkName]) : $app->routeUrl($pagination['posts_slug'].'/'.$post[$slugName]); %}
             <article class="excerpt">
               @if(!empty($post['title']))
-                <h3><a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">{{{ $post['title'] }}}</a></h3>
+                <h3><a href="{{ $_url }}">{{{ $post['title'] }}}</a></h3>
               @endif
 
                 @render('views:partials/posts-meta.php', compact('post'))
@@ -24,11 +28,11 @@ extract($posts);
               @if(!empty($post['excerpt']))
                 {{ $post['excerpt'] }}
               @elseif(!empty($post['content']))
-                @render('views:fields/repeater.php', ['content' => $post['content']])
+                @render('views:partials/content.php', ['content' => $post['content']])
               @endif
 
-                <p class="read_more"><a href="@base($pagination['slug'].'/'. ($post[mp()->slugName] ?? $post['_id']))">@lang('read more...')</a></p>
+                <p class="read_more"><a href="{{ $_url }}">@lang('read more...')</a></p>
 
             </article>
           @endforeach
-            @render('views:partials/pagination.php', compact('pagination'))
+            @render('views:partials/pagination.php')

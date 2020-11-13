@@ -13,7 +13,7 @@ $this->module('multiplane')->extend([
     // 'hasCommentSection'     => false,           // to do...
     // 'hasContactForm'        => false,           // to do...
 
-    'formSessionName'       => md5(__DIR__),
+    'formSessionName'       => \md5(__DIR__),
     'formSessionExpire'     => 30,              // time in seconds
 
     'formIdPrefix'          => 'mp_form_',      // for form fields to prevent doubled ids
@@ -58,13 +58,13 @@ $this->module('multiplane')->extend([
             if (isset($response['error'][$field['name']])) {
 
                 $error = $response['error'][$field['name']];
-                $field['error'] = is_string($error) ? $error : implode('<br>', $error);
+                $field['error'] = \is_string($error) ? $error : \implode('<br>', $error);
 
             }
             if (isset($field['options']['attr']['name']) && isset($response['error'][$field['options']['attr']['name']])) {
 
                 $error = $response['error'][$field['options']['attr']['name']];
-                $field['error'] = is_string($error) ? $error : implode('<br>', $error);
+                $field['error'] = \is_string($error) ? $error : \implode('<br>', $error);
 
             }
 
@@ -89,7 +89,7 @@ $this->module('multiplane')->extend([
                 $attr[$key] = $val;
             }
         }
-        
+
         $attr['name'] = $form . '[' . $attr['name'] . ']';
 
         return $attr;
@@ -136,7 +136,7 @@ $this->module('multiplane')->extend([
 
             else {
                 $out .= "<strong>$key: </strong><br>";
-                $out .= is_string($val) ? $val : implode('<br>', $val);
+                $out .= \is_string($val) ? $val : \implode('<br>', $val);
             }
 
         }
@@ -146,6 +146,9 @@ $this->module('multiplane')->extend([
 
     'resolveLinkedItem' => function($link) {
 
+        $slugName      = $this->fieldNames['slug'];
+        $titleName     = $this->fieldNames['title'];
+
         $filter = [
             '_id' => $link['_id'],
         ];
@@ -154,9 +157,9 @@ $this->module('multiplane')->extend([
 
         if ($lang == $this->defaultLang) {
             $projection = [
-                'title' => true,
-                $this->slugName => true,
-                '_id' => false,
+                $titleName => true,
+                $slugName  => true,
+                '_id'      => false,
             ];
 
             $linkedItem = $this->app->module('collections')->findOne($link['link'], $filter, $projection, null, false, ['lang' => $lang]);
@@ -164,11 +167,11 @@ $this->module('multiplane')->extend([
 
         else {
             $projection = [
-                'title' => true,
-                'title_'.$lang => true,
-                $this->slugName => true,
-                $this->slugName . '_'. $lang => true,
-                '_id' => false,
+                $titleName             => true,
+                "{$titleName}_{$lang}" => true,
+                $slugName              => true,
+                "{$slugName}_{$lang}"  => true,
+                '_id'                  => false,
             ];
 
             $linkedItem = $this->app->module('collections')->findOne($link['link'], $filter, $projection, null, false, ['lang' => $lang]);

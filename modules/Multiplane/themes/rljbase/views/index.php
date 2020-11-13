@@ -4,7 +4,7 @@
         <meta charset="utf-8" />
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        @render('views:partials/seometa.php', compact('page'))
+        @render('views:partials/seometa.php')
         <link rel="shortcut icon" href="{{ MP_BASE_URL }}/favicon.png?ver={{ mp()->version }}">
         <script>
             var MP_BASE_URL = '{{ MP_BASE_URL }}',
@@ -26,10 +26,10 @@
                 <h1>{{ $site['site_name'] ?? $app['app.name'] }}</h1>
             </a>
           @if(mp()->isMultilingual)
-            @render('views:partials/language-switch.php', ['page' => $page])
+            @render('views:partials/language-switch.php')
           @endif
           @if(mp()->displayBreadcrumbs)
-            @render('views:partials/breadcrumbs.php', ['page' => $page])
+            @render('views:partials/breadcrumbs.php')
           @endif
           @if(mp()->get('search/enabled'))
             @render('views:partials/search.php')
@@ -53,6 +53,5 @@
         @render('views:partials/privacy-notice.php')
         {{ mp()->assets($app['multiplane.assets.bottom'], mp()->version) }}
         {{ mp()->userScripts() }}
-
     </body>
 </html>

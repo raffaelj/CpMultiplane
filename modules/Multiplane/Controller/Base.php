@@ -4,21 +4,14 @@ namespace Multiplane\Controller;
 
 class Base extends \LimeExtra\Controller {
 
-    public function before() {
-
-        // load site data from site singleton
-        $this->app->module('multiplane')->getSite();
-
-    }
-
     public function index($slug = '') {
 
         $page  = $this->module('multiplane')->getPage($slug);
 
         if (!$page) return false;
 
-        $posts = null;
-        $site  = $this->module('multiplane')->site;
+        $_posts = [];
+        $site   = $this->app->module('multiplane')->getSite();
 
         $hasSubpageModule = isset($page['subpagemodule']['active'])
                             && $page['subpagemodule']['active'] === true;
@@ -31,14 +24,14 @@ class Base extends \LimeExtra\Controller {
 
                 $collection = $page['subpagemodule']['collection'] ?? null;
 
-                $posts = $this->module('multiplane')->getPosts($collection, $this->app->module('multiplane')->currentSlug, $options);
+                $_posts = $this->module('multiplane')->getPosts($collection, $this->app->module('multiplane')->currentSlug, $options);
             }
 
             elseif ($this->module('multiplane')->pageTypeDetection == 'type') {
 
                 $type = $page['subpagemodule']['type'] ?? 'post';
 
-                $posts = $this->module('multiplane')->getPostsByType($type, $this->app->module('multiplane')->currentSlug, $options);
+                $_posts = $this->module('multiplane')->getPostsByType($type, $this->app->module('multiplane')->currentSlug, $options);
             }
 
         }
@@ -64,16 +57,24 @@ class Base extends \LimeExtra\Controller {
             });
         }
 
-        $this->app->trigger('multiplane.page', [&$page, &$posts, &$site]);
+        $this->app->trigger('multiplane.page', [&$page, &$_posts, &$site]);
 
-        return $this->render($view, compact('page', 'posts', 'site'));
+        // make $page, $posts and $site globally available in all template files
+        $this->app->viewvars['page']       = $page;
+        $this->app->viewvars['site']       = $site;
+        $this->app->viewvars['posts']      = $_posts['posts']      ?? [];
+        $this->app->viewvars['pagination'] = $_posts['pagination'] ?? [];
+
+        $this->app->viewvars['_meta']['posts_collection'] = $_posts['collection'] ?? [];
+
+        return $this->render($view);
 
     } // end of index()
 
     public function livePreview($params = []) {
 
         $page = [];
-        $site = $this->module('multiplane')->site;
+        $site = $this->app->module('multiplane')->getSite();
         $posts = null;
 
         if ($this->app->module('multiplane')->hasBackgroundImage) {
@@ -177,13 +178,16 @@ class Base extends \LimeExtra\Controller {
 
     public function search($params = null) {
 
-        $site = $this->module('multiplane')->site;
+        $site = $this->app->module('multiplane')->getSite();
 
         $page = [
             'title' => $this('i18n')->get('Search'),
             // 'description' => ''
         ];
         $page['seo']['canonical'] = $this->app->baseUrl('/search');
+
+        $this->app->viewvars['page'] = $page;
+        $this->app->viewvars['site'] = $site;
 
         if ($this->app->module('multiplane')->hasBackgroundImage) {
             $this->app->module('multiplane')->addBackgroundImage();
@@ -192,9 +196,9 @@ class Base extends \LimeExtra\Controller {
         $return = $this->app->helper('search')->search($params);
 
         // make $list, $query, $error, $count available
-        extract($return);
+        \extract($return);
 
-        return $this->render('views:layouts/search.php', compact('page', 'site', 'list', 'error', 'count'));
+        return $this->render('views:layouts/search.php', compact('list', 'error', 'count'));
 
     } // end of search()
 
@@ -233,22 +237,24 @@ class Base extends \LimeExtra\Controller {
 
     public function error($status = '') {
 
-        $site = $this->module('multiplane')->site;
-        $page = [];
+        $this->app->module('multiplane')->displayBreadcrumbs = false;
+        $this->app->module('multiplane')->hasBackgroundImage = false;
 
-        if ($this->app->module('multiplane')->hasBackgroundImage) {
-            $this->app->module('multiplane')->addBackgroundImage();
-        }
+        $this->app->viewvars['site'] = $this->app->module('multiplane')->getSite();
+        $this->app->viewvars['page'] = [
+            'title' => $this('i18n')->get('Page not found'),
+        ];
+        $this->app->viewvars['posts'] = [];
 
         // To do: 401, 500
 
         switch ($status) {
             case '404':
-                return $this->render('views:errors/404.php', compact('site', 'page'));
+                return $this->render('views:errors/404.php');
                 break;
             case '503':
                 $this->app->layout = null;
-                return $this->render('views:errors/503-maintenance.php', compact('site'));
+                return $this->render('views:errors/503-maintenance.php');
                 break;
         }
 

@@ -38,6 +38,9 @@ if ($this->module('multiplane')->isPreviewEnabled) {
 }
 
 
+
+
+
 // bind wildcard routes
 $isMultilingual = $this->module('multiplane')->isMultilingual && $this->retrieve('languages', false);
 
@@ -74,7 +77,11 @@ if (!$isMultilingual) {
     });
 
     $this->bind('/*', function($params) {
-        return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $params[':splat'][0]]);
+
+        $slug = $params[':splat'][0];
+
+        return $this->invoke('Multiplane\\Controller\\Base', 'index', ['slug' => $slug]);
+
     });
 
 }

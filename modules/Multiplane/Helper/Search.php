@@ -24,7 +24,7 @@ class Search extends \Lime\Helper {
 
         $this->isMultilingual = $this->app->module('multiplane')->isMultilingual;
         $this->defaultLang    = $this->app->module('multiplane')->defaultLang;
-        $this->slugName       = $this->app->module('multiplane')->slugName;
+        $this->fieldNames     = $this->app->module('multiplane')->fieldNames;
         $this->languages      = $this->app->module('multiplane')->getLanguages();
         $this->lang           = $this->app->module('multiplane')->lang;
         $this->minLength      = $this->app->module('multiplane')->get('search/minLength');
@@ -50,8 +50,8 @@ class Search extends \Lime\Helper {
 
         if ($params) $query = $params;
 
-        if ($query && ((is_string($query) && mb_strlen($query) >= $this->minLength)
-            || is_array($query))
+        if ($query && ((\is_string($query) && \mb_strlen($query) >= $this->minLength)
+            || \is_array($query))
             ) {
 
             $this->app->trigger('multiplane.search.before', [&$query, &$this->list]);
@@ -63,14 +63,14 @@ class Search extends \Lime\Helper {
 
             $this->app->trigger('multiplane.search.after', [&$query, &$this->list, &$sort]);
 
-            if (!$sort || !is_callable($sort)) {
+            if (!$sort || !\is_callable($sort)) {
                 // sort by weight
                 $sort = function($a, $b) {return $a['weight'] < $b['weight'];};
             }
 
             $this->list->uasort($sort);
 
-            $count = count($this->list);
+            $count = \count($this->list);
 
         }
         else {
@@ -93,7 +93,7 @@ class Search extends \Lime\Helper {
 
         foreach ($this->collections as $collection => &$c) {
 
-            if (!is_array($c)) $c = [];
+            if (!\is_array($c)) $c = [];
 
             $_collection = $this->app->module('collections')->collection($collection);
 
@@ -101,7 +101,7 @@ class Search extends \Lime\Helper {
 
             $options = $this->generateFilterOptions($c);
             if (empty($options['filter'])) continue;
-            $options['filter']['published'] = true;
+            $options['filter'][$this->fieldNames['published']] = true;
 
             foreach ($this->app->module('collections')->find($collection, $options) as $entry) {
 
@@ -116,7 +116,7 @@ class Search extends \Lime\Helper {
     public function parseQuery($query) {
 
         if (\is_string($query)) {
-            if (strpos($query, '{') === 0 && $arr = @\json_decode($query, true)) {
+            if (\strpos($query, '{') === 0 && $arr = @\json_decode($query, true)) {
                 $query = $arr;
             }
             else {
@@ -137,14 +137,14 @@ class Search extends \Lime\Helper {
 
         if (\preg_match('/^(["\']).*\1$/m', $_search)) {
             // exact match in quotes, still case insensitive
-            $this->searches = [\preg_quote(trim($_search, "\"' \t\n\r\0\x0B"), '/')];
+            $this->searches = [\preg_quote(\trim($_search, "\"' \t\n\r\0\x0B"), '/')];
         }
         else {
             $all = \array_filter(\explode(' ', $_search), 'strlen');
-            $_search = preg_quote($_search, '/');
+            $_search = \preg_quote($_search, '/');
             foreach ($all as $s) {
-                if (\mb_strlen($s) > $minLength) { // skip single char words ("I", "a"...)
-                    $this->searches[] = preg_quote($s, '/');
+                if (\mb_strlen($s) > $this->minLength) { // skip single char words ("I", "a"...)
+                    $this->searches[] = \preg_quote($s, '/');
                 }
             }
         }
@@ -156,10 +156,10 @@ class Search extends \Lime\Helper {
         foreach ($search as $k => $v) {
 
             // numeric keys should be handled like a single string search with white spaces
-            if (is_numeric($k)) continue; // I'll fix that later
+            if (\is_numeric($k)) continue; // I'll fix that later
 
             // named keys should be handled as field searches
-            if (!in_array($k, $this->allowedFields)) continue;
+            if (!\in_array($k, $this->allowedFields)) continue;
 
             $this->fieldSearch[$k] = $v;
 
@@ -179,7 +179,7 @@ class Search extends \Lime\Helper {
 
             if (!$_collection) continue;
 
-            $name = $_collection['name'];
+            $name     = $_collection['name'];
             $pageType = $_collection['multiplane']['type'] ?? 'pages';
 
             $types = [];
@@ -197,9 +197,9 @@ class Search extends \Lime\Helper {
             foreach ($defaultFields as $field) {
                 if (isset($types[$field])) {
                     $this->collections[$name]['fields'][] = [
-                        'name' => $field,
+                        'name'   => $field,
                         'weight' => $pageType == 'pages' ? 10 : 8,
-                        'type' => $types[$field]
+                        'type'   => $types[$field]
                     ];
                 }
             }
@@ -207,16 +207,19 @@ class Search extends \Lime\Helper {
             foreach ($this->fieldSearch as $k => $v) {
                 if (!isset($types[$k])) continue;
                 $this->collections[$name]['fields'][] = [
-                    'name' => $k,
+                    'name'   => $k,
                     'weight' => 10,
-                    'type' => $types[$k]
+                    'type'   => $types[$k]
                 ];
             }
         }
 
-    } // end of getWeightedItem()
+    } // end of config()
 
     public function generateFilterOptions($c) {
+
+        $slugName      = $this->fieldNames['slug'];
+        $startpageName = $this->fieldNames['startpage'];
 
         $options = [
             'filter' => [],
@@ -224,15 +227,15 @@ class Search extends \Lime\Helper {
         ];
 
         $options['fields'] = [
-            $this->slugName => true,
-            'startpage' => true,
-            '_created' => true,
+            $slugName      => true,
+            $startpageName => true,
+            '_created'     => true,
         ];
 
         if ($this->isMultilingual) {
             foreach ($this->languages as $l) {
                 if ($l != $this->defaultLang) {
-                    $options['fields']["{$this->slugName}_{$l}"] = true;
+                    $options['fields']["{$slugName}_{$l}"] = true;
                 }
             }
         }
@@ -314,7 +317,7 @@ class Search extends \Lime\Helper {
                 if (isset($field['type']) && $field['type'] == 'tags') {
 
                     $tags = $this->fieldSearch[$field['name']];
-                    if (!is_array($tags)) $tags = [$tags];
+                    if (!\is_array($tags)) $tags = [$tags];
 
                     $options['filter'][$field['name'].$suffix] = ['$in' => $tags];
 
@@ -332,19 +335,27 @@ class Search extends \Lime\Helper {
 
     public function getWeightedItem($entry, $_collection, $c) {
 
+        $slugName      = $this->fieldNames['slug'];
+        $permalinkName = $this->fieldNames['permalink'];
+        $startpageName = $this->fieldNames['startpage'];
+
         $weight = !empty($c['weight']) ? $c['weight'] : 0;
         $label  = !empty($c['label'])  ? $c['label']
                 : (!empty($_collection['label']) ? $_collection['label']
                     : $collection);
 
-        $isStartpage = isset($entry['startpage']) && $entry['startpage'] == true;
+        $isStartpage = isset($entry[$startpageName]) && $entry[$startpageName] == true;
 
         $item = [
             '_id'        => $entry['_id'],
             '_created'   => $entry['_created'],
-            'url'        => $this->app->baseUrl(($c['route'] ?? '') . '/' . ($isStartpage ? '' : $entry[$this->slugName])),
+            'url'        => $this->app->baseUrl(($c['route'] ?? '') . '/' . ($isStartpage ? '' : $entry[$slugName])),
             'collection' => $label,
         ];
+
+        if ($this->app->module('multiplane')->usePermalinks) {
+            $item['url'] = $entry[$permalinkName];
+        }
 
         foreach ($c['fields'] as $field) {
 
@@ -352,41 +363,43 @@ class Search extends \Lime\Helper {
             $increase = !empty($field['weight']) ? (int) $field['weight'] : 1;
             $display  = !isset($field['display']) ? true : $field['display'];
             $content  = !empty($field['type'])
-                            && in_array($field['type'], ['markdown', 'repeater', 'layout']) // to do: should not be hard coded
+                            && \in_array($field['type'], ['markdown', 'repeater', 'layout']) // to do: should not be hard coded
                             && \method_exists($this->app->helper('fields'), $field['type'])
                         ? $this->app->helper('fields')->{$field['type']}($entry[$name])
                         : $entry[$name];
 
-            if (is_string($content) && count($this->searches) > 1) {
+            if (\is_string($content) && \count($this->searches) > 1) {
                 // give it a weight boost, if the full expression of
                 // multiple search terms was found
                 $regex = "/(?<!&[^\s])".$this->_search."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
 
-                preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
+                \preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
 
-                if ($count = count($matches)) {
+                if ($count = \count($matches)) {
                     $weight += $count * $increase + 10;
                 }
             }
 
-            $regex = "/(?<!&[^\s])".implode('|', $this->searches)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+            $regex = "/(?<!&[^\s])".\implode('|', $this->searches)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
 
-            if (is_string($content)) {
-                preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
+            if (\is_string($content)) {
+                \preg_match_all($regex, $content, $matches, PREG_SET_ORDER, 0);
 
-                $weight += count($matches) * $increase;
+                $weight += \count($matches) * $increase;
             }
+
+            if ($name == 'title' && !isset($item['_title']) && isset($entry['title'])) $item['_title'] = $entry['title'];
 
             if ($display) {
 
-                if ($this->app->param('highlight', false) && !empty($this->searches) && is_string($content)) {
+                if ($this->app->param('highlight', false) && !empty($this->searches) && \is_string($content)) {
 
-                    $all = count($this->searches) > 1
-                        ? array_merge([$this->_search], $this->searches) : $this->searches;
+                    $all = \count($this->searches) > 1
+                        ? \array_merge([$this->_search], $this->searches) : $this->searches;
 
-                    $regex = "/(?<!&[^\s])".implode('|', $all)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
+                    $regex = "/(?<!&[^\s])".\implode('|', $all)."(?![^<>]*(([\/\"\']|]]|\b)>))/iu";
 
-                    $content = preg_replace($regex, '<mark>$0</mark>', $content);
+                    $content = \preg_replace($regex, '<mark>$0</mark>', $content);
 
                 }
 
@@ -406,14 +419,14 @@ class Search extends \Lime\Helper {
 
         return $item;
 
-    }
+    } // end of getWeightedItem()
 
 }
 
 
 function repeaterSearch($field) {
 
-    if (!$field || !is_array($field)) return false;
+    if (!$field || !\is_array($field)) return false;
 
     $searches = cockpit()->helper('search')->searches;
 
@@ -439,7 +452,7 @@ function repeaterSearch($field) {
 
 function layoutSearch($field) {
 
-    if (!$field || !is_array($field)) return false;
+    if (!$field || !\is_array($field)) return false;
 
     $searches = cockpit()->helper('search')->searches;
 

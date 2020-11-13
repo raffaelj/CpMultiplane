@@ -36,7 +36,7 @@ class Forms extends \LimeExtra\Controller {
 
             // load site data from site singleton
             $this->app->module('multiplane')->getSite();
-            
+
             // add page to breadcrumbs
             $breadcrumbs = mp()->breadcrumbs;
             $breadcrumbs[] = ucfirst($form);

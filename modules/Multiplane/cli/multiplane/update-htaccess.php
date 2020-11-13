@@ -8,6 +8,8 @@
 
 if (!COCKPIT_CLI) return;
 
+CLI::writeln("Start to update .htaccess file...");
+
 $fallbackUrl = 'https://raw.githubusercontent.com/raffaelj/CpMultiplane/master/.htaccess.dist';
 
 $isUpdate       = \file_exists(MP_DOCS_ROOT.'/.htaccess');
@@ -29,12 +31,32 @@ if (!$isUpdate) {
     return;
 }
 
-$current = \file_get_contents(MP_DOCS_ROOT.'/.htaccess');
-$dist    = \file_get_contents(MP_DOCS_ROOT.'/.htaccess.dist');
+$currentFile = \file_get_contents(MP_DOCS_ROOT.'/.htaccess');
+$distFile    = \file_get_contents(MP_DOCS_ROOT.'/.htaccess.dist');
 
 // replace dist part, but keep user changes above/below
-$pattern = '/# BEGIN CpMultiplane.*# END CpMultiplane/s';
-$new     = preg_replace($pattern, $dist, $current);
+$pattern = '/^# BEGIN CpMultiplane.*# END CpMultiplane$/sm';
+
+\preg_match($pattern, $distFile, $matches);
+if (!isset($matches[0])) {
+    CLI::writeln("Invalid .htaccess.dist file. Update skipped.", false);
+    return;
+} else {
+    $replacement = $matches[0];
+}
+
+\preg_match($pattern, $currentFile, $matches);
+if (!isset($matches[0])) {
+    CLI::writeln("Invalid .htaccess file. Update skipped.", false);
+    return;
+} else {
+    if ($replacement == $matches[0]) {
+        CLI::writeln("Nothing to change here. Update skipped.");
+        return;
+    }
+}
+
+$new = \preg_replace($pattern, $replacement, $currentFile);
 
 \file_put_contents(MP_DOCS_ROOT.'/.htaccess', $new);
 

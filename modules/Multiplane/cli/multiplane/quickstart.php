@@ -26,6 +26,7 @@ $theme      = $app->param('theme',      'rljbase');
 $template   = $app->param('template',   'minimal');
 $i18n       = $app->param('i18n',       'en');
 $languages  = $app->param('languages',  false);
+$noAddons   = $app->param('no-addons',  false);
 
 // copy .htaccess from dist file
 if (!$app->path(MP_DOCS_ROOT . '/.htaccess')) {
@@ -89,12 +90,14 @@ $commands = [
 ];
 
 // install addons
-$addons = $config['addons'];
-foreach ($addons as $name => $url) {
-    $commands[] = [
-        'cmd'  => 'install/addon',
-        'args' => ['name' => $name, 'url' => $url]
-    ];
+if (!$noAddons) {
+    $addons = $config['addons'];
+    foreach ($addons as $name => $url) {
+        $commands[] = [
+            'cmd'  => 'install/addon',
+            'args' => ['name' => $name, 'url' => $url]
+        ];
+    }
 }
 
 run_commands($commands);
