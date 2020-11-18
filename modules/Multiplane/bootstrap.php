@@ -1019,18 +1019,34 @@ $this->module('multiplane')->extend([
 
             }
 
-            $pattern = '/(\s*)@'.$k.'\((.+?)\)/';
+            if (!$this->useImageProfiles) {
 
-            $replacement = '$1<?php echo MP_BASE_URL."/getImage?src=".urlencode($2)';
-            if (isset($v['width'])   && $v['width'])    $replacement .= '."&w=".$app->module(\'multiplane\')->get("lexy/'.$k.'/width", '   . $v['width'].')';
-            if (isset($v['height'])  && $v['height'])   $replacement .= '."&h=".$app->module(\'multiplane\')->get("lexy/'.$k.'/height", '  . $v['height'].')';
-            if (isset($v['quality']) && $v['quality'])  $replacement .= '."&q=".$app->module(\'multiplane\')->get("lexy/'.$k.'/quality", ' . $v['quality'].')';
-            if (isset($v['method'])  && $v['method'])   $replacement .= '."&m=".$app->module(\'multiplane\')->get("lexy/'.$k.'/method", "' . $v['method'].'")';
-            $replacement .= '; ?>';
+                $pattern = '/(\s*)@'.$k.'\((.+?)\)/';
 
-            $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
-                return \preg_replace($pattern, $replacement, $content);
-            });
+                $replacement = '$1<?php echo MP_BASE_URL."/getImage?src=".urlencode($2)';
+                if (isset($v['width'])   && $v['width'])    $replacement .= '."&w=".$app->module(\'multiplane\')->get("lexy/'.$k.'/width", '   . $v['width'].')';
+                if (isset($v['height'])  && $v['height'])   $replacement .= '."&h=".$app->module(\'multiplane\')->get("lexy/'.$k.'/height", '  . $v['height'].')';
+                if (isset($v['quality']) && $v['quality'])  $replacement .= '."&q=".$app->module(\'multiplane\')->get("lexy/'.$k.'/quality", ' . $v['quality'].')';
+                if (isset($v['method'])  && $v['method'])   $replacement .= '."&m=".$app->module(\'multiplane\')->get("lexy/'.$k.'/method", "' . $v['method'].'")';
+                $replacement .= '; ?>';
+
+                $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
+                    return \preg_replace($pattern, $replacement, $content);
+                });
+
+            }
+
+            else {
+
+                $pattern = '/(\s*)@'.$k.'\((.+?)\)/';
+
+                $replacement = '$1<?php echo $app->module(\'multiplane\')->imageUrl($2, \''.$k.'\');?>';
+
+                $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
+                    return \preg_replace($pattern, $replacement, $content);
+                });
+
+            }
 
         }
 
@@ -1124,6 +1140,41 @@ $this->module('multiplane')->extend([
         return $route;
 
     }, // end of getSubPageRoute()
+
+    'imageUrl' => function($src, $profile = '') {
+
+        $asset = null;
+
+        if (\is_string($src)) {
+
+            $isId = \strpos($src, '.') === false;
+
+            if ($isId) {
+                $asset = $this->app->storage->findOne('cockpit/assets', ['_id'  => $src]);
+            }
+            else {
+                $src   = \str_replace('../', '', \rawurldecode($src));
+                $asset = $this->app->storage->findOne('cockpit/assets', ['path' => $src]);
+            }
+
+        }
+
+        elseif (\is_array($src)) $asset = $src;
+
+        if (!$asset) return \is_string($src) ? $src : '';
+
+        if (!empty($profile) && isset($asset['sizes'][$profile]['path'])) {
+            $path = $asset['sizes'][$profile]['path'];
+        } else {
+            $path = $asset['path'];
+        }
+
+        $url = $this->app->pathToUrl('#uploads:'.\ltrim($path,'/'))
+               ?? $this->app->filestorage->getUrl('assets://') . $path;
+
+        return $url;
+
+    }, // end of imageUrl
 
 ]);
 
