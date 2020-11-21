@@ -1004,49 +1004,13 @@ $this->module('multiplane')->extend([
 
         foreach ($this->lexy as $k => $v) {
 
-            if (\is_string($v)) {
+            $pattern = '/(\s*)@'.\preg_quote($k, '/').'\((.+?)\)/';
 
-                if ($v == 'raw') {
-                    $this->app->renderer->extend(function($content) use ($k) {
-                        return \preg_replace('/(\s*)@'.$k.'\((.+?)\)/', '$1<?php echo MP_BASE_URL; $app->base("#uploads:" . ltrim($2, "/")); ?>', $content);
-                    });
-                    continue;
-                }
+            $replacement = '$1<?php echo $app->module(\'multiplane\')->imageUrl($2, \''.$k.'\');?>';
 
-                else {
-                    continue; // to do: custom callbacks...
-                }
-
-            }
-
-            if (!$this->useImageProfiles) {
-
-                $pattern = '/(\s*)@'.$k.'\((.+?)\)/';
-
-                $replacement = '$1<?php echo MP_BASE_URL."/getImage?src=".urlencode($2)';
-                if (isset($v['width'])   && $v['width'])    $replacement .= '."&w=".$app->module(\'multiplane\')->get("lexy/'.$k.'/width", '   . $v['width'].')';
-                if (isset($v['height'])  && $v['height'])   $replacement .= '."&h=".$app->module(\'multiplane\')->get("lexy/'.$k.'/height", '  . $v['height'].')';
-                if (isset($v['quality']) && $v['quality'])  $replacement .= '."&q=".$app->module(\'multiplane\')->get("lexy/'.$k.'/quality", ' . $v['quality'].')';
-                if (isset($v['method'])  && $v['method'])   $replacement .= '."&m=".$app->module(\'multiplane\')->get("lexy/'.$k.'/method", "' . $v['method'].'")';
-                $replacement .= '; ?>';
-
-                $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
-                    return \preg_replace($pattern, $replacement, $content);
-                });
-
-            }
-
-            else {
-
-                $pattern = '/(\s*)@'.$k.'\((.+?)\)/';
-
-                $replacement = '$1<?php echo $app->module(\'multiplane\')->imageUrl($2, \''.$k.'\');?>';
-
-                $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
-                    return \preg_replace($pattern, $replacement, $content);
-                });
-
-            }
+            $this->app->renderer->extend(function($content) use ($pattern, $replacement) {
+                return \preg_replace($pattern, $replacement, $content);
+            });
 
         }
 
@@ -1141,12 +1105,21 @@ $this->module('multiplane')->extend([
 
     }, // end of getSubPageRoute()
 
+    /**
+     * @param string|array $src
+     * @param string $profile
+     * @return string
+     */
     'imageUrl' => function($src, $profile = '') {
 
         $asset = null;
 
-        if (\is_string($src)) {
+        if (\is_array($src)) {
+            $asset = $src;
+        }
+        elseif (\is_string($src)) {
 
+            // lazy check if path or id
             $isId = \strpos($src, '.') === false;
 
             if ($isId) {
@@ -1157,24 +1130,70 @@ $this->module('multiplane')->extend([
                 $asset = $this->app->storage->findOne('cockpit/assets', ['path' => $src]);
             }
 
+            if (!$asset) {
+                return !$isId ? $src : '';
+            }
+
         }
 
-        elseif (\is_array($src)) $asset = $src;
+        if (!empty($profile)) {
 
-        if (!$asset) return \is_string($src) ? $src : '';
+            if ($asset) {
+                if (isset($asset['sizes'][$profile]['path'])) {
+                    $path = $asset['sizes'][$profile]['path'];
+                }
+                elseif (isset($this->lexy[$profile]) && $this->lexy[$profile] === 'raw') {
+                    $path = $asset['path'];
+                }
+                else {
+                    // fallback to getImage route to create thumbs on the fly
+                    return $this->getImageUrl($asset['_id'], $profile);
+                }
 
-        if (!empty($profile) && isset($asset['sizes'][$profile]['path'])) {
-            $path = $asset['sizes'][$profile]['path'];
-        } else {
-            $path = $asset['path'];
+                $url = $this->app->pathToUrl('#uploads:'.\ltrim($path,'/'))
+                    ?? $this->app->filestorage->getUrl('assets://') . $path;
+
+                return $url;
+            }
         }
 
-        $url = $this->app->pathToUrl('#uploads:'.\ltrim($path,'/'))
-               ?? $this->app->filestorage->getUrl('assets://') . $path;
+        return '';
+
+    }, // end of imageUrl
+
+    /**
+     * @param string $src
+     * @param string $profile
+     * @return string
+     */
+    'getImageUrl' => function($src, $profile) {
+
+        $options = $this->lexy[$profile] ?? false;
+
+        if (!$options || !\is_string($src)) return '';
+
+        // @uploads
+        if (\is_string($options) && $options === 'raw') {
+            return $this->app->pathToUrl("#uploads:{$src}");
+        }
+
+        // @thumbnail...
+        $url = $this->app->routeUrl('/getImage') . '?src='.$src;
+
+        $map = [
+            'width'   => 'w',
+            'height'  => 'h',
+            'quality' => 'q',
+            'method'  => 'm'
+        ];
+
+        foreach ($options as $k => $v) {
+            $url .= isset($map[$k]) ? "&{$map[$k]}={$v}" : '';
+        }
 
         return $url;
 
-    }, // end of imageUrl
+    }, // end of getImageUrl()
 
 ]);
 
