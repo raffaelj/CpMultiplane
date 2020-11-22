@@ -114,7 +114,7 @@ class Base extends \LimeExtra\Controller {
         // remove `/storage/uploads` from image urls
         $uploads = \str_replace(COCKPIT_ENV_ROOT, '', $this->app->path('#uploads:'));
         if (\strpos($src, $uploads) === 0) {
-            $src = \substr($src, strlen($uploads));
+            $src = \substr($src, \strlen($uploads));
         }
 
         // lazy uploads prefix if src is a path instead of an assets id (has no dot in filename) or is mp asset
@@ -125,11 +125,11 @@ class Base extends \LimeExtra\Controller {
         }
 
         $options = [
-            'src' => $src,
-            'mode' => $this->escape($this->param('m', 'bestFit')),
-            'width' => intval($this->param('w', 800)),
-            'height' => intval($this->param('h', null)),
-            'quality' => intval($this->param('q', 80)),
+            'src'     => $src,
+            'mode'    => $this->escape($this->param('m', 'bestFit')),
+            'width'   => \intval($this->param('w', 800)),
+            'height'  => \intval($this->param('h', null)),
+            'quality' => \intval($this->param('q', 80)),
         ];
 
         if ($this->param('blur')) {
@@ -148,18 +148,18 @@ class Base extends \LimeExtra\Controller {
 
         if (!$thumbpath) return false;
 
-        $ext = strtolower(pathinfo($thumbpath, PATHINFO_EXTENSION));
+        $ext = \strtolower(\pathinfo($thumbpath, PATHINFO_EXTENSION));
 
         $store = $ext == 'svg' ? 'uploads://' : 'thumbs://';
-        $thumbpath = $store . '/' . str_replace($this->app->filestorage->getUrl($store), '', $thumbpath);
+        $thumbpath = $store . '/' . \str_replace($this->app->filestorage->getUrl($store), '', $thumbpath);
 
         if (!$this->app->filestorage->has($thumbpath)) return false;
 
         $timestamp = $this->app->filestorage->getTimestamp($thumbpath);
-        $gmt_timestamp = gmdate(DATE_RFC1123, $timestamp);
+        $gmt_timestamp = \gmdate(DATE_RFC1123, $timestamp);
 
-        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == strtotime($gmt_timestamp)) {
-            header('HTTP/1.1 304 Not Modified');
+        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) && \strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) == \strtotime($gmt_timestamp)) {
+            \header('HTTP/1.1 304 Not Modified');
             $this->app->stop();
         }
 
@@ -167,12 +167,12 @@ class Base extends \LimeExtra\Controller {
                 ? \Lime\App::$mimeTypes[$ext]
                 : \Lime\Response::$mimeTypes[$ext];
 
-        header("Content-Type: " . $mime);
-        header('Content-Length: '.$this->app->filestorage->getSize($thumbpath));
-        header('Last-Modified: ' . $gmt_timestamp);
-        header('Expires: ' . gmdate(DATE_RFC1123, time() + 31556926));
-        header('Cache-Control: max-age=31556926');
-        header('Pragma: max-age=31556926');
+        \header("Content-Type: " . $mime);
+        \header('Content-Length: '.$this->app->filestorage->getSize($thumbpath));
+        \header('Last-Modified: ' . $gmt_timestamp);
+        \header('Expires: ' . \gmdate(DATE_RFC1123, \time() + 31556926));
+        \header('Cache-Control: max-age=31556926');
+        \header('Pragma: max-age=31556926');
 
         echo $this->app->filestorage->read($thumbpath);
 
