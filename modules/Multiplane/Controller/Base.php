@@ -146,10 +146,14 @@ class Base extends \LimeExtra\Controller {
 
         $thumbpath = $this->module('cockpit')->thumbnail($options);
 
+        if (!$thumbpath) return false;
+
         $ext = strtolower(pathinfo($thumbpath, PATHINFO_EXTENSION));
 
         $store = $ext == 'svg' ? 'uploads://' : 'thumbs://';
         $thumbpath = $store . '/' . str_replace($this->app->filestorage->getUrl($store), '', $thumbpath);
+
+        if (!$this->app->filestorage->has($thumbpath)) return false;
 
         $timestamp = $this->app->filestorage->getTimestamp($thumbpath);
         $gmt_timestamp = gmdate(DATE_RFC1123, $timestamp);
