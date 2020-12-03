@@ -15,7 +15,7 @@
         "php": ">= 7.1",
         "ext-json": "*",
         "ext-pdo": "*",
-        "oomphinc/composer-installers-extender": "^1.1",
+        "oomphinc/composer-installers-extender": "^2.0",
         "aheinze/cockpit": "^0.11.2",
         "raffaelj/cockpit-cpmultiplanegui": "^0.2.2",
         "raffaelj/cockpit-uniqueslugs": "^0.5.4",
