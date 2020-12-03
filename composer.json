@@ -3,7 +3,7 @@
     "description": "A small PHP frontend for Cockpit CMS",
     "type": "project",
     "license": "MIT",
-    "homepage": "https://github.com/raffaelj/CpMultiplane",
+    "homepage": "https://cpmultiplane.rlj.me",
     "keywords": ["frontend", "php", "cockpit"],
     "authors": [
         {
