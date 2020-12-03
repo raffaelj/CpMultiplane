@@ -163,7 +163,7 @@ foreach ($fs->ls('*.js', "{$tmppath}/{$zipname}/langs") as $file) {
         }
     }
 
-    if ($fs->copy($file->getRealPath(), "{$dest}/{$code}.js")) {
+    if ($fs->copy($file->getRealPath(), "{$dest}/{$code}.js", false)) {
         CLI::writeln("Downloaded tinyMCE language file to '{$dest}/{$code}.js'", true);
     } else {
         CLI::writeln("Couldn't write tinyMCE language file.", false);
