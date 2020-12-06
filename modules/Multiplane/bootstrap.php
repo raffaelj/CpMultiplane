@@ -807,7 +807,7 @@ $this->module('multiplane')->extend([
 
         else {
             // allow array input or string with white space delimiter
-            $ips = \is_array($ips) ? $ips : \explode(' ', trim($ips));
+            $ips = \is_array($ips) ? $ips : \explode(' ', \trim($ips));
 
             if (\in_array($this->app->getClientIp(), $ips)) {
                 $this->clientIpIsAllowed = true;
@@ -848,7 +848,9 @@ $this->module('multiplane')->extend([
             if ($key == 'fieldNames') {
                 $fieldNames = $this->fieldNames;
                 foreach ($val as $fieldName => $replacement) {
-                    $fieldNames[$fieldName] = $replacement;
+                    if (\is_string($replacement) && !empty(\trim($replacement))) {
+                        $fieldNames[$fieldName] = \trim($replacement);
+                    }
                 }
                 $this->fieldNames = $fieldNames;
             } else {
