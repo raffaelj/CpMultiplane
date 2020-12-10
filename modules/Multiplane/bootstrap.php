@@ -78,6 +78,7 @@ $this->module('multiplane')->extend([
         'logo'              => 'logo',            // only in site
         'tags'              => 'tags',
         'category'          => 'category',        // not used for now, will be like tags
+        'contactform'       => 'contactform',
     ],
 
     // maintenance mode
