@@ -35,6 +35,7 @@ $this->module('multiplane')->extend([
                 '_pid'         => true,
                 '_o'           => true,
                 $startpageName => true,
+                $permalinkName => true,
             ],
         ];
 
@@ -52,6 +53,7 @@ $this->module('multiplane')->extend([
 
             if ($lang != $this->defaultLang) {
                 $options['fields']["{$titleName}_{$lang}"] = true;
+                $options['fields']["{$permalinkName}_{$lang}"] = true;
                 if ($slugName != '_id') {
                     $options['fields']["{$slugName}_{$lang}"] = true;
                 }
@@ -78,7 +80,7 @@ $this->module('multiplane')->extend([
 
             if ($this->usePermalinks) {
                 $n['url'] = $n[$permalinkName];
-                unset($n[$slugName]);
+                if ($slugName != '_id') unset($n[$slugName]);
             }
 
         }
