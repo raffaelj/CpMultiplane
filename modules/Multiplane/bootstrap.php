@@ -1149,10 +1149,13 @@ $this->module('multiplane')->extend([
         if (!empty($profile)) {
 
             if ($asset) {
+
+                $isSVG = \preg_match('/svg/', $asset['mime']);
+
                 if (isset($asset['sizes'][$profile]['path'])) {
                     $path = $asset['sizes'][$profile]['path'];
                 }
-                elseif (isset($this->lexy[$profile]) && $this->lexy[$profile] === 'raw') {
+                elseif ($isSVG || (isset($this->lexy[$profile]) && $this->lexy[$profile] === 'raw')) {
                     $path = $asset['path'];
                 }
                 else {
