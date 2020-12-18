@@ -1130,6 +1130,13 @@ $this->module('multiplane')->extend([
             }
             else {
                 $src   = \str_replace('../', '', \rawurldecode($src));
+
+                // remove `/storage/uploads` from image urls
+                $uploads = \str_replace(COCKPIT_ENV_ROOT, '', $this->app->path('#uploads:'));
+                if (\strpos($src, $uploads) === 0) {
+                    $src = '/'.\substr($src, \strlen($uploads));
+                }
+
                 $asset = $this->app->storage->findOne('cockpit/assets', ['path' => $src]);
             }
 
