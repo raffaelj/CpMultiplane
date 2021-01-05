@@ -69,14 +69,17 @@ module.exports = {
                 });
 
                 // find caption
-                var node = (el.parentNode).querySelector('figcaption');
+                var node = el.querySelector('figcaption')           // <a><figure><img /><figcaption>...
+                    || (el.parentNode.nodeName == 'FIGURE'          // <figure><a><img /></a><figcaption>...
+                        ? (el.parentNode).querySelector('figcaption') : null);
+
                 if (node) {
-                    $this.captions[k][i] = node.innerHTML;
-                } else if (el.getAttribute('title')) {
+                    $this.captions[k][i] = node.innerHTML.trim();
+                } else if (el.getAttribute('title')) {              // <a title="..."><img /></a>
                     $this.captions[k][i] = (el.getAttribute('title')).replace(/(\r\n|\n\r|\r|\n)/g, '<br>' + '$1');
-                } else if (el.dataset.title) {
+                } else if (el.dataset.title) {                      // <a data-title="..."><img /></a>
                     $this.captions[k][i] = (el.dataset.title).replace(/(\r\n|\n\r|\r|\n)/g, '<br>' + '$1');
-                } else {
+                } else {                                            // <a><img title|data-title="..." /></a>
                     node = el.querySelector('img');
                     if (node) {
                         $this.captions[k][i] = node.getAttribute('title') || node.dataset.title || '';
