@@ -40,7 +40,7 @@ module.exports = {
 
         if (!form) return;
 
-        this.lastFocus = target,
+        this.lastFocus = target;
 
         this.show();
 
