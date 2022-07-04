@@ -34,6 +34,6 @@ isStartpage:    {{ mp()->isStartpage, PHP_EOL }}
 currentSlug:    {{ mp()->currentSlug, PHP_EOL }}
 pageTypeDetection: {{ mp()->pageTypeDetection, PHP_EOL }}
 slugName:       {{ mp()->get('fieldNames/slug'), PHP_EOL }}
-posts:          {{ isset($posts['posts']) ? count($posts['posts']) : 0, PHP_EOL }}
+posts:          {{ count($posts), PHP_EOL }}
 </pre>
 </div>
