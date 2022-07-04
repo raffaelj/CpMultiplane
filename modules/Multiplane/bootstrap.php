@@ -975,6 +975,7 @@ $this->module('multiplane')->extend([
                     $slug = $tmp['_id'];
                 } else {
                     $slug = (!empty($tmp['subpagemodule']['route'])) ? $tmp['subpagemodule']['route'] : $tmp[$slugName];
+                    $slug = ltrim($slug, '/');
                 }
 
                 $structure[$col] = [
@@ -988,6 +989,7 @@ $this->module('multiplane')->extend([
                         $slug = $tmp['_id'];
                     } else {
                         $slug = (!empty($tmp['subpagemodule']['route_'.$l])) ? $tmp['subpagemodule']['route_'.$l] : $tmp[$slugName.'_'.$l];
+                        $slug = ltrim($slug, '/');
                     }
                     $structure[$col]['slug_'.$l] = $slug;
                 }
