@@ -6,7 +6,10 @@
     "homepage": "https://github.com/raffaelj/CpMultiplane",
     "license": "MIT",
     "description": "Optimized for docs with markdown as content field",
-    "keywords": ["docs","markdown"],
+    "keywords": [
+        "docs",
+        "markdown"
+    ],
     "scripts": {
         "build": "npm run build:sass",
         "watch": "npm run watch:sass",
@@ -16,6 +19,6 @@
         "update": "npm run generate-preamble-files && npm run build"
     },
     "devDependencies": {
-        "node-sass": "^4.13.1"
+        "node-sass": "^7.0.1"
     }
 }

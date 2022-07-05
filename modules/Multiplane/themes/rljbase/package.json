@@ -27,12 +27,12 @@
         "update": "npm run generate-preamble-files && npm run build"
     },
     "devDependencies": {
-        "browserify": "^16.5.0",
+        "browserify": "^17.0.0",
+        "concurrently": "^7.2.2",
         "core-js": "^3.2.1",
-        "formdata-polyfill": "^3.0.19",
-        "onchange": "^6.1.0",
-        "uglify-js": "^3.6.0",
-        "node-sass": "^4.13.1",
-        "concurrently": "^5.1.0"
+        "formdata-polyfill": "^4.0.10",
+        "node-sass": "^7.0.1",
+        "onchange": "^7.1.0",
+        "uglify-js": "^3.6.0"
     }
 }
