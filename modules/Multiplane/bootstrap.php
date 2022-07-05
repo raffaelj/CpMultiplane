@@ -1251,7 +1251,7 @@ if (!MP_SELF_EXPORT) {
     // don't bind any routes, if users wants to use only their own routes
     if ($this->module('multiplane')->accessAllowed()
       && !$this->module('multiplane')->disableDefaultRoutes) {
-        require_once(__DIR__ . '/bind.php');
+        require_once(__DIR__ . '/default-routes.php');
     }
 
 }
