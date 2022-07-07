@@ -8,7 +8,7 @@ class Forms extends \LimeExtra\Controller {
 
         // stand-alone form page, e. g: example.com/form/form_name
         // or if multilingual example.com/en/form/form_name
-        // useful as fallback for submit redirects if HTTP_REFERER is disabled
+        // also useful as fallback for submit redirects if HTTP_REFERER is missing
 
         if (!mp()->formStandalone) return false;
 
@@ -34,13 +34,21 @@ class Forms extends \LimeExtra\Controller {
                 $this('i18n')->load($translationspath, $lang);
             }
 
-            // load site data from site singleton
-            $this->app->module('multiplane')->getSite();
-
             // add page to breadcrumbs
             $breadcrumbs = mp()->breadcrumbs;
-            $breadcrumbs[] = ucfirst($form);
+            $breadcrumbs[] = [
+                'title' => ucfirst($form),
+                'slug'  => ''
+            ];
             mp()->breadcrumbs = $breadcrumbs;
+
+            // add global viewvars
+            $site = $this->app->module('multiplane')->getSite();
+            $page = [
+                'title' => ucfirst($form),
+            ];
+            $this->app->viewvars['page'] = $page;
+            $this->app->viewvars['site'] = $site;
 
             // hide from search engines
             $this->app->on('multiplane.seo', function(&$seo) use($form) {
@@ -101,11 +109,7 @@ class Forms extends \LimeExtra\Controller {
             'error'   => mp()->formatErrorMessage($form),
         ];
 
-        // if form is a standalone page
-        $page = ['title' => ucfirst($form)];
-        $site = mp()->site;
-
-        return $this->render('views:partials/form.php', compact('page', 'form', 'fields', 'message', 'options'));
+        return $this->render('views:partials/form.php', compact('form', 'fields', 'message', 'options'));
 
     } // end of form()
 
