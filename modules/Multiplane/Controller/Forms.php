@@ -10,7 +10,7 @@ class Forms extends \LimeExtra\Controller {
         // or if multilingual example.com/en/form/form_name
         // also useful as fallback for submit redirects if HTTP_REFERER is missing
 
-        if (!mp()->formStandalone) return false;
+        if (!$this->app->module('multiplane')->formStandalone) return false;
 
         if (!empty($params[':splat'][0])) {
 
@@ -35,12 +35,12 @@ class Forms extends \LimeExtra\Controller {
             }
 
             // add page to breadcrumbs
-            $breadcrumbs = mp()->breadcrumbs;
+            $breadcrumbs = $this->app->module('multiplane')->breadcrumbs;
             $breadcrumbs[] = [
                 'title' => ucfirst($form),
                 'slug'  => ''
             ];
-            mp()->breadcrumbs = $breadcrumbs;
+            $this->app->module('multiplane')->breadcrumbs = $breadcrumbs;
 
             // add global viewvars
             $site = $this->app->module('multiplane')->getSite();
@@ -72,7 +72,7 @@ class Forms extends \LimeExtra\Controller {
         // 2: form has errors/notices
         // 3: success
 
-        $sessionName = mp()->formSessionName;
+        $sessionName = $this->app->module('multiplane')->formSessionName;
 
         // lazy check for get param to avoid starting a session without user input
         $submit = isset($_GET['submit']) ? (int) $_GET['submit'] : false;
@@ -80,7 +80,7 @@ class Forms extends \LimeExtra\Controller {
             $this('session')->init($sessionName);
         }
 
-        $fields = mp()->getFormFields($form);
+        $fields = $this->app->module('multiplane')->getFormFields($form);
 
         if (!$fields) return false;
 
@@ -88,7 +88,7 @@ class Forms extends \LimeExtra\Controller {
         $notice  = false;
 
         // hide messages if session is expired and user calls the url again
-        $expire = mp()->formSessionExpire;
+        $expire = $this->app->module('multiplane')->formSessionExpire;
 
         $call     = $this('session')->read("mp_form_call_$form", null);
         $response = $this('session')->read("mp_form_response_$form", null);
@@ -104,9 +104,9 @@ class Forms extends \LimeExtra\Controller {
         $success = !$call && isset($_GET['submit']) && $_GET['submit'] == 3;
 
         $message = [
-            'success' => $success ? mp()->formMessages['success'] : '',
-            'notice'  => $notice  ? mp()->formMessages['notice']  : '',
-            'error'   => mp()->formatErrorMessage($form),
+            'success' => $success ? $this->app->module('multiplane')->formMessages['success'] : '',
+            'notice'  => $notice  ? $this->app->module('multiplane')->formMessages['notice']  : '',
+            'error'   => $this->app->module('multiplane')->formatErrorMessage($form),
         ];
 
         return $this->render('views:partials/form.php', compact('form', 'fields', 'message', 'options'));
@@ -115,7 +115,7 @@ class Forms extends \LimeExtra\Controller {
 
     public function submit($form = '') {
 
-        $sessionName = mp()->formSessionName;
+        $sessionName = $this->app->module('multiplane')->formSessionName;
         $submitQuery = '';
 
         $this('session')->init($sessionName);
@@ -143,8 +143,8 @@ class Forms extends \LimeExtra\Controller {
 
         // cast user input and remove optional id prefix before sending it to validator
         $postedData = [];
-        $prefix = mp()->formIdPrefix;
-        $formSubmitButtonName = mp()->formSubmitButtonName;
+        $prefix = $this->app->module('multiplane')->formIdPrefix;
+        $formSubmitButtonName = $this->app->module('multiplane')->formSubmitButtonName;
 
         $strlen = strlen($prefix);
         foreach($_POST[$form] as $key => $val) {
@@ -163,7 +163,7 @@ class Forms extends \LimeExtra\Controller {
             // TODO: trim array values (multipleselect field)
         }
 
-        if (mp()->formSendReferer) {
+        if ($this->app->module('multiplane')->formSendReferer) {
             $postedData['referer'] = $refererUrl;
         }
 
@@ -201,7 +201,7 @@ class Forms extends \LimeExtra\Controller {
             $submitQuery = '?submit=2';
         }
 
-        $anchor = mp()->formIdPrefix.$form;
+        $anchor = $this->app->module('multiplane')->formIdPrefix.$form;
 
         $this->reroute($refererUrl.$submitQuery.'#'.$anchor);
 
