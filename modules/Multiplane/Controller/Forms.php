@@ -154,9 +154,15 @@ class Forms extends \LimeExtra\Controller {
                 $k = substr($key, $strlen);
             } else {$k = $key;}
 
-            $postedData[$k] = htmlspecialchars(trim($val));
+            if (is_string($val)) {
+                $postedData[$k] = htmlspecialchars(trim($val));
+            }
+            else {
+                $postedData[$k] = $val;
+            }
+            // TODO: trim array values (multipleselect field)
         }
-        
+
         if (mp()->formSendReferer) {
             $postedData['referer'] = $refererUrl;
         }
