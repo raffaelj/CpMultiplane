@@ -34,14 +34,6 @@ class Forms extends \LimeExtra\Controller {
                 $this('i18n')->load($translationspath, $lang);
             }
 
-            // add page to breadcrumbs
-            $breadcrumbs = $this->app->module('multiplane')->breadcrumbs;
-            $breadcrumbs[] = [
-                'title' => ucfirst($form),
-                'slug'  => ''
-            ];
-            $this->app->module('multiplane')->breadcrumbs = $breadcrumbs;
-
             // add global viewvars
             $site = $this->app->module('multiplane')->getSite();
             $page = [
