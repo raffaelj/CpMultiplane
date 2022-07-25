@@ -144,7 +144,8 @@ $color-icon-background: $color-white-transp !default;
     &:before {
         content: '';
         position: absolute;
-        top: $icon-width  / 4;
+        //top: $icon-width  / 4;
+        bottom: $icon-width / 10;
         left: $icon-width  / 2 * .4;
         width: $icon-width / 2 * .8;
         height: $icon-width / 4;

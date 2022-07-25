@@ -1,6 +1,6 @@
 
 // colours
-$color-white:       #fafafa !default;
+$color-white:       #fcfcfc !default;
 $color-black:       #000 !default;
 
 $color-white-transp:        rgba(255,255,255,.9) !default;
@@ -19,7 +19,7 @@ $color-darker:      #222 !default;
 $color-grey:        #ccc !default;
 $color-grey-light:  #f4f4f4 !default;
 $color-gray:        $color-grey !default; // avoid typos
-$color-gray-light:  #f4f4f4 !default;     // avoid typos
+$color-gray-light:  $color-grey-light !default; // avoid typos
 
 $color-shadow:      $color-grey !default;
 

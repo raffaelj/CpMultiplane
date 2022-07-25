@@ -8,6 +8,7 @@ $color-black:       #000 !default;
 $color-dark:        #222 !default;
 $color-grey:        #ccc !default;
 $color-shadow:      #0c0c0c !default;
+$color-white-transp:       rgba(255,255,255,.9) !default;
 $color-black-transp-light: rgba(0,0,0,.2) !default;
 
 // form colors
@@ -21,25 +22,15 @@ $color-button-text: $color-white !default;
 
 $color-alarm:       #AD000E !default;
 $color-error:       #d50f2c !default;
+$color-success:     #00af40 !default;
 
-$color-input:       rgba(255,255,255,.9) !default;
+$color-input:       $color-white-transp !default;
 $color-input-hover: $color-white !default;
 $color-info:        transparent !default;
 
 $color-fieldset-border: $color-text-dark !default;
 
-//form {
-    //* {
-        //@include box-sizing(border-box);
-    //}
-    //margin: 1em 0;
-//}
-
 form {
-    //border: 1px solid $color-fieldset-border;
-    //border-radius: $border-radius;
-    //padding: .5em;
-    //text-align: center;
     font-size: 1em;
     margin: 1em 0;
     * {
@@ -64,17 +55,13 @@ form {
             float: left; // fix inline white spaces
         }
         > label {
-/*             position: absolute; */
-/*             top: 0em; */
             display: block;
-            //font-size: .9em;
             font-size: 1em;
             transition: 0.2s;
         }
         .info {
             padding: .2em 0;
-            //font-size: .9em;
-            font-size: 1em;
+            font-size: .9em;
             background-color: $color-info;
             border-radius: $border-radius;
         }
@@ -88,11 +75,6 @@ legend {
 input, textarea {
     background-color: $color-input;
     font-size: inherit;
-    // &[required] {
-        // + label:after {
-            // content: "*";
-        // }
-    // }
 }
 
 input {
@@ -105,25 +87,15 @@ input {
     border: 1px solid $color-grey;
     border-radius: $border-radius;
     &:hover, &:focus {
-        border: 1px solid $color-grey;
+        border: 1px solid $color-text;
         background-color: $color-input-hover;
-        + label {
-            margin-left: .2em;
-        }
+
     }
-    //+ label {
-        //+ .message.error {
-          //border-top-left-radius: 0;
-          //border-top-right-radius: 0;
-          //border-top-width: 0;
-          //padding-top: .2em;
-        //}
-    //}
     &:invalid {
-        // to do...
+        // TODO
     }
     &:valid {
-        // to do...
+        // TODO
     }
 }
 
@@ -150,7 +122,7 @@ input[type=checkbox], input[type=radio] {
         position: relative;
         margin-left: 1.2em;
         &:before {
-            content:'';
+            content: '';
             position: absolute;
             top: 50%;
             left: -1.2em;
@@ -172,7 +144,7 @@ input[type=checkbox], input[type=radio] {
     }
     &:checked {
         + label:before {
-
+            // TODO
         }
         + label:after {
             content: '';
@@ -206,6 +178,7 @@ input[type=checkbox], input[type=radio] {
         }
     }
 }
+
 input[type=radio] + label:before,
 input[type=radio]:checked + label:after {
     border-radius: 50%;
@@ -216,7 +189,6 @@ input[type=submit], input[type=reset], input[type=button], button {
     margin: .1em auto;
     padding: .2em .5em;
     font-size: 1em;
-    //font-size: inherit;
     color: $color-button-text;
     background-color: $color-link;
     border: none;
@@ -235,15 +207,13 @@ input[type=submit], input[type=reset], input[type=button], button {
         }
     }
 }
+
 input, button {
     &[type=submit] {
         background-color: $color-link;
         &:hover, &:focus {
             background-color: $color-link-hover;
         }
-        // + p {
-            // margin-top:.5em;
-        // }
     }
     &[type=button] {
         background-color: $color-link;
@@ -261,6 +231,7 @@ input, button {
         background-color: $color-grey;
         color: $color-darker;
         cursor: default;
+
         &:hover, &:focus {
             background-color: $color-grey;
         }
@@ -275,6 +246,7 @@ textarea {
     border-radius: $border-radius;
     border: 1px solid $color-grey;
     font-family: $font;
+
     &:hover, &:focus{
         background-color: $color-input-hover;
         + label{
@@ -283,43 +255,10 @@ textarea {
     }
 }
 
-// button {
-    // border:none;
-// }
-
-
-//// label positioning
-
-input, textarea {
-/*     margin-top: 1.5em; */
-}
-//label {
-    //+ input, + textarea {
-        //margin-top: inherit;
-    //}
-    //// reverse pretty checkboxes if label doesn't follow input
-    //input[type=checkbox], input[type=radio]/*, + input[type=checkbox], + input[type=radio]*/ {
-        //position: static;
-        //display: inline;
-        //opacity: 1;
-        //margin: 0;
-    //}
-//}
-
-// reset margin from absolute positioned labels
-// label {
-    // + input {
-        // margin-top:0;
-    // }
-// }
-
-//// messages
-
 .message {
-    //font-size: .9em;
     font-size: 1em;
     text-align: left;
-    &.error{
+    &.error {
         border: 1px solid $color-error;
         margin: 0 .2em;
         padding: .5em;
@@ -335,16 +274,23 @@ input, textarea {
             vertical-align: baseline;
         }
     }
-    &.success{
-        //font-size: 1.1em;
+    &.success {
         font-size: 1em;
-        border: .5em solid $color-link-hover;
+        border: .5em solid $color-success;
         padding: 1em .5em;
         border-radius: $border-radius;
         text-align: center;
         margin: 1em 0.2em;
+        .icon-checked {
+            color: $color-success;
+            background-color: transparent;
+            font-size: 1.2em;
+            height: 1em;
+            width: 1.5em;
+            margin-right: 0.2em;
+        }
     }
-    &.alarm{
+    &.alarm {
         color: $color-alarm;
         border: 2px solid $color-alarm;
     }

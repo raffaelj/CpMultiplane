@@ -18,7 +18,10 @@ if ($sessionStarted = $app('session')->read("mp_form_call_$form", null)) {
     @endif
 
     @if(!empty($message['success']))
-    <p class="message success">{{ $message['success'] }}</p>
+    <p class="message success">
+        <i class="icon-checked"></i>
+        {{ $message['success'] }}
+    </p>
     @endif
 
     @if(!empty($message['notice']))
