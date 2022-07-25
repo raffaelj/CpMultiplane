@@ -1,0 +1,12 @@
+
+// a11y
+.skip-to-content-link {
+    position: absolute;
+    top:0;
+    left: 0;
+    font-weight: 700;
+    transform: translateY(-500%);
+    &:focus {
+        transform: translateY(0%);
+    }
+}
