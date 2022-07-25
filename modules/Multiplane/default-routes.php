@@ -131,7 +131,7 @@ else {
     }
 
     // redirect "/" to "/en"
-    $this->bind('/*', function($params) {
+    $this->bind('/', function() {
 
         $defaultLang = $this->module('multiplane')->defaultLang;
 
@@ -140,7 +140,7 @@ else {
         if (!in_array($lang, $this->module('multiplane')->getLanguages())) {
             $lang = $defaultLang;
         }
-        $this->reroute('/' . $lang . '/' . ($params[':splat'][0] ?? ''));
+        $this->reroute('/' . $lang );
 
     });
 
