@@ -27,6 +27,7 @@ $this->module('multiplane')->extend([
         'success' => 'Thank you for your message. I will answer soon.',
         'notice'  => 'Please fill in all mandatory fields correctly.',
         'mailer'  => 'Your mail wasn\'t sent correctly.',
+        'error_generic' => 'Something went wrong',
     ],
 
     'getFormFields' => function($form = '', $options = []) {
@@ -42,9 +43,6 @@ $this->module('multiplane')->extend([
         $response = $this('session')->read("mp_form_response_$form", []);
 
         foreach($fields as &$field) {
-
-            // set attributes
-            $field['attr'] = $this->resolveFormFieldAttributes($field, $form);
 
             // set/get values
             $field['value'] = $response['data'][$field['name']] ?? '';
@@ -68,6 +66,11 @@ $this->module('multiplane')->extend([
 
             }
 
+            // set attributes
+            $attr = $this->resolveFormFieldAttributes($field, $form);
+            $field['attr'] = $attr[0];
+            $field['aria'] = $attr[1];
+
         }
 
         return $fields;
@@ -76,8 +79,19 @@ $this->module('multiplane')->extend([
 
     'resolveFormFieldAttributes' => function($field, $form = '') {
 
+        $prefix = $this->formIdPrefix;
+
         $attr['name'] = $field['name'];
-        $attr['id']   = "{$this->formIdPrefix}{$form}_{$field['name']}";
+        $attr['id']   = "{$prefix}{$form}_{$field['name']}";
+
+        $ariaDescribedBy = [];
+        if (!empty($field['info']))  $ariaDescribedBy['info'] = $attr['id'] . '_aria_info';
+        if (!empty($field['link']))  $ariaDescribedBy['link'] = $attr['id'] . '_aria_linkinfo';
+        if (!empty($field['error'])) $ariaDescribedBy['error'] = $attr['id'] . '_aria_error';
+
+        if (!empty($ariaDescribedBy)) {
+            $attr['aria-describedby'] = join(' ', $ariaDescribedBy);
+        }
 
         if (isset($field['required']) && $field['required']) {
             $attr['required'] = true;
@@ -90,14 +104,19 @@ $this->module('multiplane')->extend([
             }
         }
 
-        $attr['name'] = $form . '[' . $attr['name'] . ']';
+        $attr['name'] = "{$prefix}{$form}[{$attr['name']}]";
 
-        return $attr;
+        return [$attr, $ariaDescribedBy];
 
     },
 
     // helper function to convert array to html attribute string
     'arrayToAttributeString' => function($attr) {
+        return $this->getHtmlAttributesFromArray($attr);
+    },
+
+    // helper function to convert array to html attribute string
+    'getHtmlAttributesFromArray' => function($attr) {
 
         $attributes = '';
 
@@ -122,23 +141,35 @@ $this->module('multiplane')->extend([
 
         if (!isset($response['error'])) return false;
 
+        // error from mailer
         if (is_string($response['error'])) {
-            // error from mailer
-            return $this->app['debug'] ? $response['error'] : $this->formMessages['mailer'];
-        }
-
-        // possible keys: 'validator', 'honeypot' (and field names - not needed here)
-
-        $out = '';
-        foreach ($response['error'] as $key => $val) {
-
-            if ($key != 'validator' && $key != 'honeypot') continue;
-
+            if ($this->app['debug']) {
+                return $response['error'];
+            }
             else {
-                $out .= "<strong>$key: </strong><br>";
-                $out .= \is_string($val) ? $val : \implode('<br>', $val);
+                $mailerMessage = $this->formMessages['mailer'];
+
+                $_form = $this->app->module('forms')->form($form);
+                $customMailerMassage = $_form['formMessages']['mailer'] ?? null;
+
+                if ($customMailerMassage && is_string($customMailerMassage) && !empty(trim($customMailerMassage))) {
+                    $mailerMessage = $customMailerMassage;
+                }
+
+                return $mailerMessage;
             }
 
+        }
+
+        // error from validator or honeypot
+        // normal fields have their own error massage/handling
+        $out = '';
+        foreach (['validator', 'honeypot'] as $key) {
+            if (!isset($response['error'][$key])) continue;
+            $val = $response['error'][$key];
+            $out .= "<strong>$key:</strong> ";
+            $out .= \is_string($val) ? $val : \implode('<br>', $val);
+            $out .= '<br>';
         }
         return $out;
 

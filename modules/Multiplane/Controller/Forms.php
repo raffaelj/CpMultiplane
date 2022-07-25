@@ -28,16 +28,12 @@ class Forms extends \LimeExtra\Controller {
 
             $form = $params[':splat'][0];
 
-            // init + load i18n
-            $lang = $this('i18n')->locale;
-            if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
-                $this('i18n')->load($translationspath, $lang);
-            }
+            $_form = $this->app->module('forms')->form($form);
 
             // add global viewvars
             $site = $this->app->module('multiplane')->getSite();
             $page = [
-                'title' => ucfirst($form),
+                'title' => $_form['label'] ?? ucfirst($form),
             ];
             $this->app->viewvars['page'] = $page;
             $this->app->viewvars['site'] = $site;
@@ -95,10 +91,19 @@ class Forms extends \LimeExtra\Controller {
         $notice  =  $call && isset($_GET['submit']) && $_GET['submit'] == 2;
         $success = !$call && isset($_GET['submit']) && $_GET['submit'] == 3;
 
+        $_form = $this->app->module('forms')->form($form);
+        $customFormMessages = isset($_form['formMessages']) && is_array($_form['formMessages']) ? $_form['formMessages'] : [];
+
+        $formMessages = $this->app->module('multiplane')->formMessages;
+        foreach ($customFormMessages as $k => $v) {
+            if (is_string($v) && !empty(trim($v))) $formMessages[$k] = $v;
+        }
+
         $message = [
-            'success' => $success ? $this->app->module('multiplane')->formMessages['success'] : '',
-            'notice'  => $notice  ? $this->app->module('multiplane')->formMessages['notice']  : '',
+            'success' => $success ? $formMessages['success'] : '',
+            'notice'  => $notice  ? $formMessages['notice']  : '',
             'error'   => $this->app->module('multiplane')->formatErrorMessage($form),
+            'error_generic' => $formMessages['error_generic'],
         ];
 
         return $this->render('views:partials/form.php', compact('form', 'fields', 'message', 'options'));
@@ -138,19 +143,15 @@ class Forms extends \LimeExtra\Controller {
         $prefix = $this->app->module('multiplane')->formIdPrefix;
         $formSubmitButtonName = $this->app->module('multiplane')->formSubmitButtonName;
 
-        $strlen = strlen($prefix);
-        foreach($_POST[$form] as $key => $val) {
+        foreach($_POST[$prefix.$form] as $key => $val) {
+
             if ($key == $formSubmitButtonName) continue;
 
-            if (substr($key, 0, $strlen) == $prefix) {
-                $k = substr($key, $strlen);
-            } else {$k = $key;}
-
             if (is_string($val)) {
-                $postedData[$k] = htmlspecialchars(trim($val));
+                $postedData[$key] = htmlspecialchars(trim($val));
             }
             else {
-                $postedData[$k] = $val;
+                $postedData[$key] = $val;
             }
             // TODO: trim array values (multipleselect field)
         }

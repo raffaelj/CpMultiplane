@@ -1,5 +1,3 @@
-<?php
-$attributes = cockpit('multiplane')->arrayToAttributeString($field['attr']);
-?>
+{% $attributes = cockpit('multiplane')->getHtmlAttributesFromArray($field['attr']); %}
 
     <input type="checkbox"{{ $attributes }} />
