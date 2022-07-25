@@ -19,6 +19,7 @@
         @trigger('multiplane.layout.contentbefore')
 
         <header>
+            <a class="skip-to-content-link" href="#main">@lang('Skip to content')</a>
             <a href="@base('/')">
               @if(!empty($site['logo']))
                 <img class="logo" alt="{{ $site['logo']['title'] ?? 'logo' }}" src="@logo($site['logo']['_id'] ?? $site['logo']['path'])" title="@lang('back to start page')" />
