@@ -67,7 +67,7 @@ $icon-height:  2em !default;
 }
 
 .search-extended {
-    text-align: center;
+    text-align: left;
     form {
         width: auto;
     }
@@ -79,6 +79,12 @@ $icon-height:  2em !default;
         > div, > button {
             display: inline-block;
             max-width: 100%;
+            width: auto;
+            margin: .2em 0;
+            vertical-align: middle;
+        }
+        > div {
+            padding: 0;
         }
     }
 }
