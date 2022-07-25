@@ -38,6 +38,7 @@ $this->module('multiplane')->extend([
 
     // base config
     'theme'                 => 'rljbase',
+    'faviconPath'           => '/favicon.png',
     'parentTheme'           => null,
     'parentThemeBootstrap'  => true,
 
