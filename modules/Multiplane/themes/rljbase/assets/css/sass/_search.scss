@@ -28,7 +28,7 @@ $icon-height:  2em !default;
         padding-top: 5px;
         padding-bottom: 5px;
         // vertical-align: bottom;
-        
+
         width: 2rem;
         max-width: 2rem;
         height: 2rem;
@@ -81,4 +81,11 @@ $icon-height:  2em !default;
             max-width: 100%;
         }
     }
+}
+
+label[for=search], label[for=search-extended] {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
 }
