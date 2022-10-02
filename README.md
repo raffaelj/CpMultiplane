@@ -2,7 +2,7 @@
 
 A small PHP front end for the fast and headless [Cockpit CMS][1].
 
-[Docs][19] (work in progress), [Demo][18] (outdated), [i18n][21]
+[Docs][19] (work in progress), [i18n][21]
 
 ---
 
@@ -38,7 +38,7 @@ It is the refactored version of [Monoplane][8], which is not maintained anymore.
 
 Make also sure that `$_SERVER['DOCUMENT_ROOT']` exists and is set correctly.
 
-You can find the detailed version and a cli install example in [docs - installation.md][20].
+You can find the detailed version and a cli install example in [docs/installation][20].
 
 ## Installation
 
@@ -230,8 +230,7 @@ Without Cockpit, CpMultiplane couldn't exist. Thanks to [Artur Heinze][16] and t
 [12]: https://github.com/raffaelj/CpMultiplane/blob/master/LICENSE
 [16]: https://github.com/aheinze
 [17]: https://github.com/agentejo/cockpit/graphs/contributors
-[18]: https://monoplane.rlj.me
 [19]: https://cpmultiplane.rlj.me
-[20]: https://github.com/raffaelj/CpMultiplane-docs/blob/master/installation.md
+[20]: https://cpmultiplane.rlj.me/en/docs/installation
 [21]: https://github.com/raffaelj/CpMultiplane-i18n
 [22]: https://hub.docker.com/r/raffaelj/cpmultiplane
