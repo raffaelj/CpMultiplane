@@ -4,6 +4,14 @@ A small PHP front end for the fast and headless [Cockpit CMS][1].
 
 [Docs][19] (work in progress), [Demo][18] (outdated), [i18n][21]
 
+---
+
+**CpMultiplane is not compatible with Cockpit CMS v2.**
+
+See also [Cockpit CMS v1 docs](https://v1.getcockpit.com/documentation), [Cockpit CMS v1 repo](https://github.com/agentejo/cockpit) and [Cockpit CMS v2 docs](https://getcockpit.com/documentation/), [Cockpit CMS v2 repo](https://github.com/Cockpit-HQ/Cockpit).
+
+---
+
 **My main goals:**
 
 1. privacy by design and privacy by default
