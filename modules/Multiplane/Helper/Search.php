@@ -38,8 +38,6 @@ class Search extends \Lime\Helper {
 
         $this->list = new \ArrayObject([]);
 
-        $this->isWhereFilterAvailable = \version_compare($this->app->retrieve('cockpit/version'), '0.11.2', '>=');
-
     } // end of initialize()
 
     public function search($params = null) {
@@ -264,25 +262,17 @@ class Search extends \Lime\Helper {
 
                 if (isset($field['type']) && $field['type'] == 'repeater') {
 
-                    if ($this->isWhereFilterAvailable) {
-                        $options['filter']['$or'][] = ['$where' => function($doc) use ($field, $suffix) {
-                            return repeaterSearch($doc[$field['name'].$suffix]);
-                        }];
-                    } else {
-                        $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'Multiplane\Helper\repeaterSearch']];
-                    }
+                    $options['filter']['$or'][] = ['$where' => function($doc) use ($field, $suffix) {
+                        return repeaterSearch($doc[$field['name'].$suffix]);
+                    }];
 
                 }
 
                 elseif (isset($field['type']) && $field['type'] == 'layout') {
 
-                    if ($this->isWhereFilterAvailable) {
-                        $options['filter']['$or'][] = ['$where' => function($doc) use ($field, $suffix) {
-                            return layoutSearch($doc[$field['name'].$suffix]);
-                        }];
-                    } else {
-                        $options['filter']['$or'][] = [$field['name'].$suffix => ['$fn' => 'Multiplane\Helper\layoutSearch']];
-                    }
+                    $options['filter']['$or'][] = ['$where' => function($doc) use ($field, $suffix) {
+                        return layoutSearch($doc[$field['name'].$suffix]);
+                    }];
 
                 }
 
