@@ -34,6 +34,7 @@ class Search extends \Lime\Helper {
         $this->fieldSearch    = [];
         $this->allowedFields  = ['title', 'content', 'tags', 'category'];
         $this->pages          = $this->app->module('multiplane')->pages;
+        $this->usePermalinks  = $this->app->module('multiplane')->usePermalinks;
 
         $this->list = new \ArrayObject([]);
 
@@ -219,6 +220,7 @@ class Search extends \Lime\Helper {
     public function generateFilterOptions($c) {
 
         $slugName      = $this->fieldNames['slug'];
+        $permalinkName = $this->fieldNames['permalink'];
         $startpageName = $this->fieldNames['startpage'];
 
         $options = [
@@ -228,6 +230,7 @@ class Search extends \Lime\Helper {
 
         $options['fields'] = [
             $slugName      => true,
+            $permalinkName => true,
             $startpageName => true,
             '_created'     => true,
         ];
@@ -236,6 +239,9 @@ class Search extends \Lime\Helper {
             foreach ($this->languages as $l) {
                 if ($l != $this->defaultLang) {
                     $options['fields']["{$slugName}_{$l}"] = true;
+                }
+                if ($l != $this->defaultLang) {
+                    $options['fields']["{$permalinkName}_{$l}"] = true;
                 }
             }
         }
@@ -353,7 +359,7 @@ class Search extends \Lime\Helper {
             'collection' => $label,
         ];
 
-        if ($this->app->module('multiplane')->usePermalinks) {
+        if ($this->usePermalinks) {
             $item['url'] = $entry[$permalinkName];
         }
 
