@@ -606,11 +606,11 @@ $this->module('multiplane')->extend([
             }
         }
 
-        $posts_slug = $slug;
-
         if ($this->isStartpage) {
             $slug = '';
         }
+
+        $posts_slug = $opts['route'] ? trim($opts['route'], '/') : $slug;
 
         if ($this->isMultilingual && !$this->usePermalinks) {
             $posts_slug = $this->lang . '/' . $posts_slug;
