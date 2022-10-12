@@ -35,6 +35,7 @@ class Search extends \Lime\Helper {
         $this->allowedFields  = ['title', 'content', 'tags', 'category'];
         $this->pages          = $this->app->module('multiplane')->pages;
         $this->usePermalinks  = $this->app->module('multiplane')->usePermalinks;
+        $this->structure      = $this->app->module('multiplane')->get('structure');
 
         $this->list = new \ArrayObject([]);
 
@@ -97,6 +98,11 @@ class Search extends \Lime\Helper {
             $_collection = $this->app->module('collections')->collection($collection);
 
             if (!$_collection) continue;
+
+            if (!empty($this->structure[$collection]['_pid'])) {
+                $parentSlugName = 'slug' . ($this->lang == $this->defaultLang ? '' : "_{$this->lang}");
+                $c['route'] = $this->structure[$collection][$parentSlugName];
+            }
 
             $options = $this->generateFilterOptions($c);
             if (empty($options['filter'])) continue;
