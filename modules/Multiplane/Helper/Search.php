@@ -259,7 +259,7 @@ class Search extends \Lime\Helper {
 
         foreach ($c['fields'] as $field) {
 
-            $isFieldLocalized = $this->app->helper('utils')->isFieldLocalized($field['name'], $c['name']);
+            $isFieldLocalized = $this->app->helper('mputils')->isFieldLocalized($field['name'], $c['name']);
             $suffix = $isFieldLocalized ? $langSuffix : '';
 
             $options['fields'][$field['name']] = true;

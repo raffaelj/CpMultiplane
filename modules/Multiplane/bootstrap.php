@@ -31,7 +31,7 @@ $this->path('mp_config', MP_ENV_ROOT . '/config');
 // add helpers
 $this->helpers['fields'] = 'Multiplane\\Helper\\Fields';
 $this->helpers['search'] = 'Multiplane\\Helper\\Search';
-$this->helpers['utils'] = 'Multiplane\\Helper\\Utils';
+$this->helpers['mputils'] = 'Multiplane\\Helper\\Utils';
 
 
 $this->module('multiplane')->extend([
