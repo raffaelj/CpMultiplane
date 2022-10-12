@@ -363,7 +363,8 @@ $this->module('multiplane')->extend([
         // filter by slug
         else {
 
-            $_slugName = $slugName == '_id' ? '_id' : $slugName.$langSuffix;
+            $isLocalized = $this->app->retrieve('unique_slugs/localize/'.$collection, false);
+            $_slugName = $slugName == '_id' ? '_id' : $slugName.($isLocalized ? $langSuffix : '');
 
             $filter = [
                 $publishedName => true,
