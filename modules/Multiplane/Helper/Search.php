@@ -250,13 +250,17 @@ class Search extends \Lime\Helper {
             }
         }
 
-        $suffix = $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
-
         if (!empty($this->searches)) {
             $options['filter']['$or'] = [];
         }
 
+        $langSuffix = $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
+        $suffix = $langSuffix;
+
         foreach ($c['fields'] as $field) {
+
+            $isFieldLocalized = $this->app->helper('utils')->isFieldLocalized($field['name'], $c['name']);
+            $suffix = $isFieldLocalized ? $langSuffix : '';
 
             $options['fields'][$field['name']] = true;
 
