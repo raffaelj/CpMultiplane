@@ -106,7 +106,7 @@ class Forms extends \LimeExtra\Controller {
             'error_generic' => $formMessages['error_generic'],
         ];
 
-        return $this->render('views:partials/form.php', compact('form', 'fields', 'message', 'options'));
+        return $this->render('views:partials/form.php', compact('form', 'fields', 'message', 'options', '_form'));
 
     } // end of form()
 
