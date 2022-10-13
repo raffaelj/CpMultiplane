@@ -46,7 +46,11 @@ class Forms extends \LimeExtra\Controller {
                 $seo['canonical'] = $this->baseUrl("/form/$form");
             });
 
-            return $this->render('views:layouts/form.php', ['form' => $form]);
+            $options = [
+                'headline' => $page['title'],
+            ];
+
+            return $this->render('views:layouts/form.php', compact('form', 'options'));
         }
 
         return false;

@@ -8,7 +8,16 @@ if ($sessionStarted = $app('session')->read("mp_form_call_$form", null)) {
 }
 ?>
 
+    @if(!empty($options['headline']))
+    <h2>{{ $options['headline'] }}</h2>
+    @endif
+    @if(!empty($options['description']))
+    <p>{{ $options['description'] }}</p>
+    @endif
+
 <form id="{{ $id }}" method="post" action="@base('/form/submit/'.$form)?submit=1"{{ $dataSessionExpires }}>
+
+    <p>@lang('Required fields are followed by *.')</p>
 
     @if(!empty($message['error']))
     <p class="message error alarm">
