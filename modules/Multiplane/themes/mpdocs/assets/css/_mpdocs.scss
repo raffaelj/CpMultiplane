@@ -51,6 +51,13 @@ body {
             margin: 0;
         }
 
+        a {
+            color: $color-link-invert;
+            &:hover {
+                color: $color-link-invert-hover;
+            }
+        }
+
         @include breakpoint(medium) {
             text-align: right;
             margin-left: $sidebar_width;
@@ -120,7 +127,10 @@ nav {
     font-size: 1em;
     line-height: 1em;
     a {
-        color: #fff;
+        color: $color-link-invert;
+        &:hover {
+            color: $color-link-invert-hover;
+        }
     }
     li {
         ol, ul {
@@ -143,6 +153,10 @@ nav {
         text-align: center;
         li {
             display: inline-block;
+            > a, > span {
+                display: block;
+                padding: .2em;
+            }
         }
     }
 
@@ -402,7 +416,7 @@ a.button {
     margin: .1rem auto;
     padding: .2rem .5rem;
     font-size: 1rem;
-    color: $color-white;
+    color: $color-link-invert;
     background-color: $color-link;
     border: none;
     border-radius: 2px;
@@ -411,7 +425,7 @@ a.button {
     //@include box-shadow(0px -2px 0px $color-black-transp-light inset);
     &:hover, &:focus {
         background-color: $color-link-hover;
-        color: $color-black;
+        color: $color-link-invert-hover;
     }
 }
 
