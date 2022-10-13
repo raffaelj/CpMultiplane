@@ -33,6 +33,12 @@ $color-fieldset-border: $color-text-dark !default;
 form {
     font-size: 1em;
     margin: 1em 0;
+    &:first-child {
+        margin-top: 0;
+    }
+    &:last-child {
+        margin-bottom: 0;
+    }
     * {
         text-align: left;
         @include box-sizing(border-box);
