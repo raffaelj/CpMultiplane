@@ -254,6 +254,7 @@ textarea {
     font-family: $font;
 
     &:hover, &:focus{
+        border: 1px solid $color-text;
         background-color: $color-input-hover;
         + label{
             margin-left: .2em;
