@@ -147,6 +147,12 @@ class Forms extends \LimeExtra\Controller {
         $prefix = $this->app->module('multiplane')->formIdPrefix;
         $formSubmitButtonName = $this->app->module('multiplane')->formSubmitButtonName;
 
+// TODO: merge $_FILES into $postedData
+// print_r($_POST);
+// print_r($_FILES);
+// print_r($this->app->param());
+// die;
+
         foreach($_POST[$prefix.$form] as $key => $val) {
 
             if ($key == $formSubmitButtonName) continue;
@@ -169,6 +175,35 @@ class Forms extends \LimeExtra\Controller {
             $response = $this->module('forms')->submit($form, $postedData);
         } catch (\Exception $e) {
             $response = json_decode($e->getMessage(), true);
+        }
+
+        // file upload
+        $_form = $this->app->module('forms')->form($form);
+        $fileFields = [];
+        $meta = [];
+        foreach ($_form['fields'] as $field) {
+            if ($field['type'] == 'file') {
+                $fileFields[] = $field;
+                $meta[] = [
+                    'description' => "uploaded via form file upload from {$form}",
+                    'tags' => [
+                        'form upload',
+                        "form:{$form}",
+                    ],
+                ];
+            }
+        }
+
+        $param = "{$prefix}{$form}";
+
+        $resultsFromAssetsUpload = $this->uploadAssets($param, $meta);
+
+        // TODO: check for failed uploads
+
+        foreach ($fileFields as $k => $field) {
+            if (isset($resultsFromAssetsUpload['assets'][$k])) {
+                $response[$field['name']] = $resultsFromAssetsUpload['assets'][$k];
+            }
         }
 
         if (!isset($response['error'])) {
@@ -203,5 +238,61 @@ class Forms extends \LimeExtra\Controller {
         $this->reroute($refererUrl.$submitQuery.'#'.$anchor);
 
     } // end of submit()
+
+    // Cockpit doesn't like named arrays for $_FILES
+    private function uploadAssets($param = 'files', $meta = []) {
+
+        $files = [];
+
+        if (is_string($param) && isset($_FILES[$param])) {
+            $files = $_FILES[$param];
+        } elseif (is_array($param) && isset($param['name'], $param['error'], $param['tmp_name'])) {
+            $files = $param;
+        }
+
+        $uploaded  = [];
+        $failed    = [];
+        $_files    = [];
+        $assets    = [];
+
+        $allowed   = $this->app->module('cockpit')->getGroupVar('assets.allowed_uploads', $this->app->retrieve('allowed_uploads', '*'));
+        $allowed   = $allowed == '*' ? true : str_replace([' ', ','], ['', '|'], preg_quote(is_array($allowed) ? implode(',', $allowed) : $allowed));
+        $max_size = $this->app->module('cockpit')->getGroupVar('assets.max_upload_size', $this->app->retrieve('max_upload_size', 0));
+
+        if (isset($files['name']) && is_array($files['name'])) {
+
+            // for ($i = 0; $i < count($files['name']); $i++) {
+            foreach ($files['name'] as $i => $v) {
+
+                $_file  = $this->app->path('#tmp:').'/'.$files['name'][$i];
+                $_isAllowed = $allowed === true ? true : preg_match("/\.({$allowed})$/i", $_file);
+                $_sizeAllowed = $max_size ? filesize($files['tmp_name'][$i]) < $max_size : true;
+
+                if (!$files['error'][$i] && $_isAllowed && $_sizeAllowed && move_uploaded_file($files['tmp_name'][$i], $_file)) {
+
+                    $_files[]   = $_file;
+                    $uploaded[] = $files['name'][$i];
+
+                    if (\preg_match('/\.(svg|xml)$/i', $_file)) {
+                        file_put_contents($_file, \SVGSanitizer::clean(\file_get_contents($_file)));
+                    }
+
+                } else {
+                    $failed[] = $files['name'][$i];
+                }
+            }
+        }
+
+        if (count($_files)) {
+
+            $assets = $this->app->module('cockpit')->saveAssets($_files, $meta);
+
+            foreach ($_files as $file) {
+                unlink($file);
+            }
+        }
+
+        return ['uploaded' => $uploaded, 'failed' => $failed, 'assets' => $assets];
+    }
 
 }

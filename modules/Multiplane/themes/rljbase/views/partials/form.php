@@ -15,7 +15,7 @@ if ($sessionStarted = $app('session')->read("mp_form_call_$form", null)) {
     <p>{{ $options['description'] }}</p>
     @endif
 
-<form id="{{ $id }}" method="post" action="@base('/form/submit/'.$form)?submit=1"{{ $dataSessionExpires }}>
+<form id="{{ $id }}" method="post" enctype="multipart/form-data" action="@base('/form/submit/'.$form)?submit=1"{{ $dataSessionExpires }}>
 
     <p>@lang('Required fields are followed by *.')</p>
 
