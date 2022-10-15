@@ -612,7 +612,7 @@ $this->module('multiplane')->extend([
             $slug = '';
         }
 
-        $posts_slug = $opts['route'] ? trim($opts['route'], '/') : $slug;
+        $posts_slug = (isset($opts['route']) && is_string($opts['route'])) ? trim($opts['route'], '/') : $slug;
 
         if ($this->isMultilingual && !$this->usePermalinks) {
             $posts_slug = $this->lang . '/' . $posts_slug;
