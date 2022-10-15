@@ -4,6 +4,7 @@
     top: 0;
 /*     right: 0; */
     left: 0;
+    text-align: left;
     background: rgba(255,255,255,.5);
     z-index: 9999;
 }
@@ -35,5 +36,6 @@ currentSlug:    {{ mp()->currentSlug, PHP_EOL }}
 pageTypeDetection: {{ mp()->pageTypeDetection, PHP_EOL }}
 slugName:       {{ mp()->get('fieldNames/slug'), PHP_EOL }}
 posts:          {{ count($posts), PHP_EOL }}
+structure:      {{ print_r(mp()->get('structure')), PHP_EOL }}
 </pre>
 </div>
