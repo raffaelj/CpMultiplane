@@ -110,7 +110,7 @@ class Search extends \Lime\Helper {
 
             foreach ($this->app->module('collections')->find($collection, $options) as $entry) {
 
-                $this->list[] = $this->getWeightedItem($entry, $_collection, $c, $collection);
+                $this->list[] = $this->getWeightedItem($entry, $_collection, $c);
 
             }
 
@@ -345,10 +345,15 @@ class Search extends \Lime\Helper {
         $permalinkName = $this->fieldNames['permalink'];
         $startpageName = $this->fieldNames['startpage'];
 
+        $collectionName = $_collection['name'];
+        $collectionLabel = $collectionName;
+
         $weight = !empty($c['weight']) ? $c['weight'] : 0;
-        $label  = !empty($c['label'])  ? $c['label']
-                : (!empty($_collection['label']) ? $_collection['label']
-                    : $collection);
+
+        $labelKey = 'label' . ($this->isMultilingual && $this->defaultLang != $this->lang ? '_'.$this->lang : '');
+        if (!empty($this->structure[$collectionName][$labelKey])) {
+            $collectionLabel = $this->structure[$collectionName][$labelKey];
+        }
 
         $isStartpage = isset($entry[$startpageName]) && $entry[$startpageName] == true;
 
@@ -356,7 +361,7 @@ class Search extends \Lime\Helper {
             '_id'        => $entry['_id'],
             '_created'   => $entry['_created'],
             'url'        => $this->app->baseUrl(($c['route'] ?? '') . '/' . ($isStartpage ? '' : $entry[$slugName])),
-            'collection' => $label,
+            'collection' => $collectionLabel,
         ];
 
         if ($this->usePermalinks) {
