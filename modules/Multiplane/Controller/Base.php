@@ -218,14 +218,9 @@ class Base extends \LimeExtra\Controller {
         $xml->startElement('urlset');
         $xml->writeAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
-        if (!$this->app->module('multiplane')->isMultilingual) {
+        if ($this->app->module('multiplane')->isMultilingual) {
             $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
-        } else {
-            $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/TR/xhtml11/xhtml11_schema.html');
         }
-
-        $xml->writeAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $xml->writeAttribute('xsi:schemaLocation', 'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd');
 
         $this->app->trigger('multiplane.sitemap', [&$xml]);
 
