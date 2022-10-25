@@ -4,6 +4,31 @@ namespace Multiplane\Helper;
 
 class Utils extends \Lime\Helper {
 
+    public function fieldExists($fieldName, $collectionName) {
+
+        static $fieldsPerCollection; // cache
+
+        if (is_null($fieldsPerCollection)) {
+            $fieldsPerCollection = [];
+        }
+
+        if (isset($fieldsPerCollection[$collectionName])) {
+            return isset($fieldsPerCollection[$collectionName][$fieldName]);
+        }
+
+        $_collection = $this->app->module('collections')->collection($collectionName);
+
+        if (!$_collection) return null;
+        if (!isset($_collection['fields']) || !is_array($_collection['fields'])) return null;
+
+        foreach ($_collection['fields'] as $field) {
+            $fieldsPerCollection[$collectionName][$field['name']] = true;
+        }
+
+        return isset($fieldsPerCollection[$collectionName][$fieldName]);
+
+    }
+
     public function isFieldLocalized($fieldName, $collectionName) {
 
         static $fieldsPerCollection; // cache
