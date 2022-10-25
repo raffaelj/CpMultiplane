@@ -325,7 +325,9 @@ class Search extends \Lime\Helper {
                     $tags = $this->fieldSearch[$field['name']];
                     if (!\is_array($tags)) $tags = [$tags];
 
-                    $options['filter'][$field['name'].$suffix] = ['$in' => $tags];
+                    if (!empty($tags)) {
+                        $options['filter'][$field['name'].$suffix] = ['$in' => $tags];
+                    }
 
                 }
 
