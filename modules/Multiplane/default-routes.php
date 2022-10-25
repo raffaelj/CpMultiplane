@@ -68,10 +68,6 @@ if (!$isMultilingual) {
         $tags = explode('/', $params[':splat'][0]);
         return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
     });
-    $this->bind('/tag/:tag', function($params) {
-        $tag = \urldecode($params['tag']);
-        return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
-    });
 
     $this->bind('/*', function($params) {
 
@@ -108,11 +104,6 @@ else {
 
             $tags = explode('/', $params[':splat'][0]);
             return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
-        });
-        $this->bind('/'.$lang.'/tag/:tag', function($params) use($lang) {
-            $this->module('multiplane')->initI18n($lang);
-            $tag = \urldecode($params['tag']);
-            return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
         });
 
         $this->bind('/'.$lang.'/*', function($params) use($lang) {
