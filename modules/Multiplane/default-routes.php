@@ -63,10 +63,12 @@ if (!$isMultilingual) {
     // tags page
     $this->bind('/tags/*', function($params) {
 
-        if ($params[':splat'][0] == '') return false; // to do: tags overview page
+        $tags = [];
+        if (isset($params[':splat'][0]) && $params[':splat'][0] !== '') {
+            $tags = explode('/', $params[':splat'][0]);
+        }
 
-        $tags = explode('/', $params[':splat'][0]);
-        return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
+        return $this->invoke('Multiplane\\Controller\\Base', 'tags', [['tags' => $tags]]);
     });
 
     $this->bind('/*', function($params) {
@@ -100,10 +102,12 @@ else {
         $this->bind('/'.$lang.'/tags/*', function($params) use($lang) {
             $this->module('multiplane')->initI18n($lang);
 
-            if ($params[':splat'][0] == '') return false; // to do: tags overview page
+            $tags = [];
+            if (isset($params[':splat'][0]) && $params[':splat'][0] !== '') {
+                $tags = explode('/', $params[':splat'][0]);
+            }
 
-            $tags = explode('/', $params[':splat'][0]);
-            return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
+            return $this->invoke('Multiplane\\Controller\\Base', 'tags', [['tags' => $tags]]);
         });
 
         $this->bind('/'.$lang.'/*', function($params) use($lang) {

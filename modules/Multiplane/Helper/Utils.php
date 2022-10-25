@@ -62,4 +62,67 @@ class Utils extends \Lime\Helper {
         }
 
     }
+
+    public function getTagsList () {
+
+        static $tags; // cache
+
+        if (is_null($tags)) {
+            $tags = [];
+        } else {
+            return $tags;
+        }
+
+        $tagsName       = $this->app->module('multiplane')->fieldNames['tags'];
+        $publishedName  = $this->app->module('multiplane')->fieldNames['published'];
+
+        $lang           = $this->app->module('multiplane')->lang;
+        $defaultLang    = $this->app->module('multiplane')->defaultLang;
+        $isMultilingual = $this->app->module('multiplane')->isMultilingual;
+
+        $collections = $this->app->module('multiplane')->use['collections'];
+
+        foreach ($collections as $col) {
+
+            $langSuffix = '';
+
+            if ($isMultilingual) {
+                $isFieldLocalized = $this->isFieldLocalized($tagsName, $col);
+                if ($isFieldLocalized && ($lang != $defaultLang)) {
+                    $langSuffix = '_'.$lang;
+                }
+            }
+
+            $options = [
+                'fields' => [
+                    $tagsName => true,
+                ],
+                'filter' => [
+                    $publishedName => true,
+                    $tagsName.$langSuffix => [
+                        '$ne' => [],
+                    ],
+                ],
+                'lang' => $lang,
+            ];
+            if ($isMultilingual) {
+                $options['fields'][$tagsName.$langSuffix] = true;
+            }
+
+            $entries = $this->app->module('collections')->find($col, $options);
+
+            foreach ($entries as $entry) {
+                if (isset($entry[$tagsName]) && is_array($entry[$tagsName])) {
+                    foreach ($entry[$tagsName] as $tag) {
+                        $tags[] = $tag;
+                    }
+                }
+            }
+
+        }
+
+        return array_unique($tags);
+
+    }
+
 }

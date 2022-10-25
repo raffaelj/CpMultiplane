@@ -208,6 +208,33 @@ class Base extends \LimeExtra\Controller {
 
     } // end of search()
 
+    public function tags($params = null) {
+
+        $site = $this->app->module('multiplane')->getSite();
+
+        $page = [
+            'title' => $this('i18n')->get('Tags'),
+        ];
+        $page['seo']['canonical'] = $this->app->baseUrl('/tags');
+
+        $this->app->viewvars['page'] = $page;
+        $this->app->viewvars['site'] = $site;
+
+        if ($this->app->module('multiplane')->hasBackgroundImage) {
+            $this->app->module('multiplane')->addBackgroundImage();
+        }
+
+        $tags = $this->app->helper('mputils')->getTagsList();
+
+        $return = $this->app->helper('search')->search($params);
+
+        // make $list, $query, $error, $count available
+        \extract($return);
+
+        return $this->render('views:layouts/tags.php', compact('tags', 'list', 'error', 'count'));
+
+    } // end of tags()
+
     public function sitemap() {
 
         $xml = new \XMLWriter();
