@@ -189,7 +189,6 @@ class Base extends \LimeExtra\Controller {
 
         $page = [
             'title' => $this('i18n')->get('Search'),
-            // 'description' => ''
         ];
         $page['seo']['canonical'] = $this->app->baseUrl('/search');
 
