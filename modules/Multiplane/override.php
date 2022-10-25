@@ -60,7 +60,7 @@ $this->on('after', function() {
     if (!$this->response->body || $this->response->body === 404) {
         $this->response->status = 404;
     }
- 
+
     if ($this->module('multiplane')->isInMaintenanceMode) {
 
         if (!$this->module('multiplane')->clientIpIsAllowed) {
