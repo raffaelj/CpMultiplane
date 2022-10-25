@@ -159,6 +159,9 @@ $this->module('multiplane')->extend([
         ],
     ],
 
+    'disableTrailingSlashRedirect' => false,
+    'statusCodeForTrailingSlashRoutes' => 301, // (int) 404 Not Found | 301 Moved Permanently |302 Found
+
     // changes dynamically
     'defaultLang'           => $this->retrieve('multiplane/i18n', $this->retrieve('i18n', 'en')),
     'lang'                  => $this('i18n')->locale,

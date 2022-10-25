@@ -10,6 +10,9 @@ class Base extends \LimeExtra\Controller {
 
         if (!$page) return false;
 
+        $resp = $this->app->helper('mputils')->handleTrailingSlashRoute();
+        if ($resp === false) return false;
+
         $_posts = [];
         $site   = $this->app->module('multiplane')->getSite();
 

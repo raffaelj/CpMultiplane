@@ -33,4 +33,33 @@ class Utils extends \Lime\Helper {
 
     }
 
+    public function handleTrailingSlashRoute() {
+
+        if ($this->app->module('multiplane')->disableTrailingSlashRedirect) {
+            return;
+        }
+
+        $route = $this->app->retrieve('route');
+
+        if (strlen($route) <= 1) return;
+        if (substr($route, -1) !== '/') return;
+
+        $newRoute = rtrim($route, '/');
+
+        $status = $this->app->module('multiplane')->statusCodeForTrailingSlashRoutes;
+
+        switch ($status) {
+
+            case 404:   $this->app->response->status = 404;
+                        return false;
+                        break;
+            case 302:   $this->app->reroute($newRoute);
+                        break;
+            case 301:
+            default:    \header('Location: '.$newRoute, true, 301);
+                        $this->app->stop();
+                        break;
+        }
+
+    }
 }
