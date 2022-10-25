@@ -19,7 +19,7 @@
         @trigger('multiplane.layout.contentbefore')
         <input type="checkbox" id="sidebar_toggle" aria-label="@lang('Toggle sidebar')" /><label for="sidebar_toggle" title="@lang('Toggle sidebar')"></label>
         <header>
-            <a href="@base('/')"@if(mp()->get('mpdocs_header_animation')) class="multiplane-animation"@endif>
+            <a href="{{ mp()->base('/') }}"@if(mp()->get('mpdocs_header_animation')) class="multiplane-animation"@endif>
               @if(!empty($site['logo']))
                 <img class="logo" alt="{{ $site['logo']['title'] ?? 'logo' }}" src="@logo($site['logo']['_id'] ?? $site['logo']['path'])" title="@lang('back to start page')" />
               @endif
