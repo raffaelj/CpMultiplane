@@ -1,9 +1,12 @@
 <main id="main">
     <p class="tags">
         @if(!empty($tags))
+          @lang('All tags:')
           @foreach($tags as $tag)
           <a href="@base('/tags/'.urlencode($tag))" class="label tag">{{ $tag }}</a>
           @endforeach
+        @else
+          @lang('No tags found')
         @endif
     </p>
   @if($count)
