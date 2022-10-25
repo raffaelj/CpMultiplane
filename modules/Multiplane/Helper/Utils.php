@@ -22,7 +22,7 @@ class Utils extends \Lime\Helper {
         if (!isset($_collection['fields']) || !is_array($_collection['fields'])) return null;
 
         foreach ($_collection['fields'] as $field) {
-            $fieldsPerCollection[$collectionName][$fieldName] = isset($field['localize']) && $field['localize'];
+            $fieldsPerCollection[$collectionName][$field['name']] = isset($field['localize']) && $field['localize'];
         }
 
         if (isset($fieldsPerCollection[$collectionName][$fieldName])) {
