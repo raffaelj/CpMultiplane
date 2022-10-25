@@ -61,9 +61,6 @@ if (!$isMultilingual) {
     }
 
     // tags page
-    $this->bind('/tags', function($params) {
-        $this->reroute("/tags/");
-    });
     $this->bind('/tags/*', function($params) {
 
         if ($params[':splat'][0] == '') return false; // to do: tags overview page
@@ -104,9 +101,6 @@ else {
         }
 
         // tags page
-        $this->bind('/'.$lang.'/tags', function($params) {
-            $this->reroute("/{$lang}/tags/");
-        });
         $this->bind('/'.$lang.'/tags/*', function($params) use($lang) {
             $this->module('multiplane')->initI18n($lang);
 
