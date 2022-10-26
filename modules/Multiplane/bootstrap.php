@@ -570,7 +570,7 @@ $this->module('multiplane')->extend([
 
         if (!$collection) return false;
 
-        $name = $collection['name'];
+        $collectionName = $collection['name'];
 
         $lang  = $this->lang;
         $page  = $this->app->param('page', 1);
@@ -593,11 +593,11 @@ $this->module('multiplane')->extend([
             'sort'   => $sort,
         ];
 
-        $this->app->trigger('multiplane.getposts.before', [$name, &$options]);
+        $this->app->trigger('multiplane.getposts.before', [$collectionName, &$options]);
 
-        $posts = $this->app->module('collections')->find($name, $options);
+        $posts = $this->app->module('collections')->find($collectionName, $options);
 
-        $count = $this->app->module('collections')->count($name, $options['filter']);
+        $count = $this->app->module('collections')->count($collectionName, $options['filter']);
 
         if (!$posts && $count) {
             // send 404 if no posts found (pagination too high)
@@ -615,7 +615,7 @@ $this->module('multiplane')->extend([
             $slug = '';
         }
 
-        $posts_slug = (isset($opts['route']) && is_string($opts['route'])) ? trim($opts['route'], '/') : $slug;
+        $posts_slug = $this->getSubPageRoute($collectionName);
 
         if ($this->isMultilingual && !$this->usePermalinks) {
             $posts_slug = $this->lang . '/' . $posts_slug;
