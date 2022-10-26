@@ -74,40 +74,6 @@ class Base extends \LimeExtra\Controller {
 
     } // end of index()
 
-    public function livePreview($params = []) {
-
-        $page = [];
-        $site = $this->app->module('multiplane')->getSite();
-        $posts = null;
-
-        if ($this->app->module('multiplane')->hasBackgroundImage) {
-            $this->app->module('multiplane')->addBackgroundImage();
-        }
-
-        // fix language specific paths + i18n
-        if ($this->app->module('multiplane')->isMultilingual) {
-
-            $lang = $this->app->module('multiplane')->lang;
-
-            // init + load i18n
-            if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
-                $this('i18n')->load($translationspath, $lang);
-            }
-
-            $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
-
-        }
-
-        return $this->render('views:layouts/live-preview.php', compact('page', 'posts', 'site'));
-
-    } // end of livePreview()
-
-    public function getPreview($data = []) {
-
-        return $this->app->module('multiplane')->getPreview($data);
-
-    } // end of getPreview()
-
     public function getImage($options = []) {
 
         $src = $this->param('src', null);

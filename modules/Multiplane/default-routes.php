@@ -23,7 +23,7 @@ $this->bind('/getImage', function() {
 if ($this->module('multiplane')->isPreviewEnabled) {
 
     $this->bind('/getPreview', function($params) {
-        return $this->invoke('Multiplane\\Controller\\Base', 'getPreview', ['params' => $params]);
+        return $this->invoke('Multiplane\\Controller\\CockpitLivePreview', 'getPreview', ['params' => $params]);
     }, $this->req_is('ajax'));
 
     $this->bind('/livePreview', function($params) {
@@ -32,7 +32,7 @@ if ($this->module('multiplane')->isPreviewEnabled) {
             return false;
         }
 
-        return $this->invoke('Multiplane\\Controller\\Base', 'livePreview', ['params' => $params]);
+        return $this->invoke('Multiplane\\Controller\\CockpitLivePreview', 'livePreview', ['params' => $params]);
 
     });
 }
