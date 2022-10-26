@@ -1,5 +1,5 @@
 
-<span id="live-preview"></span>
+<div id="live-preview"></div>
 
 <script>
 
