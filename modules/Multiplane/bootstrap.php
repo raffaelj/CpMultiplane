@@ -1007,15 +1007,21 @@ $this->module('multiplane')->extend([
 
         return \uniqid(\bin2hex(\random_bytes(16)));
 
-    }, // end of generateToken()
+    },
 
     'getCollectionSlug' => function($collection) {
 
-        $langSuffix = $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
+        $langSuffix = $this->getLanguageSuffix();
 
         return $this->structure[$collection]['slug'.$langSuffix];
 
-    }, // end of getCollectionSlug()
+    },
+
+    'getLanguageSuffix' => function() {
+
+        return $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
+
+    },
 
     /**
      * @param string|array $src

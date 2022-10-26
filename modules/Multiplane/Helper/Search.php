@@ -24,9 +24,12 @@ class Search extends \Lime\Helper {
 
         $this->isMultilingual = $this->app->module('multiplane')->isMultilingual;
         $this->defaultLang    = $this->app->module('multiplane')->defaultLang;
-        $this->fieldNames     = $this->app->module('multiplane')->fieldNames;
         $this->languages      = $this->app->module('multiplane')->getLanguages();
         $this->lang           = $this->app->module('multiplane')->lang;
+        $this->isDefaultLang  = $this->lang == $this->defaultLang;
+        $this->langSuffix     = $this->app->module('multiplane')->getLanguageSuffix();
+
+        $this->fieldNames     = $this->app->module('multiplane')->fieldNames;
         $this->minLength      = $this->app->module('multiplane')->get('search/minLength');
         $this->collections    = $this->app->module('multiplane')->get('search/collections');
         $this->searches       = [];
@@ -100,7 +103,7 @@ class Search extends \Lime\Helper {
             if (!$_collection) continue;
 
             if (!empty($this->structure[$collection]['_pid'])) {
-                $parentSlugName = 'slug' . ($this->lang == $this->defaultLang ? '' : "_{$this->lang}");
+                $parentSlugName = 'slug' . $this->langSuffix;
                 $c['route'] = $this->structure[$collection][$parentSlugName];
             }
 
@@ -243,8 +246,6 @@ class Search extends \Lime\Helper {
             foreach ($this->languages as $l) {
                 if ($l != $this->defaultLang) {
                     $options['fields']["{$slugName}_{$l}"] = true;
-                }
-                if ($l != $this->defaultLang) {
                     $options['fields']["{$permalinkName}_{$l}"] = true;
                 }
             }
@@ -254,7 +255,7 @@ class Search extends \Lime\Helper {
             $options['filter']['$or'] = [];
         }
 
-        $langSuffix = $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
+        $langSuffix = $this->langSuffix;
         $suffix = $langSuffix;
 
         foreach ($c['fields'] as $field) {
@@ -264,7 +265,7 @@ class Search extends \Lime\Helper {
 
             $options['fields'][$field['name']] = true;
 
-            if ($this->lang != $this->defaultLang) {
+            if (!$this->isDefaultLang) {
                 $options['fields'][$field['name'].$suffix] = true;
             }
 
@@ -352,7 +353,7 @@ class Search extends \Lime\Helper {
 
         $weight = !empty($c['weight']) ? $c['weight'] : 0;
 
-        $labelKey = 'label' . ($this->isMultilingual && $this->defaultLang != $this->lang ? '_'.$this->lang : '');
+        $labelKey = 'label' . $this->langSuffix;
         if (!empty($this->structure[$collectionName][$labelKey])) {
             $collectionLabel = $this->structure[$collectionName][$labelKey];
         }
