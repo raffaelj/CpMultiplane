@@ -16,21 +16,23 @@ main, header, footer, aside, nav {
     box-sizing: border-box;
 }
 
-  body > main
-, body > footer
-, body > aside
-, body > form // in case of standalone form page without parent container
-, body > #live-preview > main
-{
-    position: relative;
-    margin: 1em auto;
-    width: $width;
-    max-width: 100%;
-    padding: 1em;
-    background-color: $color-white;
-    color: $color-text;
-    @include box-shadow(0px 2px 2px $color-shadow);
-    border-radius: $border-radius;
+body {
+    > main,
+    > footer,
+    > aside,
+    > form, // in case of standalone form page without parent container
+    > #live-preview > main
+    {
+        position: relative;
+        margin: 1em auto;
+        width: $width;
+        max-width: 100%;
+        padding: 1em;
+        background-color: $color-white;
+        color: $color-text;
+        @include box-shadow(0px 2px 2px $color-shadow);
+        border-radius: $border-radius;
+    }
 }
 
 body > form {
