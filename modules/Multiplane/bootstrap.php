@@ -1082,36 +1082,9 @@ $this->module('multiplane')->extend([
 
     'getSubPageRoute' => function($collection) {
 
-        static $routes;
+        $langSuffix = $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
 
-        if (isset($routes[$collection])) return $routes[$collection];
-
-        $slugName      = $this->fieldNames['slug'];
-        $publishedName = $this->fieldNames['published'];
-
-        $route = '';
-
-        // to do: hard coded variant for all subpage modules
-        $filter = [
-            $publishedName => true,
-            'subpagemodule.active'     => true,
-            'subpagemodule.collection' => $collection
-        ];
-        $projection = [];
-
-        $postRouteEntry = $this->app->module('collections')->findOne($this->pages, $filter, $projection, false, ['lang' => $this->lang]);
-
-        $path = $this->lang == $this->defaultLang ? 'route' : 'route_'.$this->lang;
-
-        if (!empty($postRouteEntry['subpagemodule'][$path])) {
-            $route = $postRouteEntry['subpagemodule'][$path];
-        } else {
-            $route = $postRouteEntry[$slugName];
-        }
-
-        $routes[$collection] = $route;
-
-        return $route;
+        return $this->structure[$collection]['slug'.$langSuffix];
 
     }, // end of getSubPageRoute()
 
