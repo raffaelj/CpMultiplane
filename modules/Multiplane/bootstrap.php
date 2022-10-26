@@ -544,7 +544,7 @@ $this->module('multiplane')->extend([
             $slug = '';
         }
 
-        $posts_slug = $this->getSubPageRoute($collectionName);
+        $posts_slug = $this->getCollectionSlug($collectionName);
 
         if ($this->isMultilingual && !$this->usePermalinks) {
             $posts_slug = $this->lang . '/' . $posts_slug;
@@ -1009,13 +1009,13 @@ $this->module('multiplane')->extend([
 
     }, // end of generateToken()
 
-    'getSubPageRoute' => function($collection) {
+    'getCollectionSlug' => function($collection) {
 
         $langSuffix = $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
 
         return $this->structure[$collection]['slug'.$langSuffix];
 
-    }, // end of getSubPageRoute()
+    }, // end of getCollectionSlug()
 
     /**
      * @param string|array $src

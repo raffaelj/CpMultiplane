@@ -195,7 +195,7 @@ class Search extends \Lime\Helper {
 
             $this->collections[$name] = [
                 'name'   => $name,
-                'route'  => $name == $this->pages ? '' : $this->app->module('multiplane')->getSubPageRoute($name),
+                'route'  => $name == $this->pages ? '' : $this->app->module('multiplane')->getCollectionSlug($name),
                 'weight' => $pageType == 'pages' ? 10 : 5,
             ];
 
