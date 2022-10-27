@@ -33,6 +33,11 @@ class Forms extends \LimeExtra\Controller {
 
             $_form = $this->app->module('forms')->form($form);
 
+            $formLang = $_form['multiplane']['language'] ?? '';
+            if (!empty($formLang) && $formLang != $this->app->module('multiplane')->lang) {
+                return false;
+            }
+
             // add global viewvars
             $site = $this->app->module('multiplane')->getSite();
             $page = [
