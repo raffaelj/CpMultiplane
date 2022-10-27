@@ -28,6 +28,9 @@ class Forms extends \LimeExtra\Controller {
 
             $form = $params[':splat'][0];
 
+            $formsInUse = $this->app->module('multiplane')->use['forms'] ?? [];
+            if (!in_array($form, $formsInUse)) return false;
+
             $_form = $this->app->module('forms')->form($form);
 
             // add global viewvars
