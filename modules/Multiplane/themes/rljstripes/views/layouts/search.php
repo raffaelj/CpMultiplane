@@ -1,7 +1,7 @@
 
-<main>
+<main id="main">
     <section>
-        @render('views:partials/search.php')
+    @render('views:partials/search-extended.php')
         @if (isset($error))<p>@lang($error)</p>@endif
         <p>{{ count($list) }} @lang($count == 1 ? 'result' : 'results')</p>
     </section>

@@ -6,6 +6,6 @@ if (!isset($id)) $id = 'search';
                     <label for="{{ $id }}">@lang('Search in site')</label>
                     <input name="search" type="search" minlength="{{ mp()->get('search/minLength') }}" aria-label="@lang('Search')" id="{{ $id }}" />
                     <input name="highlight" type="hidden" value="1" />
-                    <button type="submit" aria-label="@lang('Search')"><i class="icon-search"></i>@lang('Search')</button>
+                    <button type="submit" class="icon-search" aria-label="@lang('Search')" title="@lang('Search')"></button>
                 </form>
             </div>
