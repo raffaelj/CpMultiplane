@@ -12,8 +12,8 @@ $color-white-transp:       rgba(255,255,255,.9) !default;
 $color-black-transp-light: rgba(0,0,0,.2) !default;
 
 // form colors
-$color-main:        #8d9444 !default;
-$color-main-dark:   #ae5e69 !default;
+$color-link:        #8d9444 !default;
+// $color-main-dark:   #ae5e69 !default;
 
 $color-text:        #000000 !default;
 $color-text-light:  #999 !default;
@@ -63,7 +63,7 @@ form {
         > label {
             display: block;
             font-size: 1em;
-            transition: 0.2s;
+            font-weight: bolder;
         }
         .info {
             padding: .2em 0;
@@ -93,7 +93,7 @@ input {
     border: 1px solid $color-grey;
     border-radius: $border-radius;
     &:hover, &:focus {
-        border: 1px solid $color-text;
+        border: 1px solid $color-link;
         background-color: $color-input-hover;
 
     }
@@ -144,8 +144,8 @@ input[type=checkbox], input[type=radio] {
     }
     &:hover, &:focus, &:active {
         + label:before {
-            border-color: $color-main;
-            @include box-shadow(0 0 1em $color-main); // better accesibility and visibility
+            border-color: $color-link;
+            @include box-shadow(0 0 1em $color-link); // better accesibility and visibility
         }
     }
     &:checked {
@@ -160,7 +160,7 @@ input[type=checkbox], input[type=radio] {
             width: .6em;
             height: .6em;
             margin-top: -.3em;
-            background-color: $color-main;
+            background-color: $color-link;
         }
         &.checkbox-icon-checked { // experimental
             + label:after {
@@ -176,7 +176,7 @@ input[type=checkbox], input[type=radio] {
                 border-top-color: transparent;
                 border-right-color: transparent;
                 background-color: transparent;
-                color: $color-main;
+                color: $color-link;
                 transform: rotate(-45deg);
                 transform-origin: 50% 50%;
                 -webkit-transform-style: preserve-3d; // fix cutted borders in FF
@@ -254,7 +254,7 @@ textarea {
     font-family: $font;
 
     &:hover, &:focus{
-        border: 1px solid $color-text;
+        border: 1px solid $color-link;
         background-color: $color-input-hover;
         + label{
             margin-left: .2em;

@@ -12,7 +12,7 @@ html {
     background-position: center;
 }
 
-main, header, footer, aside, nav {
+main, header, footer, aside, nav, div.contactform {
     box-sizing: border-box;
 }
 
@@ -20,6 +20,7 @@ body {
     > main,
     > footer,
     > aside,
+    > div.contactform,
     > form, // in case of standalone form page without parent container
     > #live-preview > main
     {
