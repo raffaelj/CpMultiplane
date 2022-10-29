@@ -10,9 +10,9 @@ $color-code:               inherit !default;
 
 $border-radius: 3px !default;
 
-// font stack like Bootstrap v4
+// font stack like Bootstrap v4, source:
+// https://github.com/twbs/bootstrap/blob/main/scss/_variables.scss
 $font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !default;
-
 
 code, samp, kbd, tt, var {
     padding: .125em .25em;
