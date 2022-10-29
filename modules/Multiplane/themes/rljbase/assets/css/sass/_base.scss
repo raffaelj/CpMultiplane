@@ -106,7 +106,7 @@ small {
 
 mark {
     background-color: #fafad2;
-    @include box-shadow(0px 0px 1px 2px #fafad2);
+    // @include box-shadow(0px 0px 1px 2px #fafad2);
 }
 
 time {
