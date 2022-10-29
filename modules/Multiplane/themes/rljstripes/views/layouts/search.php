@@ -8,7 +8,6 @@
     @foreach($list as $l)
     <article class="search-entries" data-weight="{{ $l['weight'] }}">
         <h3><a href="{{ $l['url'] }}">{{ $l['title'] }}</a></h3>
-        <p><span class="label">{{ $l['collection'] }}</span></p>
         @render('views:partials/posts-meta.php', ['post' => $l])
       @if(!empty($l['content']))
         {{ $l['content'] }}
