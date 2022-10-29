@@ -176,13 +176,17 @@ $this->module('multiplane')->extend([
 
     'set' => function($key, $value) {
 
-        $this->$key = $value;
+        if (\is_array($this->$key) && \is_array($value)) {
+            $this->$key = \array_replace_recursive($this->$key, $value);
+        } else {
+            $this->$key = $value;
+        }
 
     }, // end of set()
 
     'add' => function($key, $value, $recursive = false) {
 
-        if (\is_array($this->$key)) {
+        if (\is_array($this->$key) && \is_array($value)) {
             if ($recursive) $this->$key = \array_merge_recursive($this->$key, $value);
             else            $this->$key = \array_merge($this->$key, $value);
         }
