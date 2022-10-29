@@ -9,7 +9,7 @@ if (!isset($id)) $id = 'search-extended';
                 <form action="@base('/search')">
                     <div>
                         <label for="{{ $id }}">@lang('Search')</label>
-                        <input id="{{ $id }}" name="search" type="text" value="{{{ $search }}}" minlength="{{ mp()->get('search/minLength') }}" aria-label="@lang('Search')" />
+                        <input id="{{ $id }}" name="search" type="text" value="{{{ $search }}}" minlength="{{ mp()->get('search/minLength') }}" aria-label="@lang('Search')" required />
                     </div>
                     <div>
                         <input name="highlight" type="checkbox" value="1" id="mp_search_highlight" {{ $highlight ? 'checked' : '' }} />
