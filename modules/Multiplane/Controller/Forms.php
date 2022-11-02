@@ -51,7 +51,7 @@ class Forms extends \LimeExtra\Controller {
                 if (!isset($seo['robots'])) $seo['robots'] = [];
                 $seo['robots'][] = 'noindex';
                 $seo['robots'][] = 'nofollow';
-                $seo['canonical'] = $this->baseUrl("/form/$form");
+                $seo['canonical'] = $this->getSiteUrl() . $this->baseUrl("/form/$form");
             });
 
             $options = [
