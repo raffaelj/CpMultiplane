@@ -41,7 +41,7 @@
         {{ $content_for_layout }}
 
       @if(isset($page['contactform']['active']) && $page['contactform']['active'] == true)
-        @render('views:widgets/contactform.php', ['options' => $page['contactform']])
+        {{ $app->helper('form')->form($options['form'] ?? mp()->contact, $page['contactform']) }}
       @endif
 
         <footer>
