@@ -57,7 +57,7 @@ h6 {
 }
 
 p {
-    margin: 0;
+    margin: .5em 0;
     padding: 0 0 .5em;
     @include hyphens();
     &:last-child {
@@ -161,7 +161,7 @@ ol {
 }
 
 li {
-    
+    margin: .5em 0;
 }
 
 dl {

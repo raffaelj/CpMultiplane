@@ -176,6 +176,10 @@ nav {
             padding: 0 0 0 .25em;
             @include box-sizing(border-box);
 
+            span {
+                font-size: 0;
+            }
+
             &:before {
                 content: '';
                 width: 0;
@@ -208,7 +212,7 @@ nav {
         }
         input[type=checkbox] + label {
             &:before {
-                border-width: .5em .5em 0 .5em;
+                // border-width: .5em .5em 0 .5em;
             }
         }
     }

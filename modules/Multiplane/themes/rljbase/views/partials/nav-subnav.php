@@ -3,7 +3,7 @@
               @foreach($nav as $n){% $hasChildren = !empty($n['children']) %}
                 <li{{ isset($n['class']) ? " class=\"{$n['class']}\"" : '' }}>
                   @if($hasChildren){% $_id = uniqid('mp-nav-') %}
-                    <input type="checkbox" id="{{ $_id }}" tabindex="-1" /><label for="{{ $_id }}"></label>
+                    <input type="checkbox" id="{{ $_id }}" tabindex="-1" /><label for="{{ $_id }}"><span>@lang('Expand sub menu')</span></label>
                   @endif
                   @if(isset($n['url']))
                     <a class="{{ ($n['active'] ?? false) ? 'active' : '' }}{{ $hasChildren ? ' dropdown' : '' }}" href="{{ $n['url'] }}">{{{ $n['title'] }}}</a>

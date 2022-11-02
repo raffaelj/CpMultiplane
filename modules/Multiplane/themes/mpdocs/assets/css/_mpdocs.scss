@@ -151,6 +151,7 @@ nav {
     &.language-switch {
         display: block;
         text-align: center;
+        margin: 1em auto;
         li {
             display: inline-block;
             > a, > span {
@@ -171,6 +172,16 @@ nav {
     }
 
     &.horizontal {
+
+        @media (hover: none), (any-pointer: coarse) {
+            input[type=checkbox] {
+                width: auto;
+                + label {
+                    width: .7em;
+                }
+            }
+        }
+
         @include breakpoint(medium) {
             ul {
                 li {
@@ -289,7 +300,7 @@ nav {
 }
 
 .search {
-    margin: .25em 0;
+    margin: 1em 0;
     form {
         margin-top: 0;
         margin-bottom: 0;
