@@ -19,6 +19,6 @@
         "update": "npm run generate-preamble-files && npm run build"
     },
     "devDependencies": {
-        "node-sass": "^7.0.1"
+        "node-sass": "^7.0.3"
     }
 }
