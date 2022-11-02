@@ -5,7 +5,7 @@
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         @render('views:partials/seometa.php')
-        <link rel="shortcut icon" href="{{ MP_BASE_URL }}/favicon.png?ver={{ mp()->version }}">
+        <link rel="shortcut icon" href="@route(mp()->faviconPath)?ver={{ mp()->version }}">
         <script>
             var MP_BASE_URL = '{{ MP_BASE_URL }}',
                 MP_POLYFILLS_URL = '{{ MP_BASE_URL }}/modules/Multiplane/themes/rljbase/assets/js/polyfills.min.js';
