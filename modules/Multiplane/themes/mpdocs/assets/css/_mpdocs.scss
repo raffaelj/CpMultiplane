@@ -126,7 +126,7 @@ body > aside {
 nav {
     font-size: 1em;
     line-height: 1em;
-    a {
+    a:not([class^=icon-]) {
         color: $color-link-invert;
         &:hover {
             color: $color-link-invert-hover;
