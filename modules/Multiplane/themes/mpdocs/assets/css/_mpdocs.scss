@@ -252,6 +252,12 @@ nav {
             > a {
                 display: none;
             }
+            a {
+                color: $color-text;
+                &:hover, &:focus {
+                    color: $color-link-hover;
+                }
+            }
             > input[type="checkbox"] {
                 + label {
                     top: -1em;
@@ -267,35 +273,40 @@ nav {
                 margin: 0;
             }
 
-            // move toc to the right
-            @include breakpoint(xlarge) {
-                position: fixed !important;
-                top: 0;
-                right: 0;
-                width: calc(#{$sidebar_width} - 2em);
-                border: none;
-                padding: 1em 0 1em .5em;
-                margin: 0;
-                border-left: 1px dashed #ccc;
-                border-bottom: 1px dashed #ccc;
-                border-bottom-left-radius: .5em;
-                ul {
-                    background: none;
-                }
-                a {
-                    color: #222;
-                }
-                input[type="checkbox"] + label {
-                    background: #fff;
-                }
-                > input[type="checkbox"] + label {
-                    top: .5em;
-                    right: .5em;
-                }
-            }
-
         }
 
+    }
+
+    // move toc to the right
+    @include breakpoint(xlarge) {
+
+        li.toc {
+            position: fixed !important;
+            top: 0;
+            right: 0;
+            width: calc(#{$sidebar_width} - 2em);
+            border: none;
+            padding: 1em 0 1em .5em;
+            margin: 0;
+            border-left: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+            border-bottom-left-radius: .5em;
+            overflow-y: auto;
+            max-height: 90%;
+            ul {
+                background: none;
+            }
+            a {
+                color: #222;
+            }
+            input[type="checkbox"] + label {
+                background: #fff;
+            }
+            > input[type="checkbox"] + label {
+                top: .5em;
+                right: .5em;
+            }
+        }
     }
 }
 
