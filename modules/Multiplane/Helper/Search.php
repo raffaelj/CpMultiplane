@@ -68,7 +68,7 @@ class Search extends \Lime\Helper {
 
             if (!$sort || !\is_callable($sort)) {
                 // sort by weight
-                $sort = function($a, $b) {return $a['weight'] < $b['weight'];};
+                $sort = function($a, $b) {return $a['weight'] < $b['weight'] ? 1 : 0;};
             }
 
             $this->list->uasort($sort);
