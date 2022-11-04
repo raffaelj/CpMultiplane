@@ -264,7 +264,8 @@ $this->module('multiplane')->extend([
     }, // end of userScripts()
 
     'baseUrl' => function($url) {
-        return rtrim($this->app->baseUrl($url), '/');
+        $baseUrl = $this->app->baseUrl($url);
+        return $baseUrl == '/' ? $baseUrl : rtrim($baseUrl, '/');
     },
 
     'base' => function($url) {
