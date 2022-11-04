@@ -909,27 +909,33 @@ $this->module('multiplane')->extend([
                 ];
                 $tmp = $this->app->module('collections')->findOne($this->pages, $filter, null, false, null);
 
-                if ($slugName == '_id') {
-                    $slug = $tmp['_id'];
-                } else {
-                    $slug = (!empty($tmp['subpagemodule']['route'])) ? $tmp['subpagemodule']['route'] : $tmp[$slugName];
-                    $slug = ltrim($slug, '/');
-                }
+                if ($tmp) {
 
-                $structure[$col] = [
-                    '_id'        => $_collection['name'],
-                    'label'      => $_collection['label'] ?? $_collection['name'],
-                    'slug'       => $slug,
-                    '_pid'       => $this->pages,
-                ];
-                foreach ($languages as $l) {
                     if ($slugName == '_id') {
                         $slug = $tmp['_id'];
                     } else {
-                        $slug = (!empty($tmp['subpagemodule']['route_'.$l])) ? $tmp['subpagemodule']['route_'.$l] : $tmp[$slugName.'_'.$l];
+                        $slug = !empty($tmp['subpagemodule']['route'])
+                                ? $tmp['subpagemodule']['route']
+                                : $tmp[$slugName];
                         $slug = ltrim($slug, '/');
                     }
-                    $structure[$col]['slug_'.$l] = $slug;
+
+                    $structure[$col] = [
+                        '_id'        => $_collection['name'],
+                        'label'      => $_collection['label'] ?? $_collection['name'],
+                        'slug'       => $slug,
+                        '_pid'       => $this->pages,
+                    ];
+                    foreach ($languages as $l) {
+                        if ($slugName == '_id') {
+                            $slug = $tmp['_id'];
+                        } else {
+                            $slug = (!empty($tmp['subpagemodule']['route_'.$l])) ? $tmp['subpagemodule']['route_'.$l] : $tmp[$slugName.'_'.$l];
+                            $slug = ltrim($slug, '/');
+                        }
+                        $structure[$col]['slug_'.$l] = $slug;
+                    }
+
                 }
 
             }
