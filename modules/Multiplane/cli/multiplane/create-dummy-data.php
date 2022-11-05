@@ -34,8 +34,12 @@ if (!$app->module('singletons')->exists($siteSingleton)) {
 
 // add MP logo as asset
 $file = $logo ? $app->path($logo) : $app->path('cpmultiplanegui:icon.svg');
-$meta = ['title' => 'CpMultiplane logo'];
-$logo = $app->module('cockpit')->addAssets([$file], $meta)[0];
+$logo = [];
+if ($file) {
+    $meta = ['title' => 'CpMultiplane logo'];
+    $assets = $app->module('cockpit')->saveAssets([$file], $meta);
+    $logo = isset($assets[0]) ? $assets[0] : [];
+}
 
 // create dummy site config
 $app->module('singletons')->saveData($siteSingleton, [
