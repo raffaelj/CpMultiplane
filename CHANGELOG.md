@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1
+
+* fixed bugs caused by removing trailing slash
+* a11y improvements
+* fixed broken form in rljbase theme
+* small bug fixes
+* Dockerfile: default to cockpit next branch
+* Dockerfile: use php8.0 (dev) docker image as base
+
 ## 0.3.0
 
 * new and updated docs: https://cpmultiplane.rlj.me
