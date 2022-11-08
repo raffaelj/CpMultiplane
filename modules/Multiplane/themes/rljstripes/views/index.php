@@ -39,7 +39,7 @@
         {{ $content_for_layout }}
 
       @if(isset($page['contactform']['active']) && $page['contactform']['active'] == true)
-        {{ $app->helper('form')->form($options['form'] ?? mp()->contact, $page['contactform']) }}
+        {{ $app->helper('form')->form($page['contactform']['form'], $page['contactform']) }}
       @endif
 
         <footer>
