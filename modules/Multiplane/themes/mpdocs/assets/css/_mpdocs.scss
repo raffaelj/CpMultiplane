@@ -53,7 +53,7 @@ body {
 
         a {
             color: $color-link-invert;
-            &:hover {
+            &:hover, &:focus {
                 color: $color-link-invert-hover;
             }
         }
@@ -128,7 +128,7 @@ nav {
     line-height: 1em;
     a:not([class^=icon-]) {
         color: $color-link-invert;
-        &:hover {
+        &:hover, &:focus {
             color: $color-link-invert-hover;
         }
     }
