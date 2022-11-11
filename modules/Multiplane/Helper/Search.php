@@ -67,8 +67,8 @@ class Search extends \Lime\Helper {
             $this->app->trigger('multiplane.search.after', [&$query, &$this->list, &$sort]);
 
             if (!$sort || !\is_callable($sort)) {
-                // sort by weight
-                $sort = function($a, $b) {return $a['weight'] < $b['weight'] ? 1 : 0;};
+                // sort by weight DESC
+                $sort = function($a, $b) {return $b['weight'] <=> $a['weight'];};
             }
 
             $this->list->uasort($sort);
