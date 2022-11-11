@@ -36,6 +36,7 @@ class Search extends \Lime\Helper {
         $this->_search        = '';
         $this->fieldSearch    = [];
         $this->allowedFields  = ['title', 'content', 'tags', 'category'];
+        $this->defaultFields  = $this->app->module('multiplane')->get('search/defaultFields') ?? ['title', 'content', 'tags'];
         $this->pages          = $this->app->module('multiplane')->pages;
         $this->usePermalinks  = $this->app->module('multiplane')->usePermalinks;
         $this->structure      = $this->app->module('multiplane')->get('structure');
@@ -92,7 +93,7 @@ class Search extends \Lime\Helper {
 
         if (empty($this->searches) && empty($this->fieldSearch)) return;
 
-        if (empty($this->collections)) $this->config();
+        $this->setDefaultCollectionsConfig();
 
         foreach ($this->collections as $collection => &$c) {
 
@@ -175,11 +176,9 @@ class Search extends \Lime\Helper {
 
     }
 
-    public function config() {
+    public function setDefaultCollectionsConfig() {
 
         $collections = $this->app->module('multiplane')->use['collections'] ?? [];
-
-        $defaultFields = ['title', 'content', 'tags']; // to do: should not be hardcoded
 
         foreach ($collections as $col) {
 
@@ -191,38 +190,49 @@ class Search extends \Lime\Helper {
             $pageType = $_collection['multiplane']['type'] ?? 'pages';
 
             $types = [];
-            $contentType = 'wysiwyg';
             foreach ($_collection['fields'] ?? [] as $field) {
                 $types[$field['name']] = $field['type'];
             }
 
-            $this->collections[$name] = [
+            $this->collections[$name] = array_replace_recursive([
                 'name'   => $name,
                 'route'  => $name == $this->pages ? '' : $this->app->module('multiplane')->getCollectionSlug($name),
                 'weight' => $pageType == 'pages' ? 10 : 5,
-            ];
+            ], $this->collections[$name] ?? [] );
 
-            foreach ($defaultFields as $field) {
-                if (isset($types[$field])) {
-                    $this->collections[$name]['fields'][] = [
+            // merge default options with config
+            if (isset($this->collections[$name]['fields']) && is_array($this->collections[$name]['fields'])) {
+                foreach ($this->collections[$name]['fields'] as $field => &$opts) {
+                    $opts = array_replace([
                         'name'   => $field,
                         'weight' => $pageType == 'pages' ? 10 : 8,
                         'type'   => $types[$field]
-                    ];
+                    ], $opts);
                 }
             }
 
-            foreach ($this->fieldSearch as $k => $v) {
-                if (!isset($types[$k])) continue;
-                $this->collections[$name]['fields'][] = [
-                    'name'   => $k,
+            // add default fields
+            foreach ($this->defaultFields as $field) {
+                if (!isset($types[$field])) continue;
+                $this->collections[$name]['fields'][$field] = array_replace_recursive([
+                    'name'   => $field,
+                    'weight' => $pageType == 'pages' ? 10 : 8,
+                    'type'   => $types[$field]
+                ], $this->collections[$name]['fields'][$field] ?? [] );
+            }
+
+            // add fieldSearch fields
+            foreach ($this->fieldSearch as $field => $v) {
+                if (!isset($types[$field])) continue;
+                $this->collections[$name]['fields'][$field] = array_replace_recursive([
+                    'name'   => $field,
                     'weight' => 10,
-                    'type'   => $types[$k]
-                ];
+                    'type'   => $types[$field]
+                ], $this->collections[$name]['fields'][$field] ?? [] );
             }
         }
 
-    } // end of config()
+    } // end of setDefaultCollectionsConfig()
 
     public function generateFilterOptions($c) {
 
