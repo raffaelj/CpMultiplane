@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.2
+
+* fixed link colours in mpdocs theme
+* fixed broken forms (if more than a single default form named 'contact')
+* improved full text search
+* don't "replace" vendor libs from cockpit (composer usage)
+
 ## 0.3.1
 
 * fixed bugs caused by removing trailing slash
