@@ -21,18 +21,6 @@
         "raffaelj/cockpit-uniqueslugs": "^0.5.4",
         "raffaelj/cockpit-formvalidation": "^0.3.0"
     },
-    "replace": {
-        "phpmailer/phpmailer": "*",
-        "claviska/simpleimage": "*",
-        "ksubileau/color-thief-php": "*",
-        "league/flysystem": "*",
-        "firebase/php-jwt": "*",
-        "mongodb/mongodb": "*",
-        "erusev/parsedown": "*",
-        "erusev/parsedown-extra": "*",
-        "maennchen/zipstream-php": "*",
-        "colinodell/json5": "*"
-    },
     "config": {
         "vendor-dir": "lib/vendor",
         "preferred-install": {
