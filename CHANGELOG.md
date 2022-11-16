@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+* fixed localization of forms
+
 ## 0.3.2
 
 * fixed link colours in mpdocs theme

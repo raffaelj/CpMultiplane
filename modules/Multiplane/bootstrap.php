@@ -391,6 +391,20 @@ $this->module('multiplane')->extend([
 
         if (!$page) return false;
 
+        // hotfix for localized forms - TODO: cleanup
+        // In my test data I had a localized set field of name contactform,
+        // which was localized by cockpit's default logic. Without that field,
+        // that data doesn't get localized automatically.
+        if ($this->isMultilingual && $this->lang != $this->defaultLang) {
+            if (isset($page['contactform']) && isset($page['contactform_'.$this->lang])) {
+                $page['contactform'] = $page['contactform_'.$this->lang];
+                $languages = $this->getLanguages(false, false);
+                foreach ($languages as $code) {
+                    unset($page['contactform_'.$code]);
+                }
+            }
+        }
+
         $this->_doChecksWithCurrentPage($page);
 
         // reroute startpage if called via slug to avoid duplicated content
