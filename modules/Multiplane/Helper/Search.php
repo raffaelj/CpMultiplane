@@ -24,15 +24,19 @@ class Search extends \Lime\Helper {
 
         $this->isMultilingual = $this->app->module('multiplane')->isMultilingual;
         $this->defaultLang    = $this->app->module('multiplane')->defaultLang;
-        $this->fieldNames     = $this->app->module('multiplane')->fieldNames;
         $this->languages      = $this->app->module('multiplane')->getLanguages();
         $this->lang           = $this->app->module('multiplane')->lang;
+        $this->isDefaultLang  = $this->lang == $this->defaultLang;
+        $this->langSuffix     = $this->app->module('multiplane')->getLanguageSuffix();
+
+        $this->fieldNames     = $this->app->module('multiplane')->fieldNames;
         $this->minLength      = $this->app->module('multiplane')->get('search/minLength');
         $this->collections    = $this->app->module('multiplane')->get('search/collections');
         $this->searches       = [];
         $this->_search        = '';
         $this->fieldSearch    = [];
         $this->allowedFields  = ['title', 'content', 'tags', 'category'];
+        $this->defaultFields  = $this->app->module('multiplane')->get('search/defaultFields') ?? ['title', 'content', 'tags'];
         $this->pages          = $this->app->module('multiplane')->pages;
         $this->usePermalinks  = $this->app->module('multiplane')->usePermalinks;
         $this->structure      = $this->app->module('multiplane')->get('structure');
@@ -64,8 +68,8 @@ class Search extends \Lime\Helper {
             $this->app->trigger('multiplane.search.after', [&$query, &$this->list, &$sort]);
 
             if (!$sort || !\is_callable($sort)) {
-                // sort by weight
-                $sort = function($a, $b) {return $a['weight'] < $b['weight'];};
+                // sort by weight DESC
+                $sort = function($a, $b) {return $b['weight'] <=> $a['weight'];};
             }
 
             $this->list->uasort($sort);
@@ -89,7 +93,7 @@ class Search extends \Lime\Helper {
 
         if (empty($this->searches) && empty($this->fieldSearch)) return;
 
-        if (empty($this->collections)) $this->config();
+        $this->setDefaultCollectionsConfig();
 
         foreach ($this->collections as $collection => &$c) {
 
@@ -100,7 +104,7 @@ class Search extends \Lime\Helper {
             if (!$_collection) continue;
 
             if (!empty($this->structure[$collection]['_pid'])) {
-                $parentSlugName = 'slug' . ($this->lang == $this->defaultLang ? '' : "_{$this->lang}");
+                $parentSlugName = 'slug' . $this->langSuffix;
                 $c['route'] = $this->structure[$collection][$parentSlugName];
             }
 
@@ -110,7 +114,7 @@ class Search extends \Lime\Helper {
 
             foreach ($this->app->module('collections')->find($collection, $options) as $entry) {
 
-                $this->list[] = $this->getWeightedItem($entry, $_collection, $c, $collection);
+                $this->list[] = $this->getWeightedItem($entry, $_collection, $c);
 
             }
 
@@ -172,11 +176,9 @@ class Search extends \Lime\Helper {
 
     }
 
-    public function config() {
+    public function setDefaultCollectionsConfig() {
 
         $collections = $this->app->module('multiplane')->use['collections'] ?? [];
-
-        $defaultFields = ['title', 'content', 'tags']; // to do: should not be hardcoded
 
         foreach ($collections as $col) {
 
@@ -188,38 +190,49 @@ class Search extends \Lime\Helper {
             $pageType = $_collection['multiplane']['type'] ?? 'pages';
 
             $types = [];
-            $contentType = 'wysiwyg';
             foreach ($_collection['fields'] ?? [] as $field) {
                 $types[$field['name']] = $field['type'];
             }
 
-            $this->collections[$name] = [
+            $this->collections[$name] = array_replace_recursive([
                 'name'   => $name,
-                'route'  => $name == $this->pages ? '' : $this->app->module('multiplane')->getSubPageRoute($name),
+                'route'  => $name == $this->pages ? '' : $this->app->module('multiplane')->getCollectionSlug($name),
                 'weight' => $pageType == 'pages' ? 10 : 5,
-            ];
+            ], $this->collections[$name] ?? [] );
 
-            foreach ($defaultFields as $field) {
-                if (isset($types[$field])) {
-                    $this->collections[$name]['fields'][] = [
+            // merge default options with config
+            if (isset($this->collections[$name]['fields']) && is_array($this->collections[$name]['fields'])) {
+                foreach ($this->collections[$name]['fields'] as $field => &$opts) {
+                    $opts = array_replace([
                         'name'   => $field,
                         'weight' => $pageType == 'pages' ? 10 : 8,
                         'type'   => $types[$field]
-                    ];
+                    ], $opts);
                 }
             }
 
-            foreach ($this->fieldSearch as $k => $v) {
-                if (!isset($types[$k])) continue;
-                $this->collections[$name]['fields'][] = [
-                    'name'   => $k,
+            // add default fields
+            foreach ($this->defaultFields as $field) {
+                if (!isset($types[$field])) continue;
+                $this->collections[$name]['fields'][$field] = array_replace_recursive([
+                    'name'   => $field,
+                    'weight' => $pageType == 'pages' ? 10 : 8,
+                    'type'   => $types[$field]
+                ], $this->collections[$name]['fields'][$field] ?? [] );
+            }
+
+            // add fieldSearch fields
+            foreach ($this->fieldSearch as $field => $v) {
+                if (!isset($types[$field])) continue;
+                $this->collections[$name]['fields'][$field] = array_replace_recursive([
+                    'name'   => $field,
                     'weight' => 10,
-                    'type'   => $types[$k]
-                ];
+                    'type'   => $types[$field]
+                ], $this->collections[$name]['fields'][$field] ?? [] );
             }
         }
 
-    } // end of config()
+    } // end of setDefaultCollectionsConfig()
 
     public function generateFilterOptions($c) {
 
@@ -243,8 +256,6 @@ class Search extends \Lime\Helper {
             foreach ($this->languages as $l) {
                 if ($l != $this->defaultLang) {
                     $options['fields']["{$slugName}_{$l}"] = true;
-                }
-                if ($l != $this->defaultLang) {
                     $options['fields']["{$permalinkName}_{$l}"] = true;
                 }
             }
@@ -254,7 +265,7 @@ class Search extends \Lime\Helper {
             $options['filter']['$or'] = [];
         }
 
-        $langSuffix = $this->lang == $this->defaultLang ? '' : '_'.$this->lang;
+        $langSuffix = $this->langSuffix;
         $suffix = $langSuffix;
 
         foreach ($c['fields'] as $field) {
@@ -264,7 +275,7 @@ class Search extends \Lime\Helper {
 
             $options['fields'][$field['name']] = true;
 
-            if ($this->lang != $this->defaultLang) {
+            if (!$this->isDefaultLang) {
                 $options['fields'][$field['name'].$suffix] = true;
             }
 
@@ -325,7 +336,9 @@ class Search extends \Lime\Helper {
                     $tags = $this->fieldSearch[$field['name']];
                     if (!\is_array($tags)) $tags = [$tags];
 
-                    $options['filter'][$field['name'].$suffix] = ['$in' => $tags];
+                    if (!empty($tags)) {
+                        $options['filter'][$field['name'].$suffix] = ['$in' => $tags];
+                    }
 
                 }
 
@@ -345,10 +358,15 @@ class Search extends \Lime\Helper {
         $permalinkName = $this->fieldNames['permalink'];
         $startpageName = $this->fieldNames['startpage'];
 
+        $collectionName = $_collection['name'];
+        $collectionLabel = $collectionName;
+
         $weight = !empty($c['weight']) ? $c['weight'] : 0;
-        $label  = !empty($c['label'])  ? $c['label']
-                : (!empty($_collection['label']) ? $_collection['label']
-                    : $collection);
+
+        $labelKey = 'label' . $this->langSuffix;
+        if (!empty($this->structure[$collectionName][$labelKey])) {
+            $collectionLabel = $this->structure[$collectionName][$labelKey];
+        }
 
         $isStartpage = isset($entry[$startpageName]) && $entry[$startpageName] == true;
 
@@ -356,7 +374,7 @@ class Search extends \Lime\Helper {
             '_id'        => $entry['_id'],
             '_created'   => $entry['_created'],
             'url'        => $this->app->baseUrl(($c['route'] ?? '') . '/' . ($isStartpage ? '' : $entry[$slugName])),
-            'collection' => $label,
+            'collection' => $collectionLabel,
         ];
 
         if ($this->usePermalinks) {

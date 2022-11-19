@@ -114,6 +114,10 @@ $this->on('multiplane.sitemap', function(&$xml) {
                         $xml->text($url);
                         $xml->endElement();
 
+                        $xml->startElement('lastmod');
+                        $xml->text(\date('c', ($page['_modified']) ?? $page['_created']));
+                        $xml->endElement();
+
                         foreach ($languages as $l) {
 
                             if ($l == $lang) continue;

@@ -28,7 +28,15 @@ class Forms extends \LimeExtra\Controller {
 
             $form = $params[':splat'][0];
 
+            $formsInUse = $this->app->module('multiplane')->use['forms'] ?? [];
+            if (!in_array($form, $formsInUse)) return false;
+
             $_form = $this->app->module('forms')->form($form);
+
+            $formLang = $_form['multiplane']['language'] ?? '';
+            if (!empty($formLang) && $formLang != $this->app->module('multiplane')->lang) {
+                return false;
+            }
 
             // add global viewvars
             $site = $this->app->module('multiplane')->getSite();
@@ -43,7 +51,7 @@ class Forms extends \LimeExtra\Controller {
                 if (!isset($seo['robots'])) $seo['robots'] = [];
                 $seo['robots'][] = 'noindex';
                 $seo['robots'][] = 'nofollow';
-                $seo['canonical'] = $this->baseUrl("/form/$form");
+                $seo['canonical'] = $this->getSiteUrl() . $this->baseUrl("/form/$form");
             });
 
             $options = [

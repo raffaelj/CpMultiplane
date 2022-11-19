@@ -17,34 +17,23 @@
         "ext-pdo": "*",
         "oomphinc/composer-installers-extender": "^2.0",
         "aheinze/cockpit": "^0.12.2",
-        "raffaelj/cockpit-cpmultiplanegui": "^0.2.2",
+        "raffaelj/cockpit-cpmultiplanegui": "^0.3.2",
         "raffaelj/cockpit-uniqueslugs": "^0.5.4",
-        "raffaelj/cockpit-formvalidation": "^0.2.11"
-    },
-    "replace": {
-        "phpmailer/phpmailer": "*",
-        "claviska/simpleimage": "*",
-        "ksubileau/color-thief-php": "*",
-        "league/flysystem": "*",
-        "firebase/php-jwt": "*",
-        "mongodb/mongodb": "*",
-        "erusev/parsedown": "*",
-        "erusev/parsedown-extra": "*",
-        "maennchen/zipstream-php": "*",
-        "colinodell/json5": "*"
+        "raffaelj/cockpit-formvalidation": "^0.3.1"
     },
     "config": {
         "vendor-dir": "lib/vendor",
         "preferred-install": {
             "*": "dist"
+        },
+        "allow-plugins": {
+            "composer/installers": true,
+            "oomphinc/composer-installers-extender": true
         }
     },
     "extra": {
         "installer-name": "CpMultiplane",
-        "installer-types": [
-            "project",
-            "library"
-        ],
+        "installer-types": ["project"],
         "installer-paths": {
             "cockpit": [
                 "aheinze/cockpit"

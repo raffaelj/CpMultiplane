@@ -53,7 +53,7 @@ body {
 
         a {
             color: $color-link-invert;
-            &:hover {
+            &:hover, &:focus {
                 color: $color-link-invert-hover;
             }
         }
@@ -126,9 +126,9 @@ body > aside {
 nav {
     font-size: 1em;
     line-height: 1em;
-    a {
+    a:not([class^=icon-]) {
         color: $color-link-invert;
-        &:hover {
+        &:hover, &:focus {
             color: $color-link-invert-hover;
         }
     }
@@ -151,6 +151,7 @@ nav {
     &.language-switch {
         display: block;
         text-align: center;
+        margin: 1em auto;
         li {
             display: inline-block;
             > a, > span {
@@ -171,6 +172,16 @@ nav {
     }
 
     &.horizontal {
+
+        @media (hover: none), (any-pointer: coarse) {
+            input[type=checkbox] {
+                width: auto;
+                + label {
+                    width: .7em;
+                }
+            }
+        }
+
         @include breakpoint(medium) {
             ul {
                 li {
@@ -256,40 +267,48 @@ nav {
                 margin: 0;
             }
 
-            // move toc to the right
-            @include breakpoint(xlarge) {
-                position: fixed !important;
-                top: 0;
-                right: 0;
-                width: calc(#{$sidebar_width} - 2em);
-                border: none;
-                padding: 1em 0 1em .5em;
-                margin: 0;
-                border-left: 1px dashed #ccc;
-                border-bottom: 1px dashed #ccc;
-                border-bottom-left-radius: .5em;
-                ul {
-                    background: none;
-                }
-                a {
-                    color: #222;
-                }
-                input[type="checkbox"] + label {
-                    background: #fff;
-                }
-                > input[type="checkbox"] + label {
-                    top: .5em;
-                    right: .5em;
-                }
-            }
-
         }
 
+    }
+
+    // move toc to the right
+    @include breakpoint(xlarge) {
+
+        li.toc {
+            position: fixed !important;
+            top: 0;
+            right: 0;
+            width: calc(#{$sidebar_width} - 2em);
+            border: none;
+            padding: 1em 0 1em .5em;
+            margin: 0;
+            border-left: 1px dashed #ccc;
+            border-bottom: 1px dashed #ccc;
+            border-bottom-left-radius: .5em;
+            overflow-y: auto;
+            max-height: 90%;
+            ul {
+                background: none;
+            }
+            a {
+                color: $color-text;
+                &:hover, &:focus {
+                    color: $color-link-hover;
+                }
+            }
+            input[type="checkbox"] + label {
+                background: #fff;
+            }
+            > input[type="checkbox"] + label {
+                top: .5em;
+                right: .5em;
+            }
+        }
     }
 }
 
 .search {
-    margin: .25em 0;
+    margin: 1em 0;
     form {
         margin-top: 0;
         margin-bottom: 0;

@@ -5,7 +5,7 @@
         <meta http-equiv='X-UA-Compatible' content='IE=edge'>
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>
         @render('views:partials/seometa.php')
-        <link rel="shortcut icon" href="{{ MP_BASE_URL }}/favicon.png?ver={{ mp()->version }}">
+        <link rel="shortcut icon" href="@route(mp()->faviconPath)?ver={{ mp()->version }}">
         <script>
             var MP_BASE_URL = '{{ MP_BASE_URL }}',
                 MP_POLYFILLS_URL = '{{ MP_BASE_URL }}/modules/Multiplane/themes/rljbase/assets/js/polyfills.min.js';
@@ -19,7 +19,7 @@
         @trigger('multiplane.layout.contentbefore')
         <input type="checkbox" id="sidebar_toggle" aria-label="@lang('Toggle sidebar')" /><label for="sidebar_toggle" title="@lang('Toggle sidebar')"></label>
         <header>
-            <a href="@base('/')"@if(mp()->get('mpdocs_header_animation')) class="multiplane-animation"@endif>
+            <a href="{{ mp()->base('/') }}"@if(mp()->get('mpdocs_header_animation')) class="multiplane-animation"@endif>
               @if(!empty($site['logo']))
                 <img class="logo" alt="{{ $site['logo']['title'] ?? 'logo' }}" src="@logo($site['logo']['_id'] ?? $site['logo']['path'])" title="@lang('back to start page')" />
               @endif
@@ -37,7 +37,7 @@
         {{ $content_for_layout }}
 
       @if(isset($page['contactform']['active']) && $page['contactform']['active'] == true)
-        @render('views:widgets/contactform.php', ['options' => $page['contactform']])
+        {{ $app->helper('form')->form($page['contactform']['form'], $page['contactform']) }}
       @endif
 
         <footer>

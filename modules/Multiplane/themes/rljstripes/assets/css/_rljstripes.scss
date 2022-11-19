@@ -10,7 +10,8 @@ body {
     > footer,
     > aside,
     > section,
-    > .section
+    > .section,
+    > form
     {
         width: 100%;
         margin: 0;
@@ -27,7 +28,8 @@ body {
     > main > article,
     > main > article > section, // multiple blog posts (no excerpt)
     > aside,
-    > footer
+    > footer,
+    > form
     {
         padding: 1rem 1rem;
         @include breakpoint(medium) {
@@ -377,15 +379,15 @@ _:-ms-fullscreen, :root header .search form {
     }
 }
 
-.contactform {
-    form {
-        margin: 0;
-        max-width: 50em;
-    }
-    fieldset {
-        border-color: $color-light-grey;
-    }
-}
+// .contactform {
+//     form {
+//         margin: 0;
+//         max-width: 50em;
+//     }
+//     fieldset {
+//         border-color: $color-light-grey;
+//     }
+// }
 
 img.logo {
     max-width: 150px;

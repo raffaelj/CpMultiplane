@@ -4,7 +4,9 @@ $color-grey:       #ccc !default;
 $color-link:       #366a9c !default;
 $color-link-hover: #ac833c !default;
 
-$font: system-ui, system-ui-fallback, Helvetica, sans-serif !default;
+// font stack from bootstrap, source:
+// https://github.com/twbs/bootstrap/blob/main/scss/_variables.scss
+$font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
 
 html {
     font-family: $font;
@@ -55,7 +57,7 @@ h6 {
 }
 
 p {
-    margin: 0;
+    margin: .5em 0;
     padding: 0 0 .5em;
     @include hyphens();
     &:last-child {
@@ -106,7 +108,7 @@ small {
 
 mark {
     background-color: #fafad2;
-    @include box-shadow(0px 0px 1px 2px #fafad2);
+    // @include box-shadow(0px 0px 1px 2px #fafad2);
 }
 
 time {
@@ -159,7 +161,7 @@ ol {
 }
 
 li {
-    
+    margin: .5em 0;
 }
 
 dl {

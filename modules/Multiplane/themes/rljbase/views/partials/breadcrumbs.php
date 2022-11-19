@@ -8,7 +8,7 @@ if (\count($breadcrumbs) == 1 && mp()->isStartpage) return;
                   @foreach($breadcrumbs as $k => $n)
                     <li>
                     @if($k == 0)
-                        <a href="@base('/')" title="@lang('Home')" class="icon-home"></a>
+                        <a href="{{ mp()->base('/') }}" title="@lang('Home')" class="icon-home"></a>
                     @else
                         <a href="@route('/'.$n['slug'])">{{{ $n['title'] }}}</a>
                     @endif

@@ -20,7 +20,7 @@
 
         <header>
             @render('views:partials/skip-link.php')
-            <a href="@base('/')">
+            <a href="{{ mp()->base('/') }}">
               @if(!empty($site['logo']))
                 <img class="logo" alt="{{ $site['logo']['title'] ?? 'logo' }}" src="@logo($site['logo']['_id'] ?? $site['logo']['path'])" title="@lang('back to start page')" />
               @endif
@@ -41,7 +41,7 @@
         {{ $content_for_layout }}
 
       @if(isset($page['contactform']['active']) && $page['contactform']['active'] == true)
-        @render('views:widgets/contactform.php', ['options' => $page['contactform']])
+        {{ $app->helper('form')->form($page['contactform']['form'], $page['contactform']) }}
       @endif
 
         <footer>

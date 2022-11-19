@@ -1,6 +1,26 @@
 # Changelog
 
-## Upcoming
+## 0.3.3
+
+* fixed localization of forms
+
+## 0.3.2
+
+* fixed link colours in mpdocs theme
+* fixed broken forms (if more than a single default form named 'contact')
+* improved full text search
+* don't "replace" vendor libs from cockpit (composer usage)
+
+## 0.3.1
+
+* fixed bugs caused by removing trailing slash
+* a11y improvements
+* fixed broken form in rljbase theme
+* small bug fixes
+* Dockerfile: default to cockpit next branch
+* Dockerfile: use php8.0 (dev) docker image as base
+
+## 0.3.0
 
 * new and updated docs: https://cpmultiplane.rlj.me
 * massive code cleanup and rewrite
@@ -20,6 +40,24 @@
 * enabled `error_reporting(E_ALL)` if in debug mode
 * improved cli commands
 * a lot of minor code fixes
+
+* use profiles from ImageResize addon
+* implemented localized forms
+* added multipleselect form field
+* fixed broken honeypot (forms)
+* added skip link to rljbase theme
+* don't reroute `/*` to `/en/*`, only reroute `/` to `/en`
+* some a11y improvements
+* added option to change favicon path
+* drop `$fn` usage in search (MongoLite, if cockpit version < 0.11.3)
+* simplified and fixed sitemap schema
+* added tags overview page
+* moved live preview logic in separate controller
+* removed search button animation
+* only show forms in `use` (must be enabled via profile/config)
+* removed collection label in search results (may be reintroduced as categories)
+* fixed resetting default array keys with missing config keys (e. g. unavailable `search/minLength`
+* reroute pages with trailing slash
 
 ## 0.2.4
 

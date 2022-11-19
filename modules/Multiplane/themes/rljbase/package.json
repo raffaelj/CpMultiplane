@@ -1,7 +1,7 @@
 {
     "name": "cpmultiplane-theme-rljbase",
     "label": "rljbase",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "author": "Raffael Jesche",
     "homepage": "https://github.com/raffaelj/CpMultiplane",
     "license": "MIT",
@@ -31,7 +31,7 @@
         "concurrently": "^7.2.2",
         "core-js": "^3.2.1",
         "formdata-polyfill": "^4.0.10",
-        "node-sass": "^7.0.1",
+        "node-sass": "^7.0.3",
         "onchange": "^7.1.0",
         "uglify-js": "^3.6.0"
     }

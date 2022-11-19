@@ -23,7 +23,7 @@ $this->bind('/getImage', function() {
 if ($this->module('multiplane')->isPreviewEnabled) {
 
     $this->bind('/getPreview', function($params) {
-        return $this->invoke('Multiplane\\Controller\\Base', 'getPreview', ['params' => $params]);
+        return $this->invoke('Multiplane\\Controller\\CockpitLivePreview', 'getPreview', ['params' => $params]);
     }, $this->req_is('ajax'));
 
     $this->bind('/livePreview', function($params) {
@@ -32,7 +32,7 @@ if ($this->module('multiplane')->isPreviewEnabled) {
             return false;
         }
 
-        return $this->invoke('Multiplane\\Controller\\Base', 'livePreview', ['params' => $params]);
+        return $this->invoke('Multiplane\\Controller\\CockpitLivePreview', 'livePreview', ['params' => $params]);
 
     });
 }
@@ -61,19 +61,14 @@ if (!$isMultilingual) {
     }
 
     // tags page
-    $this->bind('/tags', function($params) {
-        $this->reroute("/tags/");
-    });
     $this->bind('/tags/*', function($params) {
 
-        if ($params[':splat'][0] == '') return false; // to do: tags overview page
+        $tags = [];
+        if (isset($params[':splat'][0]) && $params[':splat'][0] !== '') {
+            $tags = explode('/', $params[':splat'][0]);
+        }
 
-        $tags = explode('/', $params[':splat'][0]);
-        return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
-    });
-    $this->bind('/tag/:tag', function($params) {
-        $tag = \urldecode($params['tag']);
-        return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
+        return $this->invoke('Multiplane\\Controller\\Base', 'tags', [['tags' => $tags]]);
     });
 
     $this->bind('/*', function($params) {
@@ -104,21 +99,15 @@ else {
         }
 
         // tags page
-        $this->bind('/'.$lang.'/tags', function($params) {
-            $this->reroute("/{$lang}/tags/");
-        });
         $this->bind('/'.$lang.'/tags/*', function($params) use($lang) {
             $this->module('multiplane')->initI18n($lang);
 
-            if ($params[':splat'][0] == '') return false; // to do: tags overview page
+            $tags = [];
+            if (isset($params[':splat'][0]) && $params[':splat'][0] !== '') {
+                $tags = explode('/', $params[':splat'][0]);
+            }
 
-            $tags = explode('/', $params[':splat'][0]);
-            return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tags]]);
-        });
-        $this->bind('/'.$lang.'/tag/:tag', function($params) use($lang) {
-            $this->module('multiplane')->initI18n($lang);
-            $tag = \urldecode($params['tag']);
-            return $this->invoke('Multiplane\\Controller\\Base', 'search', [['tags' => $tag]]);
+            return $this->invoke('Multiplane\\Controller\\Base', 'tags', [['tags' => $tags]]);
         });
 
         $this->bind('/'.$lang.'/*', function($params) use($lang) {

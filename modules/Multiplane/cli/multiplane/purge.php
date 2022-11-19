@@ -1,7 +1,7 @@
 <?php
 /**
  * Caution: You will lose all your data!
- * 
+ *
  * This cli command is meant to revert everything from the quickstart command.
  *
  * Usage: `./mp multiplane/purge`
@@ -26,6 +26,7 @@ $paths = [
     '#data:cockpit.memory.sqlite',
     '#data:collections.sqlite',
     '#data:cockpitdb.sqlite',
+    '#data:forms.sqlite',
 ];
 
 if (!$keepAddons) {
@@ -44,5 +45,7 @@ if (!$keepAddons) {
 foreach ($paths as $path) {
     $app->helper('fs')->delete($path);
 }
+
+$app->module('cockpit')->clearCache();
 
 CLI::writeln("Purged user data", true);

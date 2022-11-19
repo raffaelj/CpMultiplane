@@ -208,7 +208,7 @@ nav {
         }
         input[type=checkbox] + label {
             &:before {
-                border-width: .5em .5em 0 .5em;
+                // border-width: .5em .5em 0 .5em;
             }
         }
     }
@@ -241,6 +241,7 @@ nav#nav {
             margin: 0;
             padding: 0;
             z-index: 11;
+            font-size: 1.5rem; // with a base of 16px from body --> 48px x 48px tapping size
         }
         .icon-close, .icon-home {
             display: none;
@@ -250,7 +251,7 @@ nav#nav {
             position: fixed;
             top: 0;
             left: 0;
-            padding-top: 3em; // for close button
+            padding-top: 4em; // for close button
             width: 100%;
             height: 100%;
             overflow-y: auto;

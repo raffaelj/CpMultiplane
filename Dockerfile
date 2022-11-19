@@ -2,13 +2,13 @@
 
 # This image should be available at https://hub.docker.com/r/raffaelj/cpmultiplane
 
-# https://hub.docker.com/r/raffaelj/php7-apache-base
-# https://github.com/raffaelj/dockerfiles/tree/master/php7-apache-base
-FROM raffaelj/php7-apache-base
+# https://hub.docker.com/r/raffaelj/php8.0-apache-dev
+# https://github.com/raffaelj/dockerfiles/tree/master/php8.0-apache-dev
+FROM raffaelj/php8.0-apache-dev
 
-# Possible arguments are "next", "master" or version tags e. g. "0.11.2"
+# Possible arguments are "next", "master" or version tags e. g. "0.12.2"
 # "latest" is not possible. This would require to switch from pure git tags to Github Releases.
-ARG COCKPIT_VERSION="master"
+ARG COCKPIT_VERSION="next"
 
 # You can rename the cockpit folder to e. g. "admin" while building the image
 # docker build --build-arg COCKPIT_DIR=admin -t raffaelj/cpmultiplane:custom .

@@ -10,6 +10,9 @@ class Base extends \LimeExtra\Controller {
 
         if (!$page) return false;
 
+        $resp = $this->app->helper('mputils')->handleTrailingSlashRoute();
+        if ($resp === false) return false;
+
         $_posts = [];
         $site   = $this->app->module('multiplane')->getSite();
 
@@ -53,7 +56,7 @@ class Base extends \LimeExtra\Controller {
         // add canonical, if page has a form
         if (isset($page['contactform']['active']) && $page['contactform']['active'] == true) {
             $this->app->on('multiplane.seo', function(&$seo) use($slug) {
-                $seo['canonical'] = $this->baseUrl($slug);
+                $seo['canonical'] = $this->getSiteUrl() . $this->module('multiplane')->baseUrl($slug);
             });
         }
 
@@ -70,40 +73,6 @@ class Base extends \LimeExtra\Controller {
         return $this->render($view);
 
     } // end of index()
-
-    public function livePreview($params = []) {
-
-        $page = [];
-        $site = $this->app->module('multiplane')->getSite();
-        $posts = null;
-
-        if ($this->app->module('multiplane')->hasBackgroundImage) {
-            $this->app->module('multiplane')->addBackgroundImage();
-        }
-
-        // fix language specific paths + i18n
-        if ($this->app->module('multiplane')->isMultilingual) {
-
-            $lang = $this->app->module('multiplane')->lang;
-
-            // init + load i18n
-            if ($translationspath = $this->path("mp_config:i18n/{$lang}.php")) {
-                $this('i18n')->load($translationspath, $lang);
-            }
-
-            $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
-
-        }
-
-        return $this->render('views:layouts/live-preview.php', compact('page', 'posts', 'site'));
-
-    } // end of livePreview()
-
-    public function getPreview($data = []) {
-
-        return $this->app->module('multiplane')->getPreview($data);
-
-    } // end of getPreview()
 
     public function getImage($options = []) {
 
@@ -186,9 +155,8 @@ class Base extends \LimeExtra\Controller {
 
         $page = [
             'title' => $this('i18n')->get('Search'),
-            // 'description' => ''
         ];
-        $page['seo']['canonical'] = $this->app->baseUrl('/search');
+        $page['seo']['canonical'] = $this->getSiteUrl() . $this->app->baseUrl('/search');
 
         $this->app->viewvars['page'] = $page;
         $this->app->viewvars['site'] = $site;
@@ -206,6 +174,33 @@ class Base extends \LimeExtra\Controller {
 
     } // end of search()
 
+    public function tags($params = null) {
+
+        $site = $this->app->module('multiplane')->getSite();
+
+        $page = [
+            'title' => $this('i18n')->get('Tags'),
+        ];
+        $page['seo']['canonical'] = $this->getSiteUrl() . $this->app->baseUrl('/search');
+
+        $this->app->viewvars['page'] = $page;
+        $this->app->viewvars['site'] = $site;
+
+        if ($this->app->module('multiplane')->hasBackgroundImage) {
+            $this->app->module('multiplane')->addBackgroundImage();
+        }
+
+        $tags = $this->app->helper('mputils')->getTagsList();
+
+        $return = $this->app->helper('search')->search($params);
+
+        // make $list, $query, $error, $count available
+        \extract($return);
+
+        return $this->render('views:layouts/tags.php', compact('tags', 'list', 'error', 'count'));
+
+    } // end of tags()
+
     public function sitemap() {
 
         $xml = new \XMLWriter();
@@ -218,14 +213,9 @@ class Base extends \LimeExtra\Controller {
         $xml->startElement('urlset');
         $xml->writeAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
 
-        if (!$this->app->module('multiplane')->isMultilingual) {
+        if ($this->app->module('multiplane')->isMultilingual) {
             $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
-        } else {
-            $xml->writeAttribute('xmlns:xhtml', 'http://www.w3.org/TR/xhtml11/xhtml11_schema.html');
         }
-
-        $xml->writeAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $xml->writeAttribute('xsi:schemaLocation', 'http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd');
 
         $this->app->trigger('multiplane.sitemap', [&$xml]);
 
