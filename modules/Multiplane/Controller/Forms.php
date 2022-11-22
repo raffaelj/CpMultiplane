@@ -32,6 +32,7 @@ class Forms extends \LimeExtra\Controller {
             if (!in_array($form, $formsInUse)) return false;
 
             $_form = $this->app->module('forms')->form($form);
+            if (!$_form) return false;
 
             $formLang = $_form['multiplane']['language'] ?? '';
             if (!empty($formLang) && $formLang != $this->app->module('multiplane')->lang) {
@@ -66,6 +67,12 @@ class Forms extends \LimeExtra\Controller {
     } // end of index()
 
     public function form($form = '', $options = []) {
+
+        $_form = $this->app->module('forms')->form($form);
+        if (!$_form) return false;
+
+        $formsInUse = $this->app->module('multiplane')->use['forms'] ?? [];
+        if (!in_array($form, $formsInUse)) return false;
 
         // submit get parameters:
         // 1: initial via form
@@ -123,6 +130,12 @@ class Forms extends \LimeExtra\Controller {
     } // end of form()
 
     public function submit($form = '') {
+
+        $_form = $this->app->module('forms')->form($form);
+        if (!$_form) return false;
+
+        $formsInUse = $this->app->module('multiplane')->use['forms'] ?? [];
+        if (!in_array($form, $formsInUse)) return false;
 
         $sessionName = $this->app->module('multiplane')->formSessionName;
         $submitQuery = '';
