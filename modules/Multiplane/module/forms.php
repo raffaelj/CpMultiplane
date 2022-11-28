@@ -1,9 +1,176 @@
 <?php
 
-// to do: cleanup, move html helper functions to a helper class...
+// TODO: cleanup, move html helper functions to a helper class...
 
 // forms helper for widget usage
 $this->helpers['form'] = 'Multiplane\\Controller\\Forms';
+
+/**
+ * Fire event with priority 101 (1 higher, than the actual form validation
+ * from the FormValidation addon) and pass $_FILES array to $data
+ * 
+ * This also fixes the validator firing too early if file field is required.
+ */
+$this->on('forms.submit.before', function($form, &$data, $frm, &$options) {
+
+    $fileFields = [];
+
+    $formFields = $frm['fields'] ?? [];
+    foreach ($formFields as $v) {
+        if ($v['type'] == 'file') $fileFields[] = $v;
+    }
+
+    // if the form has no file upload fields, skip all the steps below
+    if (empty($fileFields)) return;
+
+    $prefix = $this->module('multiplane')->formIdPrefix;
+
+    foreach ($fileFields as $field) {
+
+        $files = $this->module('formvalidation')->getUploadedFiles($prefix.$form, $field['name'], false);
+
+        if (!empty($files)) $data[$field['name']] = $files;
+
+    }
+
+    /**
+     * Add uploaded files to assets
+     */
+    $this->on('forms.validate.after', function($form, &$data, $frm, &$options) use($fileFields) {
+
+        if (isset($frm['save_uploaded_assets']) && $frm['save_uploaded_assets']) {
+
+            $folderName = $this->module('formvalidation')->formsUploadsFolder;
+            $folder = $this->module('formvalidation')->getFormsUploadsFolder($folderName.'/'.$frm['name']);
+
+            foreach ($fileFields as $field) {
+
+                $files = $data[$field['name']] ?? [];
+
+                if (empty($files)) continue;
+
+                // temporary disable ImageResize addon
+                if (isset($this['modules']['imageresize'])) {
+                    $origImageResizeConfig = $this->module('imageresize')->getConfig();
+                    $newConfig = $origImageResizeConfig;
+                    $newConfig['resize'] = false;
+                    $newConfig['optimize'] = false;
+                    $newConfig['profiles'] = null;
+                    $this->module('imageresize')->config = $newConfig;
+                    if (isset($this['modules']['cpmultiplanegui'])) {
+                        $origImageResizeAutoConfig = $this->module('cpmultiplanegui')->hasAutoConfigImageResize;
+                        $this->module('cpmultiplanegui')->hasAutoConfigImageResize = true;
+                    }
+                }
+
+                // temporary change max_upload_size
+                $origMaxUploadSize = $this->retrieve('max_upload_size');
+                $fieldMaxUploadSize = $field['options']['max_upload_size'] ?? 0;
+                if ($fieldMaxUploadSize) $this->set('max_upload_size', $fieldMaxUploadSize);
+
+                // temporary change allowed_uploads
+                $origAllowedUploads = $this->retrieve('allowed_uploads');
+                $fieldAllowedUploads = $field['options']['allowed_uploads'] ?? '';
+                if (!empty($fieldAllowedUploads)) $this->set('allowed_uploads', $fieldAllowedUploads);
+
+                // Get response from uploaded assets
+                $assets = $this->module('cockpit')->uploadAssets($files, ['folder' => $folder]);
+
+                // restore max_upload_size and allowed_uploads
+                $this->set('max_upload_size', $origMaxUploadSize);
+                $this->set('allowed_uploads', $origAllowedUploads);
+
+                // restore ImageResize config
+                if (isset($this['modules']['imageresize'])) {
+                    $this->module('imageresize')->config = $origImageResizeConfig;
+                    if (isset($this['modules']['cpmultiplanegui'])) {
+                        $this->module('cpmultiplanegui')->hasAutoConfigImageResize = $origImageResizeAutoConfig;
+                    }
+                }
+
+                // save entries as filename
+                // $data[$field['name']] = $assets['uploaded'];
+
+                // save entries as filepath
+                // $data[$field['name']] = [];
+                // $ASSETS_URL    = rtrim($this->filestorage->getUrl('assets://'), '/');
+
+                // foreach ($assets['assets'] as $file) {
+                //     $data[$field['name']][] = $ASSETS_URL.$file['path'];
+                // }
+
+                // save entries as assets data
+                $data[$field['name']] = $assets['assets'];
+
+            }
+
+        }
+
+        /**
+         * Add uploaded files as mail attachment
+         * 
+         */
+        $this->on('forms.submit.email', function($form, &$data, $frm, &$body, &$options) use ($fileFields) {
+
+            $attachUploadsToMail = isset($frm['attach_uploaded_assets']) && $frm['attach_uploaded_assets'] === true;
+
+            if (!$attachUploadsToMail) return;
+
+            $options['attachments'] = $options['attachments'] ?? [];
+
+            $ASSETS_URL = rtrim($this->filestorage->getUrl('assets://'), '/');
+
+            foreach ($fileFields as $field) {
+
+                $files = $data[$field['name']] ?? [];
+
+                if (empty($files)) continue;
+
+                $isDataFromAsset = isset($files[0]['path']);
+                $isDataFromFiles = isset($files['name']) && isset($files['tmp_name']);
+
+                // reset data key
+                $data[$field['name']] = [];
+
+                if ($isDataFromFiles) {
+
+                    foreach ($files['name'] as $k => $v) {
+
+                        // pass array to attachments --> needs modified Mailer class
+                        $options['attachments'][] = [
+                            'path' => $files['tmp_name'][$k],
+                            'name' => $v,
+                        ];
+
+                        // add file name to data key
+                        $data[$field['name']][] = $v;
+                    }
+                }
+                elseif ($isDataFromAsset) {
+
+                    foreach ($files as $asset) {
+
+                        if ($path = $this->path('#uploads:'.ltrim($asset['path'], '/'))) {
+                            $options['attachments'][] = $path;
+                        }
+                        else {
+                            // TODO: use filestorage api and write stream
+                        }
+
+                        // add url to data key
+                        $data[$field['name']][] = $ASSETS_URL.$asset['path'];
+
+                    }
+                }
+            }
+
+        });
+
+    });
+
+}, 101);
+
+
 
 $this->module('multiplane')->extend([
 
@@ -42,7 +209,7 @@ $this->module('multiplane')->extend([
 
         $response = $this('session')->read("mp_form_response_$form", []);
 
-        foreach($fields as &$field) {
+        foreach ($fields as &$field) {
 
             // set/get values
             $field['value'] = $response['data'][$field['name']] ?? '';
@@ -98,13 +265,23 @@ $this->module('multiplane')->extend([
         }
 
         // may overwrite id and name
-        if (isset($field['options']['attr'])) {
+        if (isset($field['options']['attr']) && is_array($field['options']['attr'])) {
             foreach($field['options']['attr'] as $key => $val) {
                 $attr[$key] = $val;
             }
         }
 
+        // set multiple attr from options (for file upload)
+        if (isset($field['options']['multiple']) && is_bool($field['options']['multiple'])) {
+            $attr['multiple'] = $field['options']['multiple'];
+        }
+
+        // apply form prefix
         $attr['name'] = "{$prefix}{$form}[{$attr['name']}]";
+
+        if (isset($attr['multiple']) && $attr['multiple'] === true) {
+            $attr['name'] .= '[]';
+        }
 
         return [$attr, $ariaDescribedBy];
 
@@ -122,8 +299,8 @@ $this->module('multiplane')->extend([
 
         foreach ($attr as $key => $val) {
 
-            if (is_bool($val) && $val === true) {
-                $attributes .= ' '.$key;
+            if (is_bool($val)) {
+                if ($val === true) $attributes .= ' '.$key;
                 continue;
             }
 

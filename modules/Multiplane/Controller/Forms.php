@@ -155,13 +155,7 @@ class Forms extends \LimeExtra\Controller {
         $prefix = $this->app->module('multiplane')->formIdPrefix;
         $formSubmitButtonName = $this->app->module('multiplane')->formSubmitButtonName;
 
-// TODO: merge $_FILES into $postedData
-// print_r($_POST);
-// print_r($_FILES);
-// print_r($this->app->param());
-// die;
-
-        foreach($_POST[$prefix.$form] as $key => $val) {
+        foreach($_POST[$prefix.$form] ?? [] as $key => $val) {
 
             if ($key == $formSubmitButtonName) continue;
 
