@@ -6,9 +6,18 @@ if ($sessionStarted = $app('session')->read("mp_form_call_$form", null)) {
     $seconds = mp()->formSessionExpire - (time() - $sessionStarted);
     $dataSessionExpires = ' data-expire="'.$seconds.'"';
 }
+
+$enctype = '';
+foreach ($fields as $field) {
+    if (!isset($field['type']) | $field['type'] !== 'file') continue;
+    $enctype = ' enctype="multipart/form-data"';
+    break;
+}
+
 ?>
 
-<form id="{{ $id }}" method="post" action="@base('/form/submit/'.$form)?submit=1"{{ $dataSessionExpires }}>
+
+<form id="{{ $id }}" method="post"{{ $enctype }} action="@base('/form/submit/'.$form)?submit=1"{{ $dataSessionExpires }}>
 
     @if(!empty($options['headline']))
     <h2>{{ $options['headline'] }}</h2>
