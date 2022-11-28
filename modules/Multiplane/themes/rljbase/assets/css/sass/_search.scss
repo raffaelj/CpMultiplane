@@ -14,10 +14,11 @@ $icon-height:  2em !default;
         margin: 1em auto;
         overflow: hidden; // avoid possible flickering when button text appears and mouse hovers over it
     }
-    input[type=text] {
+    input[type=text], input[type=search] {
         display: inline;
         width: 100%;
         margin: 0;
+        height: $icon-height;
     }
 
     .icon-search {
@@ -41,7 +42,7 @@ $icon-height:  2em !default;
     form {
         width: auto;
     }
-    input[type=text] {
+    input[type=text], input[type=search] {
         width: 30em;
         max-width: 100%;
     }
