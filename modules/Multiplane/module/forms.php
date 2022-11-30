@@ -136,10 +136,18 @@ $this->on('forms.submit.before', function($form, &$data, $frm, &$options) {
 
                     foreach ($files['name'] as $k => $v) {
 
+                        $tmpFileName = $v;
+                        $tmpFilePath = $files['tmp_name'][$k];
+
+                        // TODO: Sanitize svg before adding it as attachment
+                        // if (\preg_match('/\.(svg|xml)$/i', $tmpFileName)) {
+                        //     file_put_contents($tmpFilePath, \SVGSanitizer::clean(\file_get_contents($tmpFilePath)));
+                        // }
+
                         // pass array to attachments --> needs modified Mailer class
                         $options['attachments'][] = [
-                            'path' => $files['tmp_name'][$k],
-                            'name' => $v,
+                            'path' => $tmpFilePath,
+                            'name' => $tmpFileName,
                         ];
 
                         // add file name to data key
@@ -233,6 +241,13 @@ $this->module('multiplane')->extend([
 
             }
 
+            // add file size info to file upload fields
+            if ($field['type'] == 'file') {
+                $max_upload_size = !empty($field['options']['max_upload_size']) ? $field['options']['max_upload_size'] : $this->app->retrieve('max_upload_size', 0);
+                $formattedSize = $this->app->helper('i18n')->get('max:') . ' ' . $this->app->helper('utils')->formatSize($max_upload_size);
+                $field['info'] = ($field['info'] ?? '') . " ({$formattedSize})";
+            }
+
             // set attributes
             $attr = $this->resolveFormFieldAttributes($field, $form);
             $field['attr'] = $attr[0];
@@ -252,8 +267,8 @@ $this->module('multiplane')->extend([
         $attr['id']   = "{$prefix}{$form}_{$field['name']}";
 
         $ariaDescribedBy = [];
-        if (!empty($field['info']))  $ariaDescribedBy['info'] = $attr['id'] . '_aria_info';
-        if (!empty($field['link']))  $ariaDescribedBy['link'] = $attr['id'] . '_aria_linkinfo';
+        if (!empty($field['info']))  $ariaDescribedBy['info']  = $attr['id'] . '_aria_info';
+        if (!empty($field['link']))  $ariaDescribedBy['link']  = $attr['id'] . '_aria_linkinfo';
         if (!empty($field['error'])) $ariaDescribedBy['error'] = $attr['id'] . '_aria_error';
 
         if (!empty($ariaDescribedBy)) {
@@ -271,15 +286,26 @@ $this->module('multiplane')->extend([
             }
         }
 
-        // set multiple attr from options (for file upload)
-        if (isset($field['options']['multiple']) && is_bool($field['options']['multiple'])) {
-            $attr['multiple'] = $field['options']['multiple'];
+        // set atributes for file upload
+        if ($field['type'] == 'file') {
+            // set multiple attribute
+            if (isset($field['options']['multiple']) && is_bool($field['options']['multiple'])) {
+                $attr['multiple'] = $field['options']['multiple'];
+            }
+            // set accept attribute
+            if ($allowed = $field['options']['allowed_uploads'] ?? null) {
+                if (!empty($allowed) && $allowed != '*') {
+                    if (is_string($allowed)) $allowed = explode(',', $allowed);
+                    $allowed = array_map(function($v) {return '.'.trim($v);}, $allowed);
+                    $attr['accept'] = implode(',', $allowed);
+                }
+            }
         }
 
-        // apply form prefix
+        // apply form prefix to name attribute
         $attr['name'] = "{$prefix}{$form}[{$attr['name']}]";
 
-        if (isset($attr['multiple']) && $attr['multiple'] === true) {
+        if (($field['type'] == 'file') && isset($attr['multiple']) && $attr['multiple'] === true) {
             $attr['name'] .= '[]';
         }
 
