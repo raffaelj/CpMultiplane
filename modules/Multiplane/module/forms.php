@@ -25,6 +25,7 @@ $this->on('forms.submit.before', function($form, &$data, $frm, &$options) {
 
     $prefix = $this->module('multiplane')->formIdPrefix;
 
+    $files = [];
     foreach ($fileFields as $field) {
 
         $files = $this->module('formvalidation')->getUploadedFiles($prefix.$form, $field['name'], false);
@@ -32,6 +33,9 @@ $this->on('forms.submit.before', function($form, &$data, $frm, &$options) {
         if (!empty($files)) $data[$field['name']] = $files;
 
     }
+
+    // if no files were uploaded, skip all the steps below
+    if (empty($files)) return;
 
     /**
      * Add uploaded files to assets
@@ -88,27 +92,45 @@ $this->on('forms.submit.before', function($form, &$data, $frm, &$options) {
                     }
                 }
 
-                // save entries as filename
-                // $data[$field['name']] = $assets['uploaded'];
-
-                // save entries as filepath
-                // $data[$field['name']] = [];
-                // $ASSETS_URL    = rtrim($this->filestorage->getUrl('assets://'), '/');
-
-                // foreach ($assets['assets'] as $file) {
-                //     $data[$field['name']][] = $ASSETS_URL.$file['path'];
-                // }
-
-                // save entries as assets data
+                // store assets data for later usage
                 $data[$field['name']] = $assets['assets'];
 
             }
+
+            /**
+             * Convert assets array to file name before storing form data
+             */
+            $this->on('forms.submit.save', function($form, &$data, $frm) use ($fileFields) {
+
+                foreach ($fileFields as $field) {
+
+                    $files = $data[$field['name']] ?? [];
+
+                    if (empty($files)) continue;
+
+                    $isDataFromAsset = isset($files[0]['path']);
+
+                    if ($isDataFromAsset) {
+
+                        // reset data key
+                        $data[$field['name']] = [];
+                        $ASSETS_URL = rtrim($this->filestorage->getUrl('assets://'), '/');
+
+                        foreach ($files as $asset) {
+                            // add url to data key
+                            $data[$field['name']][] = $ASSETS_URL.$asset['path'];
+
+                        }
+
+                    }
+                }
+
+            });
 
         }
 
         /**
          * Add uploaded files as mail attachment
-         * 
          */
         $this->on('forms.submit.email', function($form, &$data, $frm, &$body, &$options) use ($fileFields) {
 
