@@ -25,17 +25,21 @@ $this->on('forms.submit.before', function($form, &$data, $frm, &$options) {
 
     $prefix = $this->module('multiplane')->formIdPrefix;
 
-    $files = [];
+    $areFilesUploaded = false;
+
     foreach ($fileFields as $field) {
 
         $files = $this->module('formvalidation')->getUploadedFiles($prefix.$form, $field['name'], false);
 
-        if (!empty($files)) $data[$field['name']] = $files;
+        if (!empty($files)) {
+            $data[$field['name']] = $files;
+            $areFilesUploaded = true;
+        }
 
     }
 
     // if no files were uploaded, skip all the steps below
-    if (empty($files)) return;
+    if (!$areFilesUploaded) return;
 
     /**
      * Add uploaded files to assets
