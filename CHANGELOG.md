@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.4
+
+* added file upload capabilities to forms
+* added checks, if form exists and is in use
+* base theme: fixed height difference of search form and button
+
 ## 0.3.3
 
 * fixed localization of forms
