@@ -164,8 +164,8 @@ $this->module('multiplane')->extend([
 
     // changes dynamically
     'defaultLang'           => $this->retrieve('multiplane/i18n', $this->retrieve('i18n', 'en')),
-    'lang'                  => $this('i18n')->locale,
-    'breadcrumbs'           => [['title' => $this('i18n')->get('Home'), 'slug' => '/']],
+    'lang'                  => $this->helper('i18n')->locale,
+    'breadcrumbs'           => [['title' => $this->helper('i18n')->get('Home'), 'slug' => '/']],
     'isStartpage'           => false,
     'collection'            => null,            // current collection
     'clientIpIsAllowed'     => false,           // if maintenance and ip is allowed
@@ -492,7 +492,8 @@ $this->module('multiplane')->extend([
 
     'initI18n' => function($lang = 'en') {
 
-        $this('i18n')->locale = $this->lang = $lang;
+        $this->lang = $lang;
+        $this->app->helper('i18n')->locale = $lang;
 
         if ($this->isMultilingual) {
             $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
@@ -500,7 +501,7 @@ $this->module('multiplane')->extend([
 
         // init + load i18n
         if ($translationspath = $this->app->path("mp_config:i18n/{$lang}.php")) {
-            $this('i18n')->load($translationspath, $lang);
+            $this->app->helper('i18n')->load($translationspath, $lang);
         }
 
     }, // end of initI18n()
