@@ -504,6 +504,10 @@ $this->module('multiplane')->extend([
             $this->app->helper('i18n')->load($translationspath, $lang);
         }
 
+        if (isset($this->app['modules']['babel'])) {
+            $this->app->helper('babel')->loadI18n($lang, ['multiplane', 'formvalidation']);
+        }
+
     }, // end of initI18n()
 
     'getPosts' => function($collection = null, $slug = '', $opts = []) {
