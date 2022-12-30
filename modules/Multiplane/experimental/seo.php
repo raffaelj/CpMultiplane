@@ -45,7 +45,9 @@ $this->module('multiplane')->extend([
             isset($page[$seoName]) && \is_array($page[$seoName]) ? $page[$seoName] : []
         );
 
-        $addBranding = $seo['config']['addBranding'] ?? true;
+        $hideBranding = $seo['config']['hideBranding'] ?? false;
+        $addBranding  = !$hideBranding;
+
         $spacer   = !empty($seo['config']['spacer'])
                     ? $seo['config']['spacer'] : ' - ';
         $branding = !empty($seo['config']['branding'])
@@ -54,11 +56,11 @@ $this->module('multiplane')->extend([
         $title = !empty($page[$titleName]) ? \trim($page[$titleName])
                     . ($addBranding ? $spacer . $branding : '') : $site_name;
 
-        $description =  !empty($page[$descriptionName]) ? $page[$descriptionName] : (
-                          !empty($page[$excerptName]) ? \strip_tags($page[$excerptName]) : (
-                              $site[$descriptionName] ?? ''
-                          )
-                        );
+        $description = !empty($page[$descriptionName]) ? $page[$descriptionName] : (
+                         !empty($page[$excerptName]) ? \strip_tags($page[$excerptName]) : (
+                             $site[$descriptionName] ?? ''
+                         )
+                       );
 
         $images = !empty($page[$seoName]['image']) ? $page[$seoName]['image'] : (
                     !empty($page[$featImgName]) ? $page[$featImgName] : (
@@ -79,6 +81,7 @@ $this->module('multiplane')->extend([
         ];
         foreach ($default as $k => $v) {
             if (empty($seo[$k])) $seo[$k] = $v;
+            elseif ($k == 'title' && $addBranding) $seo[$k] .= $spacer . $branding;
         }
 
         // add default twitter meta

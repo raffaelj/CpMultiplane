@@ -1,15 +1,15 @@
 <?php
 
-// to do:
-// * fallback to content snippet, if no description is present ???
-// * og:image:type
-// * og:image:width
-// * og:image:height
-// * og:video
-// * social media connections (FB, Twitter, Google...)
-// * custom markup on 404 ???
+// TODO:
+// * [ ] fallback to content snippet, if no description is present ???
+// * [ ] og:image:type
+// * [ ] og:image:width
+// * [ ] og:image:height
+// * [ ] og:video
+// * [ ] social media connections (FB, Twitter, Google...)
+// * [ ] custom markup on 404 ???
 
-$seo = mp()->getSeoMeta($page);
+$seo = $app->module('multiplane')->getSeoMeta($page);
 ?>
 
         <title>{{{ $seo['title'] }}}</title>
