@@ -113,7 +113,12 @@ class Forms extends \LimeExtra\Controller {
         $_form = $this->app->module('forms')->form($form);
         $customFormMessages = isset($_form['formMessages']) && is_array($_form['formMessages']) ? $_form['formMessages'] : [];
 
-        $formMessages = $this->app->module('multiplane')->formMessages;
+        $formMessages = [
+            'success'       => $this->app->helper('i18n')->get('Thank you for your message. I will answer soon.'),
+            'notice'        => $this->app->helper('i18n')->get('Please fill in all mandatory fields correctly.'),
+            'error_generic' => $this->app->helper('i18n')->get('Something went wrong'),
+        ];
+
         foreach ($customFormMessages as $k => $v) {
             if (is_string($v) && !empty(trim($v))) $formMessages[$k] = $v;
         }

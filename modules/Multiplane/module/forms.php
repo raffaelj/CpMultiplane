@@ -224,13 +224,6 @@ $this->module('multiplane')->extend([
 
     'formStandalone'        => true,            // forms are accessible as stand-alone page via /form/form_name
 
-    'formMessages' => [
-        'success' => 'Thank you for your message. I will answer soon.',
-        'notice'  => 'Please fill in all mandatory fields correctly.',
-        'mailer'  => 'Your mail wasn\'t sent correctly.',
-        'error_generic' => 'Something went wrong',
-    ],
-
     'getFormFields' => function($form = '', $options = []) {
 
         if (empty($form)) $form = $this->contact;
@@ -376,7 +369,7 @@ $this->module('multiplane')->extend([
                 return $response['error'];
             }
             else {
-                $mailerMessage = $this->formMessages['mailer'];
+                $mailerMessage = $this->app->helper('i18n')->get("Your mail wasn't sent correctly.");
 
                 $_form = $this->app->module('forms')->form($form);
                 $customMailerMassage = $_form['formMessages']['mailer'] ?? null;
@@ -391,7 +384,7 @@ $this->module('multiplane')->extend([
         }
 
         // error from validator or honeypot
-        // normal fields have their own error massage/handling
+        // normal fields have their own error message/handling
         $out = '';
         foreach (['validator', 'honeypot'] as $key) {
             if (!isset($response['error'][$key])) continue;

@@ -26,7 +26,7 @@ foreach ($fields as $field) {
     <p>{{ $options['description'] }}</p>
     @endif
 
-    <p>@lang('Required fields are followed by *.')</p>
+    <p>@lang('Fields marked with an asterisk (*) are required.')</p>
 
     @if(!empty($message['error']))
     <p class="message error alarm">
