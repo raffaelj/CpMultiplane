@@ -1,13 +1,15 @@
 <?php
 /**
- * CpMultiplane is a small PHP front end for Cockpit CMS
- * 
- * @see       https://github.com/raffaelj/CpMultiplane
- * @see       https://github.com/agentejo/cockpit/
- * 
+ * CpMultiplane is a small PHP front end for Cockpit CMS v1
+ *
+ * @version   0.3.5
  * @author    Raffael Jesche
  * @license   MIT
- * @note      work in progress, see package.json for version info
+ *
+ * @note      work in progress
+ *
+ * @see       https://github.com/raffaelj/CpMultiplane
+ * @see       https://github.com/agentejo/cockpit/
  */
 
 // check for custom defines

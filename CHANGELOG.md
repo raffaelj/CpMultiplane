@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.5
+
+* i18n cleanup
+* implemented Babel addon usage
+* improved seo field
+
 ## 0.3.4
 
 * added file upload capabilities to forms

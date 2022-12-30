@@ -1,6 +1,6 @@
 {
     "name": "raffaelj/cpmultiplane",
-    "description": "A small PHP frontend for Cockpit CMS",
+    "description": "A small PHP frontend for Cockpit CMS v1",
     "type": "project",
     "license": "MIT",
     "homepage": "https://cpmultiplane.rlj.me",
@@ -17,10 +17,10 @@
         "ext-pdo": "*",
         "oomphinc/composer-installers-extender": "^2.0",
         "aheinze/cockpit": "^0.12.2",
-        "raffaelj/cockpit-cpmultiplanegui": "^0.3.4",
-        "raffaelj/cockpit-uniqueslugs": "^0.5.4",
-        "raffaelj/cockpit-formvalidation": "^0.4.0",
-        "raffaelj/cockpit-babel": "^0.1.0"
+        "raffaelj/cockpit-cpmultiplanegui": "^0.3.5",
+        "raffaelj/cockpit-uniqueslugs": "^0.5.5",
+        "raffaelj/cockpit-formvalidation": "^0.4.1",
+        "raffaelj/cockpit-babel": "^0.2.2"
     },
     "config": {
         "vendor-dir": "lib/vendor",
