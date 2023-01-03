@@ -9,6 +9,14 @@ if (!function_exists('mp')) {
     function mp() {return cockpit('multiplane');}
 }
 
+// define some constants to avoid throwing errors if Multiplane is inside
+// `addons` dir of cockpit instead of inside `modules` dir of CpMultiplane
+$DIR = str_replace(DIRECTORY_SEPARATOR, '/', realpath(__DIR__));
+if (!defined('MP_ADMINFOLDER'))     define('MP_ADMINFOLDER',  'cockpit');
+if (!defined('MP_DIR'))             define('MP_DIR',          $DIR);
+if (!defined('MP_ENV_ROOT'))        define('MP_ENV_ROOT',     MP_DIR);
+if (!defined('MP_CONFIG_DIR'))      define('MP_CONFIG_DIR',   MP_ENV_ROOT.'/config');
+
 // set config path
 $this->path('mp_config', MP_CONFIG_DIR);
 
