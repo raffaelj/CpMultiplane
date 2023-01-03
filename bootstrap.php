@@ -49,7 +49,10 @@ if (!defined('COCKPIT_DIR'))        define('COCKPIT_DIR', MP_DIR.'/'.MP_ADMINFOL
 // include cockpit, now `$cockpit` and `cockpit()` are available
 if (file_exists(COCKPIT_DIR . '/bootstrap.php')) {
     require_once(COCKPIT_DIR . '/bootstrap.php');
-} else { echo '<!DOCTYPE html><html><body><p>You have to install <a href="https://github.com/agentejo/cockpit">Cockpit CMS</a> before you can use CpMultiplane.</p></body></html>'; die; } // to do: cockpit downloader
+} else {
+    // TODO: cockpit downloader
+    echo '<!DOCTYPE html><html><body><p>You have to install <a href="https://github.com/agentejo/cockpit">Cockpit CMS</a> before you can use CpMultiplane.</p></body></html>'; die;
+}
 
 // load custom config
 $customConfig = [];
