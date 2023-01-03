@@ -1,12 +1,9 @@
 <?php
 
+define('MULTIPLANE_VERSION', '0.3.5');
+
 if ($this['debug']) \error_reporting(E_ALL);
 
-//set version
-if (!$this->retrieve('multiplane/version', false)) {
-    $this->set('multiplane/version', $this['debug'] ? \time()
-        : \json_decode($this->helper('fs')->read(MP_DIR.'/package.json'), true)['version']);
-}
 
 // set config path
 $this->path('mp_config', MP_CONFIG_DIR);
@@ -31,6 +28,8 @@ $this->helpers['mputils'] = 'Multiplane\\Helper\\Utils';
 
 
 $this->module('multiplane')->extend([
+
+    'version' => $this['debug'] ? \time() : MULTIPLANE_VERSION,
 
     // base config
     'theme'                 => 'rljbase',

@@ -2,10 +2,10 @@
 /**
  * CpMultiplane is a small PHP front end for Cockpit CMS v1
  *
- * @version   0.3.5
  * @author    Raffael Jesche
  * @license   MIT
  *
+ * @note      see version info in `/modules/Multiplane/bootstrap.php`
  * @note      work in progress
  *
  * @see       https://github.com/raffaelj/CpMultiplane
