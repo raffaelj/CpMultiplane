@@ -9,7 +9,7 @@ if (!$this->retrieve('multiplane/version', false)) {
 }
 
 // set config path
-$this->path('mp_config', MP_ENV_ROOT . '/config');
+$this->path('mp_config', MP_CONFIG_DIR);
 
 \spl_autoload_register(function($class){
 
