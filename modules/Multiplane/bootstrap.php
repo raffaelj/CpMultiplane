@@ -4,6 +4,10 @@ define('MULTIPLANE_VERSION', '0.3.5');
 
 if ($this['debug']) \error_reporting(E_ALL);
 
+// shorthand module call
+if (!function_exists('mp')) {
+    function mp() {return cockpit('multiplane');}
+}
 
 // set config path
 $this->path('mp_config', MP_CONFIG_DIR);

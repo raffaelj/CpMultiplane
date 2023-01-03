@@ -53,8 +53,9 @@ if (file_exists(COCKPIT_DIR . '/bootstrap.php')) {
 }
 
 // shorthand module call
-function mp() {
-    return cockpit('multiplane');
+if (!function_exists('mp')) {
+    function mp() {return cockpit('multiplane');}
 }
+
 // load Multiplane module
 cockpit()->loadModules([MP_DIR.'/modules']);
