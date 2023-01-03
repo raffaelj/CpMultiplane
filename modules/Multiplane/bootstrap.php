@@ -8,10 +8,6 @@ if (!$this->retrieve('multiplane/version', false)) {
         : \json_decode($this->helper('fs')->read(MP_DIR.'/package.json'), true)['version']);
 }
 
-if (!MP_SELF_EXPORT) {
-    require_once(__DIR__ . '/override.php');
-}
-
 // set config path
 $this->path('mp_config', MP_ENV_ROOT . '/config');
 
@@ -1163,40 +1159,47 @@ include_once(__DIR__ . '/experimental/sitemap.php');
 include_once(__DIR__ . '/experimental/matomo.php');
 include_once(__DIR__ . '/experimental/seo.php');
 
+$this->on('multiplane.init', function() {
 
-// overwrite default config
-$this->module('multiplane')->loadConfig();
-
-// load theme bootstrap file(s)
-if ($this->module('multiplane')->parentTheme && $this->module('multiplane')->parentThemeBootstrap
-    && \file_exists($this->module('multiplane')->parentThemePath . '/bootstrap.php')) {
-
-    include_once($this->module('multiplane')->parentThemePath . '/bootstrap.php');
-}
-if (\file_exists($this->module('multiplane')->themePath . '/bootstrap.php')) {
-    include_once($this->module('multiplane')->themePath . '/bootstrap.php');
-}
-
-// load custom bootstrap file
-if (\file_exists(MP_CONFIG_DIR.'/bootstrap.php')) {
-    include_once(MP_CONFIG_DIR.'/bootstrap.php');
-}
-
-// extend lexy parser for custom image url templating
-$this->module('multiplane')->extendLexyTemplateParser();
-
-// bind routes
-
-if (!MP_SELF_EXPORT) {
-
-    // skip binding routes if in maintenance mode and
-    // don't bind any routes, if users wants to use only their own routes
-    if ($this->module('multiplane')->accessAllowed()
-      && !$this->module('multiplane')->disableDefaultRoutes) {
-        require_once(__DIR__ . '/default-routes.php');
+    if (!MP_SELF_EXPORT) {
+        require_once(__DIR__ . '/override.php');
     }
 
-}
+    // overwrite default config
+    $this->module('multiplane')->loadConfig();
+
+    // load theme bootstrap file(s)
+    if ($this->module('multiplane')->parentTheme && $this->module('multiplane')->parentThemeBootstrap
+        && \file_exists($this->module('multiplane')->parentThemePath . '/bootstrap.php')) {
+
+        include_once($this->module('multiplane')->parentThemePath . '/bootstrap.php');
+    }
+    if (\file_exists($this->module('multiplane')->themePath . '/bootstrap.php')) {
+        include_once($this->module('multiplane')->themePath . '/bootstrap.php');
+    }
+
+    // load custom bootstrap file
+    if (\file_exists(MP_CONFIG_DIR.'/bootstrap.php')) {
+        include_once(MP_CONFIG_DIR.'/bootstrap.php');
+    }
+
+    // extend lexy parser for custom image url templating
+    $this->module('multiplane')->extendLexyTemplateParser();
+
+    // bind routes
+
+    if (!MP_SELF_EXPORT) {
+
+        // skip binding routes if in maintenance mode and
+        // don't bind any routes, if users wants to use only their own routes
+        if ($this->module('multiplane')->accessAllowed()
+        && !$this->module('multiplane')->disableDefaultRoutes) {
+            require_once(__DIR__ . '/default-routes.php');
+        }
+
+    }
+
+}, 9999);
 
 // CLI
 if (COCKPIT_CLI) {

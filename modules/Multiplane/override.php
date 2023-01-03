@@ -37,13 +37,11 @@ $this->service('renderer', function() use ($lexy) {
 
 // add debug overlay
 if ($this->debug) {
-    $this->on('multiplane.init', function() {
-        if ($this->retrieve('multiplane/debug/overlay', false)) {
-            $this->on('multiplane.layout.contentafter', function() {
-                $this->renderView('views:partials/debug-overlay.php');
-            });
-        }
-    });
+    if ($this->retrieve('multiplane/debug/overlay', false)) {
+        $this->on('multiplane.layout.contentafter', function() {
+            $this->renderView('views:partials/debug-overlay.php');
+        });
+    }
 }
 
 // set global viewvars for template files - they will be filled later, but they must be available
