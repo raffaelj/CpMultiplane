@@ -485,6 +485,13 @@ $this->module('multiplane')->extend([
 
     }, // end of getLanguages()
 
+    /**
+     * Init and load i18n file(s),
+     * add locale prefix to `base_url`
+     *
+     * @param string $lang
+     * @return void
+     */
     'initI18n' => function($lang = 'en') {
 
         $this->lang = $lang;
@@ -494,16 +501,17 @@ $this->module('multiplane')->extend([
             $this->app->set('base_url', MP_BASE_URL . '/' . $lang);
         }
 
-        // init + load i18n
+        // deprecated: custom mp config path
         if ($translationspath = $this->app->path("mp_config:i18n/{$lang}.php")) {
             $this->app->helper('i18n')->load($translationspath, $lang);
         }
 
+        // use babel addon to load specific i18n files
         if (isset($this->app['modules']['babel'])) {
             $this->app->helper('babel')->loadI18n($lang, ['multiplane', 'formvalidation']);
         }
 
-    }, // end of initI18n()
+    },
 
     'getPosts' => function($collection = null, $slug = '', $opts = []) {
 

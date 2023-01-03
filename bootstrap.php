@@ -36,8 +36,6 @@ if (!defined('MP_ENV_URL'))         define('MP_ENV_URL',      MP_DIR == MP_ENV_R
 
 if (!defined('MP_CONFIG_DIR'))      define('MP_CONFIG_DIR',   MP_ENV_ROOT.'/config');
 
-if (!defined('MP_CONFIG_PATH'))     define('MP_CONFIG_PATH',  MP_CONFIG_DIR.'/config.php');
-
 // avoid overriding paths and don't bind routes - to do: cleaner implementation
 if (!defined('MP_SELF_EXPORT'))     define('MP_SELF_EXPORT',  false);
 
@@ -54,18 +52,9 @@ if (file_exists(COCKPIT_DIR . '/bootstrap.php')) {
     echo '<!DOCTYPE html><html><body><p>You have to install <a href="https://github.com/agentejo/cockpit">Cockpit CMS</a> before you can use CpMultiplane.</p></body></html>'; die;
 }
 
-// load custom config
-$customConfig = [];
-if (\file_exists(MP_CONFIG_PATH)) {
-    $customConfig = include(MP_CONFIG_PATH);
-}
-
-cockpit()->loadModules(array_merge([
-    MP_DIR . '/modules', # core
-    MP_ENV_ROOT . '/addons' # addons
-], $customConfig['loadmodules'] ?? []));
-
 // shorthand module call
 function mp() {
     return cockpit('multiplane');
 }
+// load Multiplane module
+cockpit()->loadModules([MP_DIR.'/modules']);

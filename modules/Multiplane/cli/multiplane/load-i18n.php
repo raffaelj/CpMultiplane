@@ -10,6 +10,8 @@
  * Usage: `./mp multiplane/load-i18n`
  */
 
+// TODO: refactoring to use Babel addon with new i18n folder pattern
+
 if (!COCKPIT_CLI) return; 
 
 $reload = $app->param('reload', false);
