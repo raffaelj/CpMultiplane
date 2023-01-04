@@ -20,6 +20,15 @@ if (!defined('MP_CONFIG_DIR'))      define('MP_CONFIG_DIR',   MP_ENV_ROOT.'/conf
 // set config path
 $this->path('mp_config', MP_CONFIG_DIR);
 
+// set themes paths
+if ($shippedThemesPath = $this->path(__DIR__.'/themes')) {
+    $this->path('#themes', $shippedThemesPath); // deprecated
+}
+if ((MP_ENV_ROOT != __DIR__) && $customThemesPath = $this->path(MP_ENV_ROOT.'/themes')) {
+    $this->path('#themes', $customThemesPath); // deprecated
+}
+$this->path('#themes', COCKPIT_PUBLIC_STORAGE_FOLDER . '/themes');
+
 \spl_autoload_register(function($class){
 
     // register autoload classes in namespace Multiplane\Controller from
@@ -843,8 +852,7 @@ $this->module('multiplane')->extend([
 
         $themeConfig = $parentThemeConfig = [];
 
-        if (  ($this->themePath = $this->app->path(MP_ENV_ROOT.'/themes/'.$this->theme))
-           || ($this->themePath = $this->app->path(__DIR__.'/themes/'.$this->theme)) ) {
+        if ($this->themePath = $this->app->path('#themes:'.$this->theme)) {
 
             if (\file_exists($this->themePath . '/config/config.php')) {
                 $themeConfig = include($this->themePath . '/config/config.php');
@@ -855,8 +863,7 @@ $this->module('multiplane')->extend([
             }
 
             if ($this->parentTheme) {
-                if (  ($this->parentThemePath = $this->app->path(MP_ENV_ROOT.'/themes/'.$this->parentTheme))
-                   || ($this->parentThemePath = $this->app->path(__DIR__.'/themes/'.$this->parentTheme)) ) {
+                if ($this->parentThemePath = $this->app->path('#themes:'.$this->parentTheme)) {
 
                     // parent theme path must be set before theme path
                     $this->app->path('theme', $this->parentThemePath);
@@ -1015,16 +1022,17 @@ $this->module('multiplane')->extend([
             // 'config'      => $this->loadThemeConfig(),
         ];
 
-        $themes    = [];
-        $themedirs = [MP_DIR.'/modules/Multiplane/themes', MP_ENV_ROOT.'/themes'];
+        $themes = [];
 
-        foreach ($themedirs as $themedir) {
-            foreach ($this('fs')->ls($themedir) as $dir) {
+        foreach ($this->app->paths('#themes') as $themesDir) {
+            foreach ($this('fs')->ls($themesDir) as $dir) {
 
                 if (!$dir->isDir()) continue;
 
                 $name = $dir->getFileName();
                 $path = $dir->getPathName();
+
+                if (isset($themes[$name])) continue;
 
                 $thm = [
                     'name'   => $name,
