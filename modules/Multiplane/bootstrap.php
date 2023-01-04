@@ -11,11 +11,11 @@ if (!function_exists('mp')) {
 
 // define some constants to avoid throwing errors if Multiplane is inside
 // `addons` dir of cockpit instead of inside `modules` dir of CpMultiplane
-$DIR = str_replace(DIRECTORY_SEPARATOR, '/', realpath(__DIR__));
-if (!defined('MP_ADMINFOLDER'))     define('MP_ADMINFOLDER',  'cockpit');
-if (!defined('MP_DIR'))             define('MP_DIR',          $DIR);
-if (!defined('MP_ENV_ROOT'))        define('MP_ENV_ROOT',     MP_DIR);
+if (!defined('MP_ADMINFOLDER'))     define('MP_ADMINFOLDER',  '');
+if (!defined('MP_ENV_ROOT'))        define('MP_ENV_ROOT',     COCKPIT_ENV_ROOT);
 if (!defined('MP_CONFIG_DIR'))      define('MP_CONFIG_DIR',   MP_ENV_ROOT.'/config');
+if (!defined('MP_BASE_URL'))        define('MP_BASE_URL',     COCKPIT_BASE_URL);
+if (!defined('MP_ENV_URL'))         define('MP_ENV_URL',      MP_BASE_URL);
 
 // set config path
 $this->path('mp_config', MP_CONFIG_DIR);
@@ -1025,7 +1025,8 @@ $this->module('multiplane')->extend([
         $themes = [];
 
         foreach ($this->app->paths('#themes') as $themesDir) {
-            foreach ($this('fs')->ls($themesDir) as $dir) {
+
+            foreach ($this->app->helper('fs')->ls($themesDir) as $dir) {
 
                 if (!$dir->isDir()) continue;
 
@@ -1034,21 +1035,35 @@ $this->module('multiplane')->extend([
 
                 if (isset($themes[$name])) continue;
 
-                $thm = [
+                $config = [];
+                $info   = [];
+
+                if (\file_exists("{$path}/config/config.php")) {
+                    $config = include("{$path}/config/config.php");
+                }
+                if (\file_exists("{$path}/package.json")) {
+                    $json = $this->app->helper('fs')->read("{$path}/package.json");
+                    $info = \json_decode($json, true);
+                }
+
+                $theme = [
                     'name'   => $name,
                     'path'   => $path,
                     'image'  => '',
-                    'config' => \file_exists("{$path}/config/config.php") ? include("{$path}/config/config.php") : [],
-                    'info'   => \file_exists("{$path}/package.json") ? \json_decode($this('fs')->read("{$path}/package.json"), true) : [],
+                    'config' => $config,
+                    'info'   => $info,
                 ];
 
-                if ( ($image = $this->app->pathToUrl("{$path}/screenshot.png"))
-                  || ($image = $this->app->pathToUrl("{$path}/screenshot.jpg"))) {
-                    $thm['image'] = $image;
+                $extensions = ['png', 'jpg'];
+                foreach ($extensions as $ext) {
+                    if ($image = $this->app->pathToUrl("{$path}/screenshot.{$ext}")) {
+                        $theme['image'] = $image; break;
+                    }
                 }
 
-                $themes[$name] = $thm;
+                $themes[$name] = $theme;
             }
+
         }
 
         return compact('constants', 'theme', 'themes');
